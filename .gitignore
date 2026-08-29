@@ -1,0 +1,39 @@
+# Node.js / Vite build output & dependencies
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Python caching & environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE / Editor config
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+backend/.env
+.env
+*.coverage
+backend/.coverage
+backend/static/uploads/*

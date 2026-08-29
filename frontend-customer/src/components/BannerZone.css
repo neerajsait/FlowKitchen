@@ -1,0 +1,6 @@
+.banner-item {
+  transition: transform 0.2s ease-in-out;
+}
+.banner-item:hover {
+  transform: scale(1.02);
+}
