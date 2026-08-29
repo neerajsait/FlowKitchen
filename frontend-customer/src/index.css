@@ -229,7 +229,8 @@ button { font-family: inherit; }
 ──────────────────────────────────────────────────────────── */
 .app-shell {
   display: flex;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg);
 }
 
@@ -237,7 +238,8 @@ button { font-family: inherit; }
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 /* Mobile: no sidebar */
@@ -2205,3 +2207,24 @@ textarea.form-input { resize: vertical; min-height: 100px; line-height: 1.6; }
 }
 @keyframes skelwave { 100% { transform: translateX(100%); } }
 .animate-spin { animation: iconspin 900ms linear infinite; }
+
+/* ── SMOOTHNESS & ANIMATION UPGRADES ─────────────────────── */
+button, .btn, .header-nav-link, .category-tab, .product-card, input, select, textarea, .cart-item, .cart-drawer-content {
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+button:active, .btn:active, .header-action-btn:active {
+  transform: scale(0.96) !important;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+}
+.header-nav-link:hover {
+  transform: translateY(-2px);
+}
+.cart-item {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.cart-item:hover {
+  transform: scale(1.02);
+}

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { api, API_BASE_URL } from "../utils/api";
 import {
@@ -1131,38 +1131,47 @@ export default function AdminView({ onLogout, dbMode }) {
             alignItems: "center",
             justifyContent: "space-between"
           }}>
-        <div className="page-header-left">
+        <div className="page-header-left" style={{ flex: 1 }}>
           <h1 style={{ fontSize: "1.5rem", margin: 0 }}>Admin Dashboard</h1>
           <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Manage your food business — catalog, outlets, orders & analytics</p>
         </div>
-        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           {dbMode && (
             <div style={{
-              fontSize: "0.72rem", color: dbMode.includes("Live") ? "var(--success)" : "var(--warning)",
-              background: dbMode.includes("Live") ? "var(--success-bg)" : "var(--warning-bg)",
-              padding: "0.3rem 0.75rem", borderRadius: "var(--r-full)", fontWeight: 600,
-              border: "1px solid", borderColor: dbMode.includes("Live") ? "rgba(22,163,74,0.2)" : "rgba(217,119,6,0.2)",
-              marginRight: "0.25rem"
+              display: "flex", alignItems: "center", gap: "6px",
+              fontSize: "0.75rem", color: dbMode.includes("Live") ? "var(--success)" : "var(--warning)",
+              background: dbMode.includes("Live") ? "rgba(67, 160, 71, 0.1)" : "rgba(239, 83, 80, 0.1)",
+              padding: "0.4rem 0.8rem", borderRadius: "var(--r-full)", fontWeight: 600,
             }}>
-              {dbMode.includes("Live") ? "Live Backend" : "Server Offline"}
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "currentColor", boxShadow: "0 0 8px currentColor" }}></div>
+              {dbMode.includes("Live") ? "System Live" : "Offline"}
             </div>
           )}
-          <button className="btn btn-secondary" onClick={loadData} disabled={loading}>
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-            {loading ? "Loading…" : "Refresh"}
-          </button>
-          <button className="btn btn-primary" onClick={() => setShowAddMenu(true)}>
-            <Plus size={15} /> Add Product
-          </button>
-          <button className="btn btn-secondary" onClick={() => setShowAddStaff(true)}>
-            <Users size={15} /> Add Staff
-          </button>
-          <button className="btn btn-secondary" onClick={openProfileModal}>
-            <User size={15} /> My Profile
-          </button>
-          <button className="btn btn-secondary" onClick={onLogout}>
-            <LogOut size={15} /> Sign Out
-          </button>
+          
+          <div style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
+
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <button className="btn-icon" onClick={loadData} disabled={loading} title="Refresh Data" style={{ borderRadius: "var(--r-full)" }}>
+              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowAddMenu(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
+              <Plus size={14} /> New Product
+            </button>
+            <button className="btn btn-secondary" onClick={() => setShowAddStaff(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
+              <Users size={14} /> Add Staff
+            </button>
+          </div>
+
+          <div style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
+
+          <div style={{ display: "flex", gap: "0.25rem", alignItems: "center", background: "var(--bg-elevated)", padding: "0.25rem", borderRadius: "var(--r-full)", border: "1px solid var(--border-subtle)" }}>
+            <button className="btn btn-secondary" onClick={openProfileModal} style={{ border: "none", background: "transparent", padding: "0.4rem 0.8rem", fontSize: "0.8rem", boxShadow: "none" }}>
+              <User size={14} /> My Profile
+            </button>
+            <button className="btn-icon" onClick={onLogout} title="Sign Out" style={{ border: "none", background: "rgba(239, 83, 80, 0.1)", borderRadius: "var(--r-full)", color: "var(--error)" }}>
+              <LogOut size={14} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2760,21 +2769,28 @@ export default function AdminView({ onLogout, dbMode }) {
 
       {/* ══════════ STORE SETTINGS ══════════ */}
       {activeTab === "settings" && (
-        <form className="card fade-in" style={{ padding: "1.5rem" }} onSubmit={async (e) => {
-          e.preventDefault();
-          try {
-            await api.adminUpdateStoreSettings(storeSettings);
-            setToast({ message: "All store settings saved successfully", type: "success" });
-          } catch (err) {
-            setToast({ message: "Error saving settings", type: "error" });
-          }
-        }}>
-          <h2>Store Settings</h2>
-          <div style={{ marginTop: "1.5rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-            
-            {/* Status Toggles */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Store Status</h3>
+        <div className="fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem", maxWidth: "1000px", margin: "0 auto" }}>
+          
+          <div>
+            <h2 style={{ fontSize: "1.75rem", margin: 0 }}>Store Settings</h2>
+            <p style={{ color: "var(--text-muted)", marginTop: "0.25rem" }}>Manage core operational parameters, payment methods, and system data.</p>
+          </div>
+
+          <form className="card" style={{ padding: "2rem", borderTop: "4px solid var(--brand)" }} onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              await api.adminUpdateStoreSettings(storeSettings);
+              setToast({ message: "All store settings saved successfully", type: "success" });
+            } catch (err) {
+              setToast({ message: "Error saving settings", type: "error" });
+            }
+          }}>
+            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}><Settings size={18} /> Global Configuration</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+              
+              {/* Status Toggles */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <h3 style={{ fontSize: "1rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Store Status</h3>
               <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", background: "var(--bg-elevated)", padding: "1rem", borderRadius: "var(--r-md)", border: "1px solid var(--border-subtle)" }}>
                 <input type="checkbox" checked={storeSettings.is_store_online === "true"} onChange={e => {
                   const val = e.target.checked ? "true" : "false";
@@ -2872,8 +2888,13 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
             </div>
 
+            <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end" }}>
+              <button type="submit" className="btn btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "0.95rem" }}>Save Configuration</button>
+            </div>
+          </form>
+
             {/* ══════════ PAYMENT GATEWAY — RAZORPAY ══════════ */}
-            <div style={{ marginTop: "3rem", borderTop: "1px solid var(--border-light)", paddingTop: "2rem" }}>
+          <div className="card" style={{ padding: "2rem", borderTop: "4px solid #6366f1" }}>
               <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <CreditCard size={20} /> Payment Gateway — Razorpay
               </h3>
@@ -2939,7 +2960,7 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
 
             {/* System Data Reset */}
-            <div style={{ marginTop: "3rem", borderTop: "1px solid var(--border-light)", paddingTop: "2rem" }}>
+          <div className="card" style={{ padding: "2rem", borderTop: "4px solid var(--danger)", marginBottom: "3rem" }}>
               <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--danger)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <AlertTriangle size={20} /> System Data Reset
               </h3>
@@ -2999,13 +3020,7 @@ export default function AdminView({ onLogout, dbMode }) {
                 </button>
               </div>
             </div>
-
-            <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--border-light)", display: "flex", justifyContent: "flex-end", position: "sticky", bottom: "1rem", background: "transparent", zIndex: 10 }}>
-            <button type="submit" className="btn btn-primary" style={{ padding: "0.75rem 2rem" }}>
-              Save All Changes
-            </button>
           </div>
-        </form>
       )}
 
       {/* ══════════ STOCK REQUESTS ══════════ */}
@@ -3410,7 +3425,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
       {/* Add/Edit Staff */}
       <Modal open={showAddStaff} onClose={() => { setShowAddStaff(false); setEditingUserId(null); setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFirstName(""); setStaffLastName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0); }} title={editingUserId ? "Edit User Account" : "Create User Account"}>
-        <form onSubmit={handleAddStaff} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <form onSubmit={handleAddStaff} autoComplete="off" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Role</label>
             <select className="form-select" value={staffRole} onChange={e => setStaffRole(e.target.value)}>
@@ -3423,12 +3438,12 @@ export default function AdminView({ onLogout, dbMode }) {
           </div>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Email</label>
-            <input type="email" required className="form-input" placeholder="team@brand.com" value={staffEmail} onChange={e => setStaffEmail(e.target.value)} />
+            <input type="email" required autoComplete="new-password" className="form-input" value={staffEmail} onChange={e => setStaffEmail(e.target.value)} />
           </div>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Password {editingUserId && "(Leave blank to keep)"}</label>
-              <input type="password" required={!editingUserId} className="form-input" placeholder="••••••••" value={staffPassword} onChange={e => setStaffPassword(e.target.value)} />
+              <input type="password" required={!editingUserId} autoComplete="new-password" className="form-input" value={staffPassword} onChange={e => setStaffPassword(e.target.value)} />
             </div>
             {(staffRole === "staff" || staffRole === "kitchen") && (
               <div className="form-group" style={{ margin: 0 }}>
@@ -3439,8 +3454,8 @@ export default function AdminView({ onLogout, dbMode }) {
                   maxLength={4}
                   pattern="\d{4}"
                   required={!editingUserId}
+                  autoComplete="new-password"
                   className="form-input"
-                  placeholder="● ● ● ●"
                   value={staffPin}
                   onChange={e => setStaffPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
                 />
@@ -3450,16 +3465,16 @@ export default function AdminView({ onLogout, dbMode }) {
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">First Name</label>
-              <input type="text" className="form-input" placeholder="Alex" value={staffFirstName} onChange={e => setStaffFirstName(e.target.value)} />
+              <input type="text" autoComplete="off" className="form-input" value={staffFirstName} onChange={e => setStaffFirstName(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Last Name</label>
-              <input type="text" className="form-input" placeholder="Kumar" value={staffLastName} onChange={e => setStaffLastName(e.target.value)} />
+              <input type="text" autoComplete="off" className="form-input" value={staffLastName} onChange={e => setStaffLastName(e.target.value)} />
             </div>
           </div>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Phone</label>
-            <input type="tel" maxLength={10} className="form-input" placeholder="9876543210" pattern="\d{10}" value={staffPhone} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setStaffPhone(val); }} />
+            <input type="tel" autoComplete="off" maxLength={10} className="form-input" pattern="\d{10}" value={staffPhone} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setStaffPhone(val); }} />
           </div>
           {(staffRole === "staff" || staffRole === "outlet_owner" || staffRole === "kitchen") && (
             <div className="form-group" style={{ margin: 0 }}>

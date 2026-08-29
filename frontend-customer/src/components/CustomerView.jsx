@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { api, API_BASE_URL } from "../utils/api";
 import { jsPDF } from "jspdf";
 import { TermsPage, PrivacyPage } from "./LegalPages";
@@ -1026,11 +1027,24 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         )}
 
         {/* Page content */}
-        <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-          {renderPage()}
-
-          {/* Site footer */}
-          <SiteFooter setActiveTab={(tab) => { setSelectedItem(null); setActiveTab(tab); }} />
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab || "home"}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}
+            >
+              {renderPage()}
+              
+              {/* Site footer */}
+              {(!activeTab || activeTab === "home") && (
+                <SiteFooter setActiveTab={(tab) => { setSelectedItem(null); setActiveTab(tab); }} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 

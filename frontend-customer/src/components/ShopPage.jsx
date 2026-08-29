@@ -201,19 +201,17 @@ export default function ShopPage({ menu, cart, favorites, loading, activeCategor
       )}
 
       <div className="shop-layout">
-        <div className="desktop-only" style={{ width: "240px", flexShrink: 0 }}>
-          <div style={{ position: "sticky", top: "100px", width: "240px", height: "calc(100vh - 120px)", overflowY: "auto", paddingRight: "1rem" }}>
-            <FilterSidebar
-              activeCategory={activeCategory} setActiveCategory={setActiveCategory}
-              sortBy={sortBy} setSortBy={setSortBy}
-              priceMax={priceMax} setPriceMax={setPriceMax}
-              showOnlyVeg={showOnlyVeg} setShowOnlyVeg={setShowOnlyVeg}
-              spiceFilter={spiceFilter} setSpiceFilter={setSpiceFilter}
-              ratingFilter={ratingFilter} setRatingFilter={setRatingFilter}
-              onReset={handleReset}
-              count={filtered.length} total={menu.length}
-            />
-          </div>
+        <div className="desktop-only" style={{ width: "240px", flexShrink: 0, position: "sticky", top: "20px", height: "calc(100vh - 120px)", overflowY: "auto", paddingRight: "1rem" }}>
+          <FilterSidebar
+            activeCategory={activeCategory} setActiveCategory={setActiveCategory}
+            sortBy={sortBy} setSortBy={setSortBy}
+            priceMax={priceMax} setPriceMax={setPriceMax}
+            showOnlyVeg={showOnlyVeg} setShowOnlyVeg={setShowOnlyVeg}
+            spiceFilter={spiceFilter} setSpiceFilter={setSpiceFilter}
+            ratingFilter={ratingFilter} setRatingFilter={setRatingFilter}
+            onReset={handleReset}
+            count={filtered.length} total={menu.length}
+          />
         </div>
 
         {/* Product grid */}
