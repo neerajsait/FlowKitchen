@@ -1074,7 +1074,7 @@ def create_app(config_override=None):
         #  - refresh_token manually, path-scoped to /api/auth.
         # The body still carries access_token for non-browser API clients;
         # browser frontends rely on the cookies + memory fast-path only.
-        resp = jsonify({"access_token": token, "user": user.to_dict()})
+        resp = jsonify({"access_token": token, "refresh_token": refresh_token, "user": user.to_dict()})
         set_access_cookies(resp, token, max_age=int(expires_delta.total_seconds()))
         _set_refresh_cookie(resp, refresh_token)
         return resp, 200

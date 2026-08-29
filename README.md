@@ -16,6 +16,44 @@ A comprehensive full-stack application providing a complete ecosystem for food s
 *   **Customer Frontend:** React (Vite), Tailwind CSS
 *   **Admin/POS Frontend:** React (Vite), Tailwind CSS
 
+## 💻 Getting Started (Local Development)
+
+### 1. Clone the repository
+```bash
+git clone <your-repository-url>
+cd food
+```
+
+### 2. Backend Setup
+```bash
+cd backend
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+# Make sure to create a .env file for your database and secrets!
+flask db upgrade
+flask run
+```
+
+### 3. Frontend Setup (Admin & Customer)
+Open a new terminal for the admin dashboard:
+```bash
+cd frontend-admin
+npm install
+npm run dev
+```
+
+Open another terminal for the customer storefront:
+```bash
+cd frontend-customer
+npm install
+npm run dev
+```
+
 ## ⚙️ Deployment & Production Requirements
 
 ### Environment Variables (Backend)

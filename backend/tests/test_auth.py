@@ -165,7 +165,7 @@ class AuthTestCase(unittest.TestCase):
         # Reset password
         resp2 = self.client.post("/api/auth/reset-password", json={
             "email": "customer@test.com",
-            "token": "1234567890abcdef1234567890abcdef",
+            "token": "123456",
             "new_password": "newcustpass123"
         })
         self.assertEqual(resp2.status_code, 200)

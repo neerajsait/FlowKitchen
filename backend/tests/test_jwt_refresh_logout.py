@@ -92,8 +92,13 @@ def test_inactive_user_token_rejected(client):
     assert res2.status_code == 401
 
 def test_refresh_preserves_claims(client):
-    from models import User
+    from models import User, Outlet
     from app import db, bcrypt
+    
+    # Create outlet
+    outlet = Outlet(name="Test Outlet", address="Test")
+    outlet.id = 42
+    db.session.add(outlet)
     
     # Create staff user
     staff = User(email="staff@test.com", first_name="Staff", role="staff")
