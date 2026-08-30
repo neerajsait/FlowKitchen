@@ -9,20 +9,50 @@ _redis_client = None
 class MemoryRedis:
     def __init__(self):
         self.store = {}
+        
     def ping(self):
         return True
-    def setex(self, key, time, value):
+        
+    def set(self, key, value, ex=None, px=None, nx=False, xx=False):
         import time as t
-        self.store[key] = (value, t.time() + time)
+        if nx and key in self.store:
+            return None
+        if xx and key not in self.store:
+            return None
+            
+        exp = None
+        if ex is not None:
+            exp = t.time() + ex
+        elif px is not None:
+            exp = t.time() + (px / 1000.0)
+            
+        self.store[key] = (value, exp)
+        return True
+
+    def setex(self, key, time, value):
+        return self.set(key, value, ex=time)
+
     def get(self, key):
         import time as t
         if key in self.store:
             val, exp = self.store[key]
-            if t.time() < exp:
+            if exp is None or t.time() < exp:
                 return val
             else:
                 del self.store[key]
         return None
+        
+    def exists(self, *keys):
+        import time as t
+        count = 0
+        for key in keys:
+            if key in self.store:
+                val, exp = self.store[key]
+                if exp is None or t.time() < exp:
+                    count += 1
+                else:
+                    del self.store[key]
+        return count
     def delete(self, *keys):
         """Match redis-py semantics: remove keys, return how many were deleted."""
         removed = 0

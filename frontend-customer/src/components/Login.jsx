@@ -111,7 +111,7 @@ export default function Login({ onLoginSuccess }) {
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
               <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>FlavorFlow</div>
+                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula\'s Kitchen</div>
                 <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Suggula's Kitchen</div>
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Login({ onLoginSuccess }) {
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
               <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>FlavorFlow</div>
+                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula\'s Kitchen</div>
                 <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Suggula's Kitchen</div>
               </div>
             </div>

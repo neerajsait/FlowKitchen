@@ -97,12 +97,12 @@ def test_refresh_preserves_claims(client):
     
     # Create outlet
     outlet = Outlet(name="Test Outlet", address="Test")
-    outlet.id = 42
     db.session.add(outlet)
+    db.session.flush()
     
     # Create staff user
     staff = User(email="staff@test.com", first_name="Staff", role="staff")
-    staff.outlet_id = 42
+    staff.outlet_id = outlet.id
     staff.staff_code = "5555"
     staff.set_password("staff", bcrypt)
     staff.set_pin("1234", bcrypt)
@@ -120,8 +120,7 @@ def test_refresh_preserves_claims(client):
     
     # Check token claims
     import jwt
-    from flask import current_app
-    decoded = jwt.decode(new_access, "test-jwt-secret", options={"verify_signature": False})
+    decoded = jwt.decode(new_access, options={"verify_signature": False})
     assert decoded.get("role") == "staff"
-    assert decoded.get("outlet_id") == 42
+    assert decoded.get("outlet_id") == outlet.id
     assert decoded.get("user_id") == staff.id

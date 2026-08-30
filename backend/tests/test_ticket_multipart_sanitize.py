@@ -44,7 +44,7 @@ def test_ticket_upload_security(client):
     data2 = {
         "issue_type": "<script>alert(1)</script>",
         "description": "I have an issue",
-        "attachment": (io.BytesIO(b"fake image"), "image.png")
+        "attachment": (io.BytesIO(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82"), "image.png")
     }
     
     res2 = client.post('/api/customer/tickets', headers=headers, data=data2, content_type='multipart/form-data')
