@@ -1,4 +1,4 @@
-﻿// API client for communicating with the Flask backend.
+// API client for communicating with the Flask backend.
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || (
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
@@ -1061,6 +1061,26 @@ export const api = {
     if (!res.ok) throw new Error(data.message || "Failed to delete banner");
     return data;
   },
+  async adminUploadImage(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(`${API_BASE_URL}/admin/upload_image`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+      },
+      body: formData
+    });
+    const data = await safeJson(res);
+    if (!res.ok) throw new Error(data.message || "Failed to upload image");
+    return data;
+  },
+  async adminGetSystemAuditLogs(params={}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${API_BASE_URL}/admin/audit_logs?${query}`, { headers: getAuthHeader() });
+    if (!res.ok) throw new Error("Failed to load audit logs");
+    return safeJson(res);
+  },
   async getPublicStoreSettings() {
     const res = await fetch(`${API_BASE_URL}/public/store-settings`);
     if (!res.ok) throw new Error("Failed to load store settings");
@@ -1241,6 +1261,26 @@ export const api = {
     const data = await safeJson(res);
     if (!res.ok) throw new Error(data.message || "Failed to delete banner");
     return data;
+  },
+  async adminUploadImage(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(`${API_BASE_URL}/admin/upload_image`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+      },
+      body: formData
+    });
+    const data = await safeJson(res);
+    if (!res.ok) throw new Error(data.message || "Failed to upload image");
+    return data;
+  },
+  async adminGetSystemAuditLogs(params={}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${API_BASE_URL}/admin/audit_logs?${query}`, { headers: getAuthHeader() });
+    if (!res.ok) throw new Error("Failed to load audit logs");
+    return safeJson(res);
   },
   async getPublicStoreSettings() {
     const res = await fetch(`${API_BASE_URL}/public/store-settings`);

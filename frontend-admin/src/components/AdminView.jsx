@@ -108,6 +108,7 @@ export default function AdminView({ onLogout, dbMode }) {
   const [analytics, setAnalytics] = useState(null);
   const [revenueShare, setRevenueShare] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
+  const [systemLogs, setSystemLogs] = useState([]);
   const [batches, setBatches] = useState([]);
   const [marketPurchases, setMarketPurchases] = useState([]);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
@@ -287,6 +288,7 @@ export default function AdminView({ onLogout, dbMode }) {
       } catch (err) { }
       try { const a = await api.adminGetAnalytics(); setAnalytics(a); } catch (err) { }
       try { const l = await api.adminGetAuditLogs(1, 40); setAuditLogs(l.logs || []); } catch (err) { }
+      try { const sl = await api.adminGetSystemAuditLogs({limit: 100}); setSystemLogs(sl || []); } catch (err) { }
       try { const mp = await api.adminGetMarketPurchases(); setMarketPurchases(mp); } catch (err) { }
       try { const f = await api.getForecast(); setForecastData(f); } catch (err) { }
       try { const t = await api.adminGetTickets(); setTickets(t); } catch (err) { }
@@ -933,7 +935,8 @@ export default function AdminView({ onLogout, dbMode }) {
     { id: "batches", label: "Expiry & Spoilage", icon: Calendar, depts: ["SuperAdmin", "Operations"] },
     { id: "market_purchases", label: "Market Purchases", icon: Receipt, depts: ["SuperAdmin", "Operations"] },
     { id: "reviews", label: "Product Reviews", icon: MessageSquare, depts: ["SuperAdmin", "Operations"] },
-    { id: "logs", label: "Audit Logs", icon: FileText, depts: ["SuperAdmin"] },
+    { id: "stock_logs", label: "Stock Audit", icon: FileText, depts: ["SuperAdmin"] },
+{ id: "admin_logs", label: "Admin Audit", icon: FileText, depts: ["SuperAdmin"] },
     { id: "stock_requests", label: "Restock Requests", icon: Package, depts: ["SuperAdmin", "Operations"] },
     { id: "qr", label: "QR Dispatch", icon: QrCode, depts: ["SuperAdmin", "Operations"] },
     { id: "coupons", label: "Discount Coupons", icon: Tag, depts: ["SuperAdmin", "Finance"] },
@@ -1971,8 +1974,37 @@ export default function AdminView({ onLogout, dbMode }) {
         </div>
       )}
 
-      {/* ══════════ AUDIT LOGS ══════════ */}
-      {activeTab === "logs" && (
+      {/* ══════════ ADMIN AUDIT LOGS ══════════ */}
+      {activeTab === "admin_logs" && (
+        <div className="animate-fade-in">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+            <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem" }}>System Audit Logs</h3>
+            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{systemLogs.length} entries</span>
+          </div>
+          <div className="table-container">
+            <table className="custom-table">
+              <thead><tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>Resource</th><th>New Value</th></tr></thead>
+              <tbody>
+                {systemLogs.length === 0 && (
+                  <tr><td colSpan={5} style={{ textAlign: "center", color: "var(--text-muted)", padding: "2rem" }}>No system logs yet.</td></tr>
+                )}
+                {systemLogs.map(log => (
+                  <tr key={log.id}>
+                    <td style={{ color: "var(--text-secondary)", fontSize: "0.78rem" }}>{new Date(log.timestamp).toLocaleString()}</td>
+                    <td><strong>{log.actor_id} ({log.actor_role})</strong></td>
+                    <td><span className="badge-status status-processing">{log.action?.toUpperCase()}</span></td>
+                    <td>{log.resource_type} #{log.resource_id}</td>
+                    <td style={{maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{log.new_value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ STOCK AUDIT LOGS ══════════ */}
+      {activeTab === "stock_logs" && (
         <div className="animate-fade-in">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
             <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem" }}>Stock Audit Logs</h3>
@@ -3065,7 +3097,7 @@ export default function AdminView({ onLogout, dbMode }) {
                     {req.status === "Pending" ? (
                       <button className="btn btn-primary" style={{ padding: "0.25rem 0.75rem", fontSize: "0.8rem" }} onClick={async () => {
                         try {
-                          await api.updateStockRequestStatus(req.id, "Fulfilled");
+                          await api.updateStockRequestStatus(req.id, STOCK_REQUEST_STATUS.FULFILLED);
                           setToast({ message: `Request #${req.id} fulfilled`, type: "success" });
                           const updated = await api.getStockRequests();
                           setStockRequests(updated);
@@ -3744,8 +3776,18 @@ export default function AdminView({ onLogout, dbMode }) {
           {/* Image URL */}
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Image URL</label>
-            <input type="text" className="form-input" value={bannerImageUrl} onChange={e => setBannerImageUrl(processImageUrl(e.target.value))} placeholder="https://... or /images/..." />
-            {bannerImageUrl && <img referrerPolicy="no-referrer" src={bannerImageUrl.startsWith('/') ? `http://localhost:5173${bannerImageUrl}` : bannerImageUrl} alt="Preview" style={{ marginTop: "0.5rem", width: "100%", borderRadius: "8px", maxHeight: "150px", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input type="text" className="form-input" value={bannerImageUrl} onChange={e => setBannerImageUrl(processImageUrl(e.target.value))} placeholder="/static/uploads/images/..." style={{ flex: 1 }} />
+              <input type="file" accept="image/*" onChange={async (e) => {
+                if (e.target.files && e.target.files[0]) {
+                  try {
+                    const res = await api.adminUploadImage(e.target.files[0]);
+                    if (res.success) setBannerImageUrl(res.path);
+                  } catch (err) { alert("Failed to upload image"); }
+                }
+              }} style={{ width: '120px' }} />
+            </div>
+            {bannerImageUrl && <img referrerPolicy="no-referrer" src={bannerImageUrl.startsWith('/') ? `${API_BASE_URL.replace('/api', '')}${bannerImageUrl}` : bannerImageUrl} alt="Preview" style={{ marginTop: "0.5rem", width: "100%", borderRadius: "8px", maxHeight: "150px", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />}
           </div>
 
           {/* Target URL */}

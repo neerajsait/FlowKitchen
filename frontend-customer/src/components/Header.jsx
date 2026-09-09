@@ -39,7 +39,7 @@ export default function Header({ activeTab, setActiveTab, cartCount, searchQuery
               onClick={() => setActiveTab(item.id)}
               aria-current={activeTab === item.id ? "page" : undefined}
             >
-              <Icon size={16} />
+              <Icon size={20} />
               {item.label}
             </button>
           );
@@ -68,11 +68,11 @@ export default function Header({ activeTab, setActiveTab, cartCount, searchQuery
           style={{ position: "relative" }}
         >
           Cart
-          <ShoppingCart size={16} />
+          <ShoppingCart size={20} />
           {cartCount > 0 && <span className="action-badge" style={{ top: "-6px", right: "-12px" }}>{cartCount > 9 ? "9+" : cartCount}</span>}
         </button>
         <button className="header-nav-link logout" onClick={onLogout} title={isGuest ? "Login" : "Sign Out"}>
-          {isGuest ? <LogIn size={16} /> : <LogOut size={16} />}
+          {isGuest ? <LogIn size={20} /> : <LogOut size={20} />}
           {isGuest ? "Login" : "Logout"}
         </button>
       </div>

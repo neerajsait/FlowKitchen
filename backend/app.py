@@ -36,8 +36,8 @@ from cryptography.fernet import Fernet, InvalidToken
 from models import (
     db, User, Admin, Customer, Staff, OutletOwner, Outlet, MenuItem, OutletStock,
     Supplier, SupplierItem, StockAuditLog, ProductBatch,
-    Order, OrderItem, Review, Coupon, StaffShift, Address, Favorite, AdminAuditLog,
-    KitchenStaff, ProductionBatch, WalletTransaction, BroadcastMessage, Banner, StoreSetting, SupportTicket, StockRequest, MarketPurchase,
+    Order, OrderItem, Review, Coupon, StaffShift, Address, Favorite,
+    KitchenStaff, KitchenProductionBatch, WalletTransaction, BroadcastMessage, Banner, StoreSetting, SupportTicket, StockRequest, MarketPurchase,
     AuditLog, MonthlyRevenueHistory, PaymentTransaction
 )
 import bleach
@@ -540,13 +540,14 @@ def log_stock_change(db_session, outlet_id, menu_item_id, change_qty, change_typ
     db_session.add(entry)
 
 def log_admin_action(db_session, admin_id, action, target_entity=None, target_id=None, details=None):
-    """Helper to write an AdminAuditLog entry."""
-    entry = AdminAuditLog(
-        admin_id=admin_id,
+    """Helper to write an AuditLog entry for admins."""
+    entry = AuditLog(
+        actor_id=admin_id,
+        actor_role='admin',
         action=action,
-        target_entity=target_entity,
-        target_id=target_id,
-        details=details
+        resource_type=target_entity,
+        resource_id=target_id,
+        new_value=details
     )
     db_session.add(entry)
 
@@ -556,7 +557,7 @@ def _generate_unique_code(db_session):
     for _ in range(1000):
         code = f"{random.randint(1000, 9999)}"
         existing = db_session.scalars(
-            select(MenuItem).where(MenuItem.code == code)
+            select(MenuItem).where(MenuItem.code == code, MenuItem.deleted_at.is_(None))
         ).first()
         if not existing:
             return code
@@ -749,7 +750,7 @@ def create_app(config_override=None):
                 _seed_admin(app)
             # Bootstrap: assign 4-digit codes to any existing MenuItems that lack one
             items_without_code = db.session.scalars(
-                select(MenuItem).where(MenuItem.code.is_(None))
+                select(MenuItem).where(MenuItem.code.is_(None), MenuItem.deleted_at.is_(None))
             ).all()
             for item in items_without_code:
                 item.code = _generate_unique_code(db.session)
@@ -1573,7 +1574,7 @@ The Suggula\'s Kitchen Team"""
 
             # Nullable audit/tracking FKs are ON DELETE SET NULL in the schema
             # (stock_audit_logs.performed_by, product_batches.received_by,
-            # production_batches.produced_by, outlets.owner_id) and are handled
+            # kitchen_production_batches.produced_by, outlets.owner_id) and are handled
             # by the database itself.
 
             db.session.delete(user)
@@ -1652,7 +1653,7 @@ The Suggula\'s Kitchen Team"""
     def get_food_by_code(code):
         """Public: get a menu item by its code"""
         item = db.session.scalars(
-            select(MenuItem).where(MenuItem.code == code)
+            select(MenuItem).where(MenuItem.code == code, MenuItem.deleted_at.is_(None))
         ).first()
         if not item:
             return jsonify({"error": "Not Found", "message": "Item not found with this code"}), 404
@@ -1802,8 +1803,8 @@ The Suggula\'s Kitchen Team"""
                 # already drained the balance below actual_redeem.
                 from sqlalchemy import update as _sa_update
                 redeem_res = db.session.execute(
-                    _sa_update(User).where(User.id == customer.id, User.loyalty_points >= actual_redeem)
-                    .values(loyalty_points=User.loyalty_points - actual_redeem)
+                    _sa_update(Customer).where(Customer.id == customer.id, Customer.loyalty_points >= actual_redeem)
+                    .values(loyalty_points=Customer.loyalty_points - actual_redeem)
                 )
                 if redeem_res.rowcount != 1:
                     db.session.rollback()
@@ -2197,7 +2198,7 @@ The Suggula\'s Kitchen Team"""
     @app.route("/api/admin/menu", methods=["GET"])
     @department_required("Operations")
     def admin_get_menu():
-        items = db.session.scalars(select(MenuItem).where(MenuItem.is_active == True).order_by(MenuItem.business_type, MenuItem.name)).all()
+        items = db.session.scalars(select(MenuItem).where(MenuItem.is_active == True, MenuItem.deleted_at.is_(None)).order_by(MenuItem.business_type, MenuItem.name)).all()
         return jsonify([i.to_dict() for i in items]), 200
 
     @app.route("/api/admin/menu", methods=["POST"])
@@ -2538,7 +2539,7 @@ The Suggula\'s Kitchen Team"""
             db.session.query(OrderItem).delete()
             db.session.query(Order).delete()
             db.session.query(WalletTransaction).delete()
-            db.session.query(User).update({User.loyalty_points: 0})
+            db.session.query(User).update({Customer.loyalty_points: 0})
             db.session.commit()
             return jsonify({"message": "Sales, Analytics and Wallets have been reset to zero."}), 200
         except Exception as e:
@@ -2775,7 +2776,7 @@ The Suggula\'s Kitchen Team"""
         
         # Scope to outlet if not admin
         if current_user.role != "admin" and hasattr(current_user, "outlet_id"):
-            query = query.where(User.outlet_id == current_user.outlet_id)
+            query = query.outerjoin(Staff, User.id == Staff.id).where(Staff.outlet_id == current_user.outlet_id)
 
         staff = db.session.scalars(query).all()
         return jsonify([u.to_dict() for u in staff]), 200
@@ -2958,7 +2959,7 @@ The Suggula\'s Kitchen Team"""
     @app.route("/api/admin/coupons", methods=["GET"])
     @role_required("admin", "outlet_owner")
     def admin_get_coupons():
-        coupons = db.session.scalars(select(Coupon).order_by(Coupon.created_at.desc())).all()
+        coupons = db.session.scalars(select(Coupon).where(Coupon.deleted_at.is_(None)).order_by(Coupon.created_at.desc())).all()
         return jsonify([c.to_dict() for c in coupons]), 200
 
     @app.route("/api/admin/coupons", methods=["POST"])
@@ -3223,7 +3224,7 @@ The Suggula\'s Kitchen Team"""
         # Generate batch number
         batch_number = f"B-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{random.randint(100, 999)}"
         
-        batch = ProductionBatch(
+        batch = KitchenProductionBatch(
             menu_item_id=menu_item_id,
             batch_number=batch_number,
             quantity_produced=quantity,
@@ -3909,8 +3910,8 @@ The Suggula\'s Kitchen Team"""
                 # with_for_update at lookup; this guards against drift).
                 from sqlalchemy import update as _sa_update
                 redeem_res = db.session.execute(
-                    _sa_update(User).where(User.id == customer.id, User.loyalty_points >= actual_redeem)
-                    .values(loyalty_points=User.loyalty_points - actual_redeem)
+                    _sa_update(Customer).where(Customer.id == customer.id, Customer.loyalty_points >= actual_redeem)
+                    .values(loyalty_points=Customer.loyalty_points - actual_redeem)
                 )
                 if redeem_res.rowcount != 1:
                     db.session.rollback()
@@ -4708,7 +4709,7 @@ The Suggula\'s Kitchen Team"""
                                     if not matches:
                                         reply_text = "Hi! To order, please say the quantity and item name, e.g., '1 burger and 2 pizzas'."
                                     else:
-                                        active_items = db.session.execute(db.select(MenuItem).where(MenuItem.is_active == True)).scalars().all()
+                                        active_items = db.session.execute(db.select(MenuItem).where(MenuItem.is_active == True, MenuItem.deleted_at.is_(None))).scalars().all()
                                         order_items = []
                                         total_price = Decimal("0.00")
                                         not_found = []
@@ -4992,7 +4993,7 @@ The Suggula\'s Kitchen Team"""
             return jsonify({"error": "Bad Request", "message": "min_loyalty_points and coupon data are required"}), 400
             
         customers = db.session.scalars(
-            select(User).where(User.role == 'customer', User.loyalty_points >= int(min_loyalty_points))
+            select(User).where(User.role == 'customer', Customer.loyalty_points >= int(min_loyalty_points))
         ).all()
         
         # Create a single coupon that can be used multiple times
@@ -5120,6 +5121,44 @@ The Suggula\'s Kitchen Team"""
             db.session.commit()
         return jsonify({"success": True}), 200
 
+    @app.route("/api/admin/upload_image", methods=["POST"])
+    @limiter.limit("20 per minute")
+    @role_required("admin")
+    def admin_upload_image():
+        if "file" not in request.files:
+            return jsonify({"error": "Bad Request", "message": "No file part in the request"}), 400
+            
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"error": "Bad Request", "message": "No file selected for uploading"}), 400
+            
+        if file:
+            filename = secure_filename(file.filename)
+            import os
+            import uuid
+            # Ensure upload directory exists
+            upload_dir = os.path.join(app.root_path, "static", "uploads", "images")
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            # Generate unique filename
+            ext = os.path.splitext(filename)[1]
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            file_path = os.path.join(upload_dir, unique_filename)
+            
+            file.save(file_path)
+            
+            # Return public path
+            public_path = f"/static/uploads/images/{unique_filename}"
+            return jsonify({"success": True, "path": public_path}), 200
+
+    @app.route("/api/admin/audit_logs", methods=["GET"])
+    @role_required("admin")
+    def admin_get_audit_logs():
+        limit = request.args.get("limit", 100, type=int)
+        offset = request.args.get("offset", 0, type=int)
+        logs = db.session.scalars(select(AuditLog).order_by(AuditLog.timestamp.desc()).offset(offset).limit(limit)).all()
+        return jsonify([log.to_dict() for log in logs]), 200
+
     @app.route("/api/admin/banners", methods=["GET"])
     @role_required("admin")
     def admin_get_banners():
@@ -5135,6 +5174,9 @@ The Suggula\'s Kitchen Team"""
         image_url = data.get("image_url")
         if not title or not image_url:
             return jsonify({"error": "Bad Request", "message": "title and image_url are required"}), 400
+            
+        if image_url and image_url.startswith("data:image/"):
+            return jsonify({"error": "Bad Request", "message": "Base64 image uploads are not allowed. Please use the file upload component."}), 400
             
         # Parse dates
         start_date = datetime.fromisoformat(data["start_date"].replace('Z', '+00:00')) if data.get("start_date") else None
@@ -5179,7 +5221,10 @@ The Suggula\'s Kitchen Team"""
         if "description" in data: banner.description = data["description"]
         if "eyebrow_text" in data: banner.eyebrow_text = data["eyebrow_text"]
         if "button_text" in data: banner.button_text = data["button_text"]
-        if "image_url" in data: banner.image_url = data["image_url"]
+        if "image_url" in data: 
+            if data["image_url"] and data["image_url"].startswith("data:image/"):
+                return jsonify({"error": "Bad Request", "message": "Base64 image uploads are not allowed. Please use the file upload component."}), 400
+            banner.image_url = data["image_url"]
         if "target_url" in data: banner.target_url = data["target_url"]
         if "is_active" in data: banner.is_active = data["is_active"]
         if "display_order" in data: banner.display_order = data["display_order"]

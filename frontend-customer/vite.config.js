@@ -22,6 +22,7 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: true,
+    hmr: { overlay: false },
     headers: {
       'Content-Security-Policy': DEV_CSP,
       'X-Frame-Options': 'DENY',

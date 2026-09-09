@@ -4,6 +4,7 @@ import {
   ChefHat, Package, Clock, CheckCircle, Flame, ArrowRight,
   LogOut, RefreshCw, AlertTriangle, Plus, Grid, QrCode
 } from "../ui/Icon";
+import { STOCK_REQUEST_STATUS } from "../constants";
 
 const premiumStyles = `
   .kv-wrapper {
@@ -442,20 +443,20 @@ export default function KitchenView({ onLogout, dbMode }) {
                             </span>
                           </td>
                           <td style={{ display: "flex", gap: "0.5rem" }}>
-                            {r.status === "Pending" && (
+                            {r.status === STOCK_REQUEST_STATUS.PENDING && (
                               <button className="btn btn-secondary btn-sm" onClick={async () => {
                                 try {
-                                  await api.updateStockRequestStatus(r.id, "In Progress");
+                                  await api.updateStockRequestStatus(r.id, STOCK_REQUEST_STATUS.APPROVED);
                                   alertMsg("Request accepted.");
                                   const reqs = await api.getStockRequests();
                                   setRestockReqs(reqs);
                                 } catch (e) { alertMsg(e.message); }
                               }}>Accept</button>
                             )}
-                            {(r.status === "Pending" || r.status === "In Progress") && (
+                            {(r.status === STOCK_REQUEST_STATUS.PENDING || r.status === STOCK_REQUEST_STATUS.APPROVED) && (
                               <button className="btn btn-primary btn-sm" onClick={async () => {
                                 try {
-                                  await api.updateStockRequestStatus(r.id, "Dispatched");
+                                  await api.updateStockRequestStatus(r.id, STOCK_REQUEST_STATUS.FULFILLED);
                                   alertMsg("Items dispatched to outlet!");
                                   const reqs = await api.getStockRequests();
                                   setRestockReqs(reqs);
