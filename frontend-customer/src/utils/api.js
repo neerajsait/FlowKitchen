@@ -129,12 +129,12 @@ export const api = {
     }
   },
 
-  async register(email, password, role, first_name = "", last_name = "", phone = "", outlet_id = null) {
-
+  async register(email, password, role, first_name = "", last_name = "", phone = "", address = "", outlet_id = null) {
+    
     const res = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, role, first_name, last_name, phone, outlet_id: outlet_id ? parseInt(outlet_id) : null })
+      body: JSON.stringify({ email, password, role, first_name, last_name, phone, address, outlet_id: outlet_id ? parseInt(outlet_id) : null })
     });
     const data = await safeJson(res);
     if (!res.ok) throw new Error(data.message || data.error || "Registration failed");
@@ -564,7 +564,7 @@ export const api = {
     try {
       payload = JSON.parse(qrData);
     } catch (err) {
-      throw new Error("Invalid QR code â€” not a dispatch label.");
+      throw new Error("Invalid QR code — not a dispatch label.");
     }
 
     const res = await fetch(`${API_BASE_URL}/pos/scan-arrival`, {

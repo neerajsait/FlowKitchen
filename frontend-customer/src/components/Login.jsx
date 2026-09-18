@@ -27,6 +27,7 @@ export default function Login({ onLoginSuccess }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,7 +49,7 @@ export default function Login({ onLoginSuccess }) {
     setError(""); setMessage(""); setLoading(true);
     try {
       if (isRegistering) {
-        await api.register(email, password, "customer", firstName, lastName, phone);
+        await api.register(email, password, "customer", firstName, lastName, phone, address);
         setMessage("Account created! Please sign in.");
         setIsRegistering(false);
         setPassword("");
@@ -111,7 +112,7 @@ export default function Login({ onLoginSuccess }) {
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
               <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula\'s Kitchen</div>
+                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula's Kitchen</div>
                 <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Suggula's Kitchen</div>
               </div>
             </div>
@@ -207,7 +208,7 @@ export default function Login({ onLoginSuccess }) {
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
               <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula\'s Kitchen</div>
+                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula's Kitchen</div>
                 <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Suggula's Kitchen</div>
               </div>
             </div>
@@ -247,6 +248,20 @@ export default function Login({ onLoginSuccess }) {
                 <div className="glass-input-wrap" style={{ marginBottom: 0 }}>
                   <input type="email" required className="glass-input" placeholder="john@example.com" value={email} onChange={e => setEmail(e.target.value)} />
                   <Mail size={18} className="glass-icon" />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label className="glass-label">Phone Number</label>
+                <div className="glass-input-wrap" style={{ marginBottom: 0 }}>
+                  <input type="tel" required className="glass-input" placeholder="10-digit mobile number" value={phone} onChange={e => setPhone(e.target.value)} />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label className="glass-label">Delivery Address</label>
+                <div className="glass-input-wrap" style={{ marginBottom: 0 }}>
+                  <textarea required className="glass-input" placeholder="Enter your full address" rows={2} value={address} onChange={e => setAddress(e.target.value)} style={{ paddingLeft: "1rem", paddingTop: "0.75rem", resize: "none" }} />
                 </div>
               </div>
 

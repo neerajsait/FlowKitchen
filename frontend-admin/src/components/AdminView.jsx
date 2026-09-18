@@ -2750,7 +2750,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         } catch (err) { showToast("Failed: " + err.message, "error"); }
                       }}
                     >
-                      {b.is_active ? "âœ“ Active" : "âœ— Inactive"}
+                      {b.is_active ? "✓ Active" : "✗ Inactive"}
                     </button>
                   </td>
                   <td style={{ padding: "1rem", borderRadius: "0 var(--r-md) var(--r-md) 0" }}>
@@ -3763,7 +3763,7 @@ export default function AdminView({ onLogout, dbMode }) {
           {/* Title */}
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Title <span style={{ fontWeight: 400, color: "var(--text-muted)" }}>(required)</span></label>
-            <input type="text" required className="form-input" value={bannerTitle} onChange={e => setBannerTitle(e.target.value)} placeholder="e.g. Summer Sale â€” 20% Off Everything" />
+            <input type="text" required className="form-input" value={bannerTitle} onChange={e => setBannerTitle(e.target.value)} placeholder="e.g. Summer Sale — 20% Off Everything" />
           </div>
 
           {/* Eyebrow Text */}
@@ -3811,14 +3811,14 @@ export default function AdminView({ onLogout, dbMode }) {
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Display Location</label>
             <select className="form-input" style={{ width: "100%", background: "var(--bg-primary)", color: "var(--text-primary)", border: "1px solid var(--border-light)", padding: "0.5rem" }} value={bannerDisplayLocation} onChange={e => setBannerDisplayLocation(e.target.value)}>
-              <option value="hero">ðŸ  Hero Banner (Top Carousel)</option>
-              <option value="home">ðŸ  Home Screen (Top/Default)</option>
-              <option value="home_top">ðŸ  Home Screen (Top)</option>
-              <option value="home_middle">ðŸ¡ Home Screen (Middle)</option>
-              <option value="home_bottom">ðŸ¡ Home Screen (Bottom)</option>
-              <option value="brand_story">ðŸ“– Brand Story Section</option>
-              <option value="checkout">ðŸ›’ Checkout Screen</option>
-              <option value="popup_after_login">ðŸŽ‰ Popup After Login</option>
+              <option value="hero">📱 Hero Banner (Top Carousel)</option>
+              <option value="home">📱 Home Screen (Top/Default)</option>
+              <option value="home_top">📱 Home Screen (Top)</option>
+              <option value="home_middle">📻 Home Screen (Middle)</option>
+              <option value="home_bottom">📻 Home Screen (Bottom)</option>
+              <option value="brand_story">📖 Brand Story Section</option>
+              <option value="checkout">🛒 Checkout Screen</option>
+              <option value="popup_after_login">🎉 Popup After Login</option>
             </select>
           </div>
 
@@ -3910,12 +3910,12 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
           </div>
 
-          {/* Stats JSON â€” brand_story only */}
+          {/* Stats JSON — brand_story only */}
           {bannerDisplayLocation === "brand_story" && (
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Stats JSON <span style={{ fontWeight: 400, color: "var(--text-muted)" }}>(numbers shown below the title)</span></label>
               <input type="text" className="form-input" value={bannerStatsJson} onChange={e => setBannerStatsJson(e.target.value)} placeholder={'[["35+","Products"],["100%","Natural"],["Pan India","Delivery"]]'} />
-              <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>Format: <code>[["value","label"],...]</code> â€” leave blank for defaults</p>
+              <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>Format: <code>[["value","label"],...]</code> — leave blank for defaults</p>
             </div>
           )}
 
@@ -3929,7 +3929,7 @@ export default function AdminView({ onLogout, dbMode }) {
                   <div style={{ position: "relative", zIndex: 1 }}>
                     <span style={{ fontSize: "0.6rem", fontWeight: 800, letterSpacing: "1px", textTransform: "uppercase", background: "rgba(199,240,0,0.2)", border: "1px solid rgba(199,240,0,0.3)", color: "#c7f000", padding: "0.2rem 0.6rem", borderRadius: 999, marginBottom: "0.5rem", display: "inline-block" }}>{bannerEyebrowText || "Our Story"}</span>
                     <div style={{ fontSize: "1rem", fontWeight: 900, marginBottom: "0.3rem" }}>{bannerTitle || "THE TASTE OF HOME"}</div>
-                    <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.75)", marginBottom: "0.5rem", lineHeight: 1.5 }}>{(bannerDescription || "").slice(0, 80)}{(bannerDescription || "").length > 80 ? "â€¦" : ""}</div>
+                    <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.75)", marginBottom: "0.5rem", lineHeight: 1.5 }}>{(bannerDescription || "").slice(0, 80)}{(bannerDescription || "").length > 80 ? "…" : ""}</div>
                     <div style={{ display: "flex", gap: "1rem" }}>
                       {(bannerStatsJson ? (() => { try { return JSON.parse(bannerStatsJson); } catch { return null; } })() || [["35+","Products"],["100%","Natural"],["Pan India","Delivery"]] : [["35+","Products"],["100%","Natural"],["Pan India","Delivery"]]).map(([v, l]) => (
                         <div key={l}><div style={{ fontSize: "0.875rem", fontWeight: 900, color: "#c7f000" }}>{v}</div><div style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.6)" }}>{l}</div></div>
@@ -3940,10 +3940,10 @@ export default function AdminView({ onLogout, dbMode }) {
               ) : (
                 <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", background: "#1a5c2e", borderRadius: 8, padding: "0.75rem", overflow: "hidden" }}>
                   <div style={{ flex: 1, color: "#fff" }}>
-                    {bannerEyebrowText && <div style={{ fontSize: "0.6rem", fontWeight: 800, color: "#c7f000", marginBottom: "0.25rem", textTransform: "uppercase", letterSpacing: "1px" }}>ðŸ”¥ {bannerEyebrowText}</div>}
+                    {bannerEyebrowText && <div style={{ fontSize: "0.6rem", fontWeight: 800, color: "#c7f000", marginBottom: "0.25rem", textTransform: "uppercase", letterSpacing: "1px" }}>🔥 {bannerEyebrowText}</div>}
                     <div style={{ fontSize: "0.875rem", fontWeight: 900, lineHeight: 1.2, marginBottom: "0.3rem" }}>{bannerTitle}</div>
-                    <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.7)", marginBottom: "0.5rem" }}>{(bannerDescription || "").slice(0, 60)}{(bannerDescription || "").length > 60 ? "â€¦" : ""}</div>
-                    {bannerButtonText && <span style={{ fontSize: "0.65rem", fontWeight: 800, background: "#c7f000", color: "#1a5c2e", padding: "0.2rem 0.75rem", borderRadius: 999 }}>{bannerButtonText} â†’</span>}
+                    <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.7)", marginBottom: "0.5rem" }}>{(bannerDescription || "").slice(0, 60)}{(bannerDescription || "").length > 60 ? "…" : ""}</div>
+                    {bannerButtonText && <span style={{ fontSize: "0.65rem", fontWeight: 800, background: "#c7f000", color: "#1a5c2e", padding: "0.2rem 0.75rem", borderRadius: 999 }}>{bannerButtonText} →</span>}
                   </div>
                   {bannerImageUrl && <img src={bannerImageUrl} alt="preview" referrerPolicy="no-referrer" style={{ width: 80, height: 60, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} onError={e => { e.target.style.display = "none"; }} />}
                 </div>
@@ -3952,7 +3952,7 @@ export default function AdminView({ onLogout, dbMode }) {
           )}
 
           <button type="submit" className="btn btn-primary" style={{ marginTop: "0.5rem" }}>
-            {editingBannerId ? "âœï¸ Update Banner" : "ðŸ–¼ Create Banner"}
+            {editingBannerId ? "âœï¸ Update Banner" : "🖼 Create Banner"}
           </button>
         </form>
       </Modal>
@@ -3960,7 +3960,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {/* Confirm Delete Modal */}
       <Modal open={!!confirmDeleteModal} onClose={() => setConfirmDeleteModal(null)} title="Confirm Action" width={440}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", marginBottom: "1.5rem", marginTop: "0.5rem" }}>
-          <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>âš ï¸</span>
+          <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>⚠ï¸</span>
           <p style={{ margin: 0, color: "var(--text-primary)", fontSize: "0.95rem", lineHeight: 1.6, fontWeight: 500 }}>{confirmDeleteModal?.message}</p>
         </div>
         <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>

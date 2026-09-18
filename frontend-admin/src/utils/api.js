@@ -91,12 +91,12 @@ function getAuthHeader() {
   return accessToken ? { "Authorization": `Bearer ${accessToken}` } : {};
 }
 
-// Safe JSON parser â€” never crashes on HTML responses (e.g. 502 gateway, Vite fallback)
+// Safe JSON parser — never crashes on HTML responses (e.g. 502 gateway, Vite fallback)
 async function safeJson(res) {
   const ct = res.headers.get("content-type") || "";
   if (!ct.includes("application/json")) {
     // const text = await res.text();
-    // Backend returned HTML â€” means server is down or misconfigured
+    // Backend returned HTML — means server is down or misconfigured
     throw new Error(
       res.status === 404
         ? "API endpoint not found (404). Please restart the backend."
@@ -484,7 +484,7 @@ export const api = {
     try {
       payload = JSON.parse(qrData);
     } catch (err) {
-      throw new Error("Invalid QR code Ã¢â‚¬â€ not a dispatch label.");
+      throw new Error("Invalid QR code Ã¢€â€ not a dispatch label.");
     }
 
     const res = await fetch(`${API_BASE_URL}/pos/scan-arrival`, {

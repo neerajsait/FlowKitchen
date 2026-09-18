@@ -402,7 +402,19 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const isLoyaltyEnabled  = storeSettings.enable_loyalty_program !== "false";
   const loyaltyPoints     = isLoyaltyEnabled ? (user?.loyalty_points || 0) : 0;
   const redeemRate        = parseFloat(storeSettings.loyalty_redeem_rate || "0.01");
-  const discountAmount    = appliedCoupon ? (getCartTotal() * appliedCoupon.discount_pct / 100) : 0;
+  
+  let discountAmount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discount_pct) {
+      discountAmount = getCartTotal() * (appliedCoupon.discount_pct / 100);
+      if (appliedCoupon.max_discount_amount && discountAmount > appliedCoupon.max_discount_amount) {
+        discountAmount = appliedCoupon.max_discount_amount;
+      }
+    } else if (appliedCoupon.discount_amount) {
+      discountAmount = appliedCoupon.discount_amount;
+    }
+  }
+
   const finalSubtotal     = getCartTotal() - discountAmount;
   const deliveryFeeRaw    = storeSettings.delivery_fee;
   const deliveryCharge    = deliveryFeeRaw !== undefined ? parseFloat(deliveryFeeRaw) : (getCartTotal() >= 499 ? 0 : 49);

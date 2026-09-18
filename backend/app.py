@@ -919,6 +919,8 @@ def create_app(config_override=None):
         first_name = (data.get("first_name") or "").strip()
         last_name = (data.get("last_name") or "").strip()
         phone_raw = data.get("phone")
+        if not phone_raw:
+            return jsonify({"error": "Bad Request", "message": "Phone number is required"}), 400
         valid_phone, phone = validate_phone(phone_raw)
         if not valid_phone:
             return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
@@ -949,6 +951,10 @@ def create_app(config_override=None):
         
         db.session.add(user)
         db.session.flush()
+
+        if role == "customer" and data.get("address"):
+            addr = Address(user_id=user.id, title="Home", address_line=data.get("address").strip(), is_default=True)
+            db.session.add(addr)
 
         db.session.commit()
 

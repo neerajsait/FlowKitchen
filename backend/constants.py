@@ -4,6 +4,7 @@ class OrderStatus(str, enum.Enum):
     PENDING = 'pending'
     PROCESSING = 'processing'
     READY = 'ready'
+    SHIPPED = 'shipped'
     OUT_FOR_DELIVERY = 'out_for_delivery'
     DELIVERED = 'delivered'
     CANCELLED = 'cancelled'

@@ -2006,7 +2006,15 @@ textarea.form-input { resize: vertical; min-height: 100px; line-height: 1.6; }
   width: 100%;
   max-width: 440px;
   padding: 2rem;
+  max-height: 100%;
+  overflow-y: auto;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
   transition: opacity 0.5s ease 0.3s, transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.split-content::-webkit-scrollbar {
+  display: none;
 }
 
 .split-panel.inactive .split-content {
@@ -2220,6 +2228,201 @@ button:active, .btn:active, .header-action-btn:active {
   box-shadow: 0 12px 24px rgba(0,0,0,0.06);
 }
 .header-nav-link:hover {
+  transition: opacity 0.4s ease, transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+  white-space: nowrap;
+}
+
+.split-panel.left-panel .split-overlay-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.split-panel.right-panel .split-overlay-text {
+  writing-mode: vertical-rl;
+}
+
+.split-panel.active .split-overlay-text {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+}
+
+/* Glassmorphism Form */
+.glass-form {
+  background: rgba(20, 20, 20, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  color: #fff;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.glass-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.95rem;
+  margin-bottom: 2.5rem;
+}
+
+.glass-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.glass-input-wrap {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.glass-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  color: #fff;
+  padding: 1rem 1rem 1rem 3rem;
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.glass-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.glass-input:-webkit-autofill,
+.glass-input:-webkit-autofill:hover, 
+.glass-input:-webkit-autofill:focus, 
+.glass-input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px #1e1e1e inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.glass-input:focus {
+  outline: none;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.glass-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.glass-input:focus + .glass-icon,
+.glass-input-wrap:focus-within .glass-icon {
+  color: var(--green);
+}
+
+.glass-btn {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 1.1rem;
+  width: 100%;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.glass-btn:hover {
+  background: var(--green-hover, #16a34a);
+}
+
+.glass-link {
+  color: rgba(255,255,255,0.7);
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+.glass-link:hover { color: #fff; }
+
+/* Mobile behavior */
+@media (max-width: 768px) {
+  .split-layout { flex-direction: column; }
+  .split-panel { width: 100% !important; transition: height 0.8s cubic-bezier(0.76, 0, 0.24, 1); }
+  .split-panel.active { height: 85%; }
+  .split-panel.inactive { height: 15%; }
+  
+  .split-panel.left-panel .split-overlay-text {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+  .split-panel.right-panel .split-overlay-text {
+    writing-mode: horizontal-tb;
+  }
+}
+
+/* ── Combo recommender scroll (hide scrollbar but keep scroll) */
+.combo-scroll { overflow-x: auto; scrollbar-width: none; }
+.combo-scroll::-webkit-scrollbar { display: none; }
+
+/* ── Coupon panel scrollable area */
+.coupon-panel-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.coupon-panel-scroll::-webkit-scrollbar { width: 4px; }
+.coupon-panel-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Loader + skeleton primitives ─────────────────────────── */
+@keyframes iconspin { to { transform: rotate(360deg); } }
+.icon-spin { animation: iconspin 900ms linear infinite; }
+.skel {
+  position: relative; overflow: hidden;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: var(--r-sm, 4px);
+}
+.skel::after {
+  content: ""; position: absolute; inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: skelwave 1.4s infinite;
+}
+@keyframes skelwave { 100% { transform: translateX(100%); } }
+.animate-spin { animation: iconspin 900ms linear infinite; }
+
+/* ── SMOOTHNESS & ANIMATION UPGRADES ─────────────────────── */
+button, .btn, .header-nav-link, .category-tab, .product-card, input, select, textarea, .cart-item, .cart-drawer-content {
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+button:active, .btn:active, .header-action-btn:active {
+  transform: scale(0.96) !important;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+}
+.header-nav-link:hover {
   transform: translateY(-2px);
 }
 .cart-item {
@@ -2227,4 +2430,16 @@ button:active, .btn:active, .header-action-btn:active {
 }
 .cart-item:hover {
   transform: scale(1.02);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
