@@ -2846,6 +2846,17 @@ export default function AdminView({ onLogout, dbMode }) {
               </label>
 
               <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", background: "var(--bg-elevated)", padding: "1rem", borderRadius: "var(--r-md)", border: "1px solid var(--border-subtle)" }}>
+                <input type="checkbox" checked={storeSettings.enable_loyalty_program !== "false"} onChange={e => {
+                  const val = e.target.checked ? "true" : "false";
+                  setStoreSettings(prev => ({ ...prev, enable_loyalty_program: val }));
+                }} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--success)" }} />
+                <div>
+                  <strong style={{ display: "block", color: "var(--text-primary)" }}>Enable Loyalty Program</strong>
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Toggle whether customers can earn and redeem loyalty points.</span>
+                </div>
+              </label>
+
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", background: "var(--bg-elevated)", padding: "1rem", borderRadius: "var(--r-md)", border: "1px solid var(--border-subtle)" }}>
                 <input type="checkbox" checked={storeSettings.share_revenue_with_outlets === "true"} onChange={e => {
                   const val = e.target.checked ? "true" : "false";
                   setStoreSettings(prev => ({ ...prev, share_revenue_with_outlets: val }));

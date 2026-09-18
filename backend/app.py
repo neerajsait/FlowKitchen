@@ -415,6 +415,10 @@ os.makedirs(TICKETS_UPLOAD_FOLDER, exist_ok=True)
 
 def get_loyalty_settings():
     from decimal import Decimal, InvalidOperation
+    enabled = db.session.scalars(select(StoreSetting).where(StoreSetting.setting_key == 'enable_loyalty_program')).first()
+    if enabled and enabled.setting_value == 'false':
+        return Decimal("0"), Decimal("0")
+
     earn_rate = db.session.scalars(select(StoreSetting).where(StoreSetting.setting_key == 'loyalty_earn_rate')).first()
     redeem_rate = db.session.scalars(select(StoreSetting).where(StoreSetting.setting_key == 'loyalty_redeem_rate')).first()
 
@@ -4563,13 +4567,17 @@ The Suggula\'s Kitchen Team"""
         review = Review(menu_item_id=item_id, customer_id=uid, rating=rating_val, comment=comment, order_id=has_ordered.id)
         db.session.add(review)
         
-        review_points_setting = db.session.scalars(select(StoreSetting).where(StoreSetting.setting_key == 'loyalty_review_points')).first()
-        try:
-            pct = float(review_points_setting.setting_value) if review_points_setting else 10.0
-        except ValueError:
-            pct = 10.0
-            
-        points = int((pct / 100.0) * float(item.price)) if item.price else 0
+        enabled = db.session.scalars(select(StoreSetting).where(StoreSetting.setting_key == 'enable_loyalty_program')).first()
+        if enabled and enabled.setting_value == 'false':
+            points = 0
+        else:
+            review_points_setting = db.session.scalars(select(StoreSetting).where(StoreSetting.setting_key == 'loyalty_review_points')).first()
+            try:
+                pct = float(review_points_setting.setting_value) if review_points_setting else 10.0
+            except ValueError:
+                pct = 10.0
+                
+            points = int((pct / 100.0) * float(item.price)) if item.price else 0
 
         if points > 0:
             user.loyalty_points = (user.loyalty_points or 0) + points

@@ -386,14 +386,15 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   // Derived pricing
   // ────────────────────────────────────────────────────────────
   const user = liveUser || api.getCurrentUser();
-  const loyaltyPoints     = user?.loyalty_points || 0;
+  const isLoyaltyEnabled  = storeSettings.enable_loyalty_program !== "false";
+  const loyaltyPoints     = isLoyaltyEnabled ? (user?.loyalty_points || 0) : 0;
   const redeemRate        = parseFloat(storeSettings.loyalty_redeem_rate || "0.01");
   const discountAmount    = appliedCoupon ? (getCartTotal() * appliedCoupon.discount_pct / 100) : 0;
   const finalSubtotal     = getCartTotal() - discountAmount;
   const deliveryFeeRaw    = storeSettings.delivery_fee;
   const deliveryCharge    = deliveryFeeRaw !== undefined ? parseFloat(deliveryFeeRaw) : (getCartTotal() >= 499 ? 0 : 49);
   const maxLoyaltyDiscount = loyaltyPoints * redeemRate;
-  const actualLoyaltyDiscount = useLoyaltyPoints ? Math.min(maxLoyaltyDiscount, finalSubtotal + deliveryCharge) : 0;
+  const actualLoyaltyDiscount = (useLoyaltyPoints && isLoyaltyEnabled) ? Math.min(maxLoyaltyDiscount, finalSubtotal + deliveryCharge) : 0;
   const finalTotal        = finalSubtotal + deliveryCharge - actualLoyaltyDiscount;
 
   // ────────────────────────────────────────────────────────────
@@ -447,7 +448,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
 
     setPaymentProcessing(true);
     try {
-      const pointsToRedeem = useLoyaltyPoints && user?.loyalty_points ? user.loyalty_points : 0;
+      const pointsToRedeem = (useLoyaltyPoints && isLoyaltyEnabled && user?.loyalty_points) ? user.loyalty_points : 0;
       
       const guestDetails = !currentUser ? {
         guest_name: guestName.trim(),
@@ -842,6 +843,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
             discountAmount={discountAmount}
             actualLoyaltyDiscount={actualLoyaltyDiscount}
             storeSettings={storeSettings}
+            isLoyaltyEnabled={isLoyaltyEnabled}
             checkoutBanners={checkoutBanners}
             onCheckout={() => setActiveTab("checkout-flow")}
             currentUser={currentUser}
@@ -871,6 +873,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
             discountAmount={discountAmount} actualLoyaltyDiscount={actualLoyaltyDiscount}
             paymentProcessing={paymentProcessing} onPlaceOrder={handlePlaceOrder}
             storeSettings={storeSettings} checkoutBanners={checkoutBanners}
+            isLoyaltyEnabled={isLoyaltyEnabled}
             guestName={guestName} setGuestName={setGuestName}
             guestEmail={guestEmail} setGuestEmail={setGuestEmail}
             guestPhone={guestPhone} setGuestPhone={setGuestPhone}
@@ -943,6 +946,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
             myReviews={myReviews} handleDeleteMyReview={handleDeleteMyReview}
             loyaltyPoints={loyaltyPoints}
             storeSettings={storeSettings}
+            isLoyaltyEnabled={isLoyaltyEnabled}
             onDeleteAccount={handleDeleteAccount}
             onLogout={onLogout}
           />

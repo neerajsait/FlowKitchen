@@ -15,6 +15,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
   const [outlet, setOutlet] = useState(null);
   const [menu, setMenu] = useState([]);
   const [activeSale, setActiveSale] = useState({}); // { itemId: quantity }
+  const [storeSettings, setStoreSettings] = useState({});
   const [paymentMethod, setPaymentMethod] = useState("cash"); // "cash" or "scanner"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -277,6 +278,13 @@ export default function StaffPOS({ onLogout, _dbMode }) {
       setMenu(menuData);
 
       try {
+        const settings = await api.getPublicStoreSettings();
+        setStoreSettings(settings);
+      } catch (err) {
+        console.warn("Could not load settings:", err);
+      }
+
+      try {
         const couponsData = await api.getOutletCoupons();
         setAvailableCoupons(couponsData);
       } catch (err) {
@@ -407,7 +415,8 @@ export default function StaffPOS({ onLogout, _dbMode }) {
     }));
 
     // Determine loyalty redemption
-    const pointsToRedeem = (redeemPoints && crmResult?.customer?.loyalty_points > 0)
+    const isLoyaltyEnabled = storeSettings?.enable_loyalty_program !== "false";
+    const pointsToRedeem = (isLoyaltyEnabled && redeemPoints && crmResult?.customer?.loyalty_points > 0)
       ? Math.min(crmResult.customer.loyalty_points, Math.floor(finalTotalAmount))
       : 0;
 
@@ -1395,15 +1404,17 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                   <div>
                     <div style={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--text-primary)" }}>{crmResult.customer.name}</div>
                     <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>{crmResult.customer.email}</div>
-                    <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid rgba(245, 158, 11, 0.2)", borderRadius: "var(--r-md)", padding: "1rem", marginTop: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                      <div style={{ background: "#f59e0b", color: "#fff", width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Gift size={20} />
+                    {storeSettings?.enable_loyalty_program !== "false" && (
+                      <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid rgba(245, 158, 11, 0.2)", borderRadius: "var(--r-md)", padding: "1rem", marginTop: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+                        <div style={{ background: "#f59e0b", color: "#fff", width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <Gift size={20} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>Points Balance</div>
+                          <div style={{ fontSize: "1.5rem", color: "#f59e0b", fontWeight: 900 }}>{crmResult.customer.loyalty_points}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>Points Balance</div>
-                        <div style={{ fontSize: "1.5rem", color: "#f59e0b", fontWeight: 900 }}>{crmResult.customer.loyalty_points}</div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                   <button onClick={clearCrm} className="btn-icon" title="Remove Customer"><X size={16} /></button>
                 </div>

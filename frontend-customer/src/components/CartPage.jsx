@@ -216,7 +216,7 @@ export default function CartPage({
   couponCodeInput, setCouponCodeInput, appliedCoupon, onApplyCoupon, onRemoveCoupon,
   couponError, activeCoupons, useLoyaltyPoints, setUseLoyaltyPoints,
   loyaltyPoints, maxLoyaltyDiscount, finalSubtotal, deliveryCharge, finalTotal,
-  discountAmount, actualLoyaltyDiscount, storeSettings, onCheckout, checkoutBanners,
+  discountAmount, actualLoyaltyDiscount, storeSettings, isLoyaltyEnabled, onCheckout, checkoutBanners,
   currentUser, orders
 }) {
   const [showCouponPanel, setShowCouponPanel] = useState(false);
@@ -480,7 +480,7 @@ export default function CartPage({
               </div>
 
               {/* Loyalty points */}
-              {loyaltyPoints > 0 && (
+              {(isLoyaltyEnabled && loyaltyPoints > 0) && (
                 <div style={{ marginBottom: "1rem", background: "var(--bg)", borderRadius: "var(--radius-md)", padding: "0.75rem 0.875rem" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "0.625rem", cursor: "pointer", fontSize: "0.85rem" }}>
                     <input type="checkbox" checked={useLoyaltyPoints} onChange={e => setUseLoyaltyPoints(e.target.checked)}

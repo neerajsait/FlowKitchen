@@ -10,7 +10,7 @@ export default function ProfilePage({
   newAddrVal, setNewAddrVal, newAddrLabel, setNewAddrLabel,
   showAddressManager, setShowAddressManager, handleAddAddress, handleDeleteAddress,
   myReviews, handleDeleteMyReview,
-  loyaltyPoints, storeSettings, onDeleteAccount, onLogout
+  loyaltyPoints, storeSettings, isLoyaltyEnabled, onDeleteAccount, onLogout
 }) {
   if (!user) return null;
 
@@ -23,27 +23,29 @@ export default function ProfilePage({
       <h1 style={{ fontSize: "1.5rem", fontWeight: 900, marginBottom: "1.5rem" }}>My Profile</h1>
 
       {/* Loyalty Card */}
-      <div className="loyalty-card" style={{ marginBottom: "1.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.25rem" }}>
-          <div style={{ width: 56, height: 56, background: "rgba(255,255,255,0.15)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", fontWeight: 900, color: "#fff", flexShrink: 0 }}>
-            {initials}
+      {isLoyaltyEnabled && (
+        <div className="loyalty-card" style={{ marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.25rem" }}>
+            <div style={{ width: 56, height: 56, background: "rgba(255,255,255,0.15)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", fontWeight: 900, color: "#fff", flexShrink: 0 }}>
+              {initials}
+            </div>
+            <div>
+              <div style={{ color: "#fff", fontWeight: 900, fontSize: "1.1rem" }}>{displayName}</div>
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem" }}>{user.email}</div>
+            </div>
           </div>
-          <div>
-            <div style={{ color: "#fff", fontWeight: 900, fontSize: "1.1rem" }}>{displayName}</div>
-            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem" }}>{user.email}</div>
+          <div style={{ display: "flex", gap: "2rem" }}>
+            <div>
+              <div className="loyalty-points-big">{loyaltyPoints || 0}</div>
+              <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: "0.25rem" }}>Loyalty Points</div>
+            </div>
+            <div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent)" }}>₹{((loyaltyPoints || 0) * redeemRate).toFixed(2)}</div>
+              <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: "0.25rem" }}>Redeemable Value</div>
+            </div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "2rem" }}>
-          <div>
-            <div className="loyalty-points-big">{loyaltyPoints || 0}</div>
-            <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: "0.25rem" }}>Loyalty Points</div>
-          </div>
-          <div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent)" }}>₹{((loyaltyPoints || 0) * redeemRate).toFixed(2)}</div>
-            <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: "0.25rem" }}>Redeemable Value</div>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Profile Info */}
       <div className="card card-padded mb-lg">
