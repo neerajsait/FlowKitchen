@@ -942,6 +942,10 @@ def create_app(config_override=None):
         valid_phone, phone = validate_phone(phone_raw)
         if not valid_phone:
             return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
+            
+        address_raw = (data.get("address") or "").strip()
+        if not address_raw:
+            return jsonify({"error": "Bad Request", "message": "Delivery address is required"}), 400
         
         import re
         if first_name and not re.match(r"^[a-zA-Z\s\-']+$", first_name):
