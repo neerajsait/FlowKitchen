@@ -97,7 +97,7 @@ def get_redis():
     elif redis_url:
         try:
             # decode_responses=True makes it return strings instead of bytes
-            _redis_client = redis.from_url(redis_url, decode_responses=True)
+            _redis_client = redis.from_url(redis_url, decode_responses=True, protocol=2)
             _redis_client.ping()
             return _redis_client
         except redis.ConnectionError as e:

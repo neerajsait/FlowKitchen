@@ -2484,7 +2484,7 @@ The Suggula\'s Kitchen Team"""
             total_sales = db.session.scalar(
                 select(func.sum(Order.total_price))
                 .where(Order.outlet_id == o.id)
-                .where(Order.status == 'completed')
+                .where(Order.status == 'delivered')
             ) or Decimal('0.00')
             share_pct = o.revenue_share_percentage or Decimal('0.00')
             brand_cut = Decimal(total_sales) * (Decimal(share_pct) / Decimal('100.0'))
@@ -3930,7 +3930,7 @@ The Suggula\'s Kitchen Team"""
             outlet_id=oid,
             staff_id=staff_id,
             total_price=total,
-            status='completed',
+            status='delivered',
             payment_method=payment_method,
             items=sale_items,
             customer_id=customer.id if customer else None,

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: food_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+      # Change these secrets in production!
+      - SECRET_KEY=prod_super_secret_key_change_me
+      - JWT_SECRET_KEY=prod_super_secret_jwt_key_change_me
+      # Using SQLite for ease of deployment. If using MySQL:
+      # - DATABASE_URL=mysql+pymysql://user:pass@db:3306/food
+      - FRONTEND_URL=http://localhost:3000,http://localhost:3001
+      - ALLOW_SEED=1 # Allow seeding on first run
+    depends_on:
+      - redis
+    volumes:
+      - backend_data:/app/instance
+      - backend_uploads:/app/static/uploads
+
+  frontend-customer:
+    build: ./frontend-customer
+    container_name: food_customer
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  frontend-admin:
+    build: ./frontend-admin
+    container_name: food_admin
+    restart: always
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    container_name: food_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  backend_data:
+  backend_uploads:

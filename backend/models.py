@@ -1463,6 +1463,17 @@ class AuditLog(db.Model):
 
     actor = relationship('User', foreign_keys=[actor_id])
 
+    def __init__(self, action, actor_id=None, actor_role=None, resource_type=None, resource_id=None, old_value=None, new_value=None, ip_address=None, user_agent=None):
+        self.action = action
+        self.actor_id = actor_id
+        self.actor_role = actor_role
+        self.resource_type = resource_type
+        self.resource_id = resource_id
+        self.old_value = old_value
+        self.new_value = new_value
+        self.ip_address = ip_address
+        self.user_agent = user_agent
+
     def to_dict(self):
         return {
             "id": self.id,

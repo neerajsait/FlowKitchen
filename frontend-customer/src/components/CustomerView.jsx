@@ -23,13 +23,6 @@ import WishlistPage from "./WishlistPage";
 import SupportPage from "./SupportPage";
 
 
-// ────────────────────────────────────────────────────────────
-// Defaults
-// ────────────────────────────────────────────────────────────
-const DEFAULT_ADDRESSES = [
-  { id: "default-1", label: "Home", address_line: "123 Food Street, Tasty City" },
-  { id: "default-2", label: "Work", address_line: "456 Office Tower, Biz District" },
-];
 
 // ────────────────────────────────────────────────────────────
 // Toast portal
@@ -317,7 +310,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       setMenu(menuData);
       setOrders(ordersData);
       setFavorites(favsData.map(f => f.menu_item_id));
-      setAddresses(addrData.length > 0 ? addrData : DEFAULT_ADDRESSES);
+      setAddresses(addrData);
 
       const topBanners   = bannersData.filter(b => ["home", "home_top", "hero"].includes(b.display_location)).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       const midBanners   = bannersData.filter(b => b.display_location === "home_middle");
@@ -338,8 +331,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       }
       setStoreSettings(settingsData);
 
-      if (!selectedAddressId && (addrData.length > 0 ? addrData : DEFAULT_ADDRESSES).length > 0) {
-        const firstAddr = (addrData.length > 0 ? addrData : DEFAULT_ADDRESSES)[0];
+      if (!selectedAddressId && addrData.length > 0) {
+        const firstAddr = addrData[0];
         setSelectedAddressId(firstAddr.id);
         setCheckoutAddress(firstAddr.address_line);
       }
@@ -610,9 +603,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const handleDeleteAddress = async (id, e) => {
     e?.stopPropagation?.();
     try {
-      if (typeof id !== "string" || !id.toString().startsWith("default")) {
-        await api.deleteAddress(id);
-      }
+      await api.deleteAddress(id);
       setAddresses(prev => prev.filter(a => a.id !== id));
       if (selectedAddressId === id) {
         const remaining = addresses.filter(a => a.id !== id);

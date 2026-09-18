@@ -2,5 +2,3 @@
 cd food && cd backend && python app.py
 cd food && cd frontend-customer && npm run dev
 cd food && cd frontend-admin && npm run dev
-
-

@@ -351,6 +351,18 @@ export default function CartPage({
               </div>
             </div>
           ))}
+
+          {/* Delivery & Combos (Moved from Right Side) */}
+          <div style={{ marginTop: "2rem" }}>
+            <DeliveryBar cartTotal={cartTotal} />
+            <ComboRecommender
+              cartTotal={cartTotal}
+              menu={menu}
+              cart={cart}
+              coupons={activeCoupons}
+              onAddItem={onAdd}
+            />
+          </div>
         </div>
 
         {/* ── RIGHT: Order Summary — CTA always visible */}
@@ -377,18 +389,6 @@ export default function CartPage({
             {/* ── Scrollable body */}
             <div style={{ flex: 1, overflowY: "auto", padding: "1rem 1.25rem", scrollbarWidth: "none" }}
               className="coupon-panel-scroll">
-
-              {/* Delivery bar */}
-              <DeliveryBar cartTotal={cartTotal} />
-
-              {/* Combo recommender */}
-              <ComboRecommender
-                cartTotal={cartTotal}
-                menu={menu}
-                cart={cart}
-                coupons={activeCoupons}
-                onAddItem={onAdd}
-              />
 
               {/* Coupon section */}
               <div style={{ marginBottom: "1rem" }}>
