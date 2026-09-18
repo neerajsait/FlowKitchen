@@ -213,7 +213,20 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   // ── Cart state ───────────────────────────────────────────
-  const [cart, setCart] = useState({});
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem("food_cart");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("food_cart", JSON.stringify(cart));
+    } catch {}
+  }, [cart]);
 
   // ── Guest Checkout state ──────────────────────────────────
   const [guestName, setGuestName] = useState("");
