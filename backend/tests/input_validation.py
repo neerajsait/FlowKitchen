@@ -61,7 +61,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
             "password": "ValidPass123",
             "first_name": "<script>alert('XSS')</script>",
             "last_name": "Hacker",
-            "phone": "1234567890"
+            "phone": "9876543210", "address": "123 Test Street"
         }
         resp = self.client.post("/api/auth/register", json=payload)
         

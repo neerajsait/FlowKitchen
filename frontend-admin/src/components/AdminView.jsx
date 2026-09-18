@@ -2715,7 +2715,7 @@ export default function AdminView({ onLogout, dbMode }) {
                   <tr key={b.id} style={{ background: "var(--bg-card)", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
                     <td style={{ padding: "1rem", borderRadius: "var(--r-md) 0 0 var(--r-md)" }}>
                     <div style={{ width: "120px", height: "60px", borderRadius: "8px", overflow: "hidden", background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {b.image_url ? <img referrerPolicy="no-referrer" src={b.image_url} alt={b.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} /> : <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>No Image</span>}
+                      {b.image_url ? <img referrerPolicy="no-referrer" src={b.image_url.startsWith('/') ? `${API_BASE_URL.replace('/api', '')}${b.image_url}` : b.image_url} alt={b.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} /> : <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>No Image</span>}
                     </div>
                   </td>
                   <td style={{ padding: "1rem", fontWeight: 600 }}>{b.title}</td>
@@ -2750,7 +2750,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         } catch (err) { showToast("Failed: " + err.message, "error"); }
                       }}
                     >
-                      {b.is_active ? "✓ Active" : "✗ Inactive"}
+                      {b.is_active ? "Active" : "Inactive"}
                     </button>
                   </td>
                   <td style={{ padding: "1rem", borderRadius: "0 var(--r-md) var(--r-md) 0" }}>
@@ -3922,7 +3922,7 @@ export default function AdminView({ onLogout, dbMode }) {
           {/* Live Preview */}
           {(bannerTitle || bannerImageUrl) && (
             <div style={{ background: "var(--bg-secondary)", borderRadius: 10, padding: "0.75rem", border: "1px dashed var(--border-light)" }}>
-              <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>ðŸ‘ Live Preview</p>
+              <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>👁 Live Preview</p>
               {bannerDisplayLocation === "brand_story" ? (
                 <div style={{ background: bannerBgColor || "linear-gradient(135deg,#1a5c2e,#2d9b4e)", borderRadius: 8, padding: "1rem 1.25rem", color: "#fff", position: "relative", overflow: "hidden" }}>
                   {bannerImageUrl && <div style={{ position: "absolute", inset: 0, background: `url('${bannerImageUrl}') center/cover`, opacity: 0.12, borderRadius: 8 }} />}
@@ -3952,7 +3952,7 @@ export default function AdminView({ onLogout, dbMode }) {
           )}
 
           <button type="submit" className="btn btn-primary" style={{ marginTop: "0.5rem" }}>
-            {editingBannerId ? "âœï¸ Update Banner" : "🖼 Create Banner"}
+            {editingBannerId ? " Update Banner" : " Create Banner"}
           </button>
         </form>
       </Modal>
@@ -3960,7 +3960,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {/* Confirm Delete Modal */}
       <Modal open={!!confirmDeleteModal} onClose={() => setConfirmDeleteModal(null)} title="Confirm Action" width={440}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", marginBottom: "1.5rem", marginTop: "0.5rem" }}>
-          <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>⚠ï¸</span>
+          <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>!</span>
           <p style={{ margin: 0, color: "var(--text-primary)", fontSize: "0.95rem", lineHeight: 1.6, fontWeight: 500 }}>{confirmDeleteModal?.message}</p>
         </div>
         <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>

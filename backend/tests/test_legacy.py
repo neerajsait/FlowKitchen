@@ -212,7 +212,9 @@ class BackendTestCase(unittest.TestCase):
             "email": "new_staff_try@brand.com",
             "password": "somepassword1",
             "role": "staff",
-            "outlet_id": self.outlet.id
+            "outlet_id": self.outlet.id,
+            "phone": "9876543210",
+            "address": "123 Test Street"
         }
         resp = self.client.post("/api/auth/register", json=register_payload)
         self.assertEqual(resp.status_code, 201)
@@ -227,7 +229,7 @@ class BackendTestCase(unittest.TestCase):
             "first_name": "Real",
             "last_name": "Staff",
             "outlet_id": self.outlet.id,
-            "phone": "1234567890",
+            "phone": "9876543210", "address": "123 Test Street",
             "pin": "1234"
         }
         resp = self.client.post("/api/admin/staff", json=admin_staff_payload, headers=customer_headers)

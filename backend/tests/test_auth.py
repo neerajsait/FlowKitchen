@@ -50,7 +50,7 @@ class AuthTestCase(unittest.TestCase):
             "first_name": "New",
             "last_name": "User",
             "role": "customer",
-            "phone": "1234567890"
+            "phone": "9876543210", "address": "123 Test Street"
         })
         self.assertEqual(resp.status_code, 201)
         self.assertIn("registration confirmation will be sent", resp.json["message"])
@@ -61,7 +61,7 @@ class AuthTestCase(unittest.TestCase):
         resp = self.client.post("/api/auth/register", json={
             "email": "customer@test.com", # already exists
             "password": "newpass123",
-            "phone": "1234567890"
+            "phone": "9876543210", "address": "123 Test Street"
         })
         self.assertEqual(resp.status_code, 201)
         self.assertIn("registration confirmation will be sent", resp.json["message"])
@@ -70,7 +70,7 @@ class AuthTestCase(unittest.TestCase):
         resp = self.client.post("/api/auth/register", json={
             "email": "not-an-email",
             "password": "newpass123",
-            "phone": "1234567890"
+            "phone": "9876543210", "address": "123 Test Street"
         })
         # Could be 400 or 422 depending on how they validate
         self.assertIn(resp.status_code, [400, 422])
@@ -81,7 +81,7 @@ class AuthTestCase(unittest.TestCase):
             "email": "hacker@test.com",
             "password": "hack1234",
             "role": "admin",
-            "phone": "1234567890"
+            "phone": "9876543210", "address": "123 Test Street"
         })
         self.assertEqual(resp.status_code, 201)
         user = db.session.query(User).filter_by(email="hacker@test.com").first()

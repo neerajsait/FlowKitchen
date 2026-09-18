@@ -109,7 +109,7 @@ class AdminTestCase(unittest.TestCase):
             "password": "staffpass123",
             "first_name": "Staff",
             "last_name": "Member",
-            "phone": "5555555555",
+            "phone": "9876543210", "address": "123 Test Street",
             "pin": "1234",
             "outlet_id": self.outlet.id
         }, headers=self.admin_headers)
@@ -247,7 +247,7 @@ class AdminTestCase(unittest.TestCase):
             "password": "staffpass123",
             "first_name": "Staff",
             "last_name": "Member",
-            "phone": "5555555555",
+            "phone": "9876543210", "address": "123 Test Street",
             "pin": "1234",
             "outlet_id": self.outlet.id
         }, headers=self.admin_headers)

@@ -2060,7 +2060,8 @@ The Suggula\'s Kitchen Team"""
         if not ticket or ticket.customer_id != customer_id:
             return jsonify({"error": "Not Found"}), 404
             
-        if ticket.status != "Open":
+        status_val = ticket.status.value if hasattr(ticket.status, "value") else ticket.status
+        if str(status_val).lower() != "open":
             return jsonify({"error": "Bad Request", "message": "Only open tickets can be edited"}), 400
 
         if request.content_type and request.content_type.startswith("multipart/form-data"):

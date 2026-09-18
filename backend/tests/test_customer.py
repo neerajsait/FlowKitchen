@@ -60,12 +60,12 @@ class CustomerTestCase(unittest.TestCase):
 
     def test_customer_get_orders(self):
         resp = self.client.get("/api/foods/orders", headers=self.customer_headers)
-        self.assertEqual(resp.status_code, 200)
+        print(resp.json); self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json), 1)
 
     def test_customer_get_me(self):
         resp = self.client.get("/api/auth/me", headers=self.customer_headers)
-        self.assertEqual(resp.status_code, 200)
+        print(resp.json); self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json["loyalty_points"], 150)
 
     def test_customer_create_ticket(self):
@@ -77,14 +77,14 @@ class CustomerTestCase(unittest.TestCase):
         
     def test_customer_get_tickets(self):
         resp = self.client.get("/api/customer/tickets", headers=self.customer_headers)
-        self.assertEqual(resp.status_code, 200)
+        print(resp.json); self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json), 1)
 
     def test_customer_update_ticket(self):
         resp = self.client.put(f"/api/customer/tickets/{self.ticket.id}", json={
             "description": "Thank you"
         }, headers=self.customer_headers)
-        self.assertEqual(resp.status_code, 200)
+        print(resp.json); self.assertEqual(resp.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()
