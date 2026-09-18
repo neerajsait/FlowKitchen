@@ -515,15 +515,33 @@ def sanitize_input(data, skip_keys=None):
 
 
 def validate_phone(phone_str):
-    """Sanitize and validate phone number to be exactly 10 digits."""
+    """Strictly sanitize and validate Indian phone numbers."""
     if not phone_str:
         return True, None
+        
     phone_str = str(phone_str).strip()
     if not phone_str:
         return True, None
-    if not phone_str.isdigit() or len(phone_str) != 10:
+        
+    import re
+    # Remove all non-digit characters
+    cleaned = re.sub(r'\D', '', phone_str)
+    
+    # Check for country code +91
+    if phone_str.startswith('+91'):
+        cleaned = re.sub(r'\D', '', phone_str[3:])
+    # Check for 91 prefix
+    elif len(cleaned) == 12 and cleaned.startswith('91'):
+        cleaned = cleaned[2:]
+    # Check for 0 prefix
+    elif len(cleaned) == 11 and cleaned.startswith('0'):
+        cleaned = cleaned[1:]
+        
+    # Indian mobile numbers must be exactly 10 digits and start with 6, 7, 8, or 9
+    if len(cleaned) != 10 or cleaned[0] not in '6789':
         return False, None
-    return True, phone_str
+        
+    return True, cleaned
 
 
 def log_stock_change(db_session, outlet_id, menu_item_id, change_qty, change_type,
@@ -923,7 +941,7 @@ def create_app(config_override=None):
             return jsonify({"error": "Bad Request", "message": "Phone number is required"}), 400
         valid_phone, phone = validate_phone(phone_raw)
         if not valid_phone:
-            return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+            return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
         
         import re
         if first_name and not re.match(r"^[a-zA-Z\s\-']+$", first_name):
@@ -1394,7 +1412,7 @@ The Suggula\'s Kitchen Team"""
         if "phone" in data:
             valid_phone, phone_clean = validate_phone(data["phone"])
             if not valid_phone:
-                return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+                return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
             user.phone = phone_clean
         
         if "address" in data:
@@ -1467,7 +1485,7 @@ The Suggula\'s Kitchen Team"""
             if data["phone"]:
                 valid_phone, phone_clean = validate_phone(data["phone"])
                 if not valid_phone:
-                    return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+                    return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
                 user.phone = phone_clean
             else:
                 user.phone = None
@@ -2806,7 +2824,7 @@ The Suggula\'s Kitchen Team"""
         last_name = data.get("last_name")
         valid_phone, phone = validate_phone(data.get("phone"))
         if not valid_phone:
-            return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+            return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
         role = (data.get("role") or "staff").strip().lower()
 
         if role not in ("staff", "admin", "outlet_owner", "kitchen"):
@@ -2889,7 +2907,7 @@ The Suggula\'s Kitchen Team"""
         if "phone" in data:
             valid_phone, phone_clean = validate_phone(data["phone"])
             if not valid_phone:
-                return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+                return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
             user.phone = phone_clean
         if "outlet_id" in data:
             user.outlet_id = data["outlet_id"]
@@ -3061,7 +3079,7 @@ The Suggula\'s Kitchen Team"""
             return jsonify({"error": "Bad Request", "message": "name required"}), 400
         valid_phone, phone_clean = validate_phone(data.get("phone"))
         if not valid_phone:
-            return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+            return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
         s = Supplier(name=name, contact_name=data.get("contact_name"),
                      phone=phone_clean, email=data.get("email"),
                      address=data.get("address"), notes=data.get("notes"))
@@ -3082,7 +3100,7 @@ The Suggula\'s Kitchen Team"""
         if "phone" in data:
             valid_phone, phone_clean = validate_phone(data["phone"])
             if not valid_phone:
-                return jsonify({"error": "Bad Request", "message": "Phone number must be exactly 10 digits"}), 400
+                return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
             s.phone = phone_clean
         db.session.commit()
         return jsonify({"message": "Updated", "supplier": s.to_dict()}), 200
