@@ -2880,6 +2880,17 @@ export default function AdminView({ onLogout, dbMode }) {
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Privacy Policy Checkout Text</label>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>Displayed at checkout. Customers must agree to this before placing an order.</p>
+                <textarea 
+                  className="form-input" 
+                  value={storeSettings.privacy_policy_text !== undefined ? storeSettings.privacy_policy_text : "I agree to the Privacy Policy and consent to my data being processed for this order."} 
+                  onChange={e => setStoreSettings(prev => ({ ...prev, privacy_policy_text: e.target.value }))} 
+                  rows={2}
+                />
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Minimum Order Value ($)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" className="form-input" value={storeSettings.min_order_value || "10"} onChange={e => setStoreSettings(prev => ({ ...prev, min_order_value: e.target.value }))} />

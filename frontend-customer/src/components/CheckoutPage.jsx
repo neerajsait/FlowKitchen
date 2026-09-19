@@ -16,6 +16,7 @@ export default function CheckoutPage({
   guestName, setGuestName, guestEmail, setGuestEmail, guestPhone, setGuestPhone
 }) {
   const [step, setStep] = useState(1); // 1: address, 2: payment, 3: review
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   const cartItems = Object.entries(cart)
     .map(([id, qty]) => {
@@ -211,13 +212,22 @@ export default function CheckoutPage({
                 <div className="alert alert-warning" style={{ marginBottom: "1rem" }}>We're on a holiday break. Check back soon.</div>
               )}
 
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", cursor: "pointer", background: "var(--bg)", padding: "1rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border)" }}>
+                  <input type="checkbox" checked={privacyAccepted} onChange={e => setPrivacyAccepted(e.target.checked)} style={{ width: "1.2rem", height: "1.2rem", marginTop: "0.15rem", accentColor: "var(--green)" }} />
+                  <div style={{ fontSize: "0.85rem", color: "var(--text-2)", lineHeight: "1.4" }}>
+                    {storeSettings.privacy_policy_text !== undefined ? storeSettings.privacy_policy_text : "I agree to the Privacy Policy and consent to my data being processed for this order."}
+                  </div>
+                </label>
+              </div>
+
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button className="btn btn-secondary" onClick={() => setStep(2)}>← Back</button>
                 <button
                   className="btn btn-primary"
                   style={{ flex: 1, minHeight: 52 }}
                   onClick={onPlaceOrder}
-                  disabled={paymentProcessing || storeSettings.is_store_online === "false"}
+                  disabled={!privacyAccepted || paymentProcessing || storeSettings.is_store_online === "false"}
                 >
                   {paymentProcessing
                     ? <><span className="spinner" /> Processing…</>
