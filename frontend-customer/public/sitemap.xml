@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main entry point -->
+  <url>
+    <loc>https://suggulaskitchen.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- NOTE: Since the current React application handles views (like Shop, Cart, Profile) 
+       using internal state without changing the URL path, search engines will only 
+       crawl the main index. If you switch to using a router (like react-router-dom) 
+       with distinct URLs (e.g. /shop, /terms), you should add those URLs here. -->
+</urlset>

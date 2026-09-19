@@ -3,6 +3,7 @@ import { api } from "./utils/api";
 import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import VerifyEmail from "./components/VerifyEmail";
+import CookieConsent from "./components/CookieConsent";
 
 // Lazy load views for code splitting
 const CustomerView = lazy(() => import("./components/CustomerView"));
@@ -251,6 +252,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <CookieConsent />
     </ErrorBoundary>
   );
 }

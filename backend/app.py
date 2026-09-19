@@ -6435,6 +6435,33 @@ def _purge_old_ticket_attachments(app):
 
 
 def _start_scheduler(app):
+    import atexit
+    
+    # Try to use a file lock so only one Gunicorn worker starts the scheduler
+    try:
+        import fcntl
+        import os
+        import tempfile
+        lock_file = os.path.join(tempfile.gettempdir(), 'food_scheduler.lock')
+        lock_fp = open(lock_file, 'w')
+        try:
+            fcntl.flock(lock_fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except (IOError, BlockingIOError):
+            logger.info("Scheduler is already running in another process. Skipping start in this worker.")
+            return
+            
+        def unlock():
+            try:
+                fcntl.flock(lock_fp, fcntl.LOCK_UN)
+                lock_fp.close()
+            except Exception:
+                pass
+        atexit.register(unlock)
+        
+    except ImportError:
+        # On Windows (no fcntl) during local dev, just proceed without lock
+        logger.info("fcntl not available (likely Windows), starting scheduler without cross-process lock.")
+
     scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
 
     def run_report():

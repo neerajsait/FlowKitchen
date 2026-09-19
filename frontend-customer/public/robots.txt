@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow access to the admin portal or api paths if they are ever hosted on the same domain
+Disallow: /api/
+Disallow: /admin/
+
+Sitemap: https://suggulaskitchen.com/sitemap.xml

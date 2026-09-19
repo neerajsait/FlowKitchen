@@ -7,6 +7,7 @@ import { X, CheckCircle, AlertCircle, XCircle } from "../ui/Icon";
 import { createPortal } from "react-dom";
 import QRScanner from "./QRScanner";
 import BannerZone from "./BannerZone";
+import { useSEO } from "../utils/useSEO";
 
 
 // New design components
@@ -177,6 +178,38 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   // ── Core navigation state ────────────────────────────────
   const [activeTab, setActiveTab] = useState("home");
   const [selectedItem, setSelectedItem] = useState(null); // product detail view
+
+  const seoData = useMemo(() => {
+    if (selectedItem) {
+      return {
+        title: `${selectedItem.name} | Suggula's Kitchen`,
+        description: selectedItem.description || `Buy authentic ${selectedItem.name} online from Suggula's Kitchen.`
+      };
+    }
+    switch (activeTab) {
+      case "home":
+        return { title: "Suggula's Kitchen | Authentic Indian Homemade Foods", description: "Order premium homemade Indian foods, pickles, sweets, and snacks online. Pan-India delivery available." };
+      case "shop":
+        return { title: "Shop Pickles & Sweets | Suggula's Kitchen", description: "Browse our authentic homemade pickles, sweets, spice powders, and snacks." };
+      case "cart":
+      case "checkout":
+      case "checkout-flow":
+        return { title: "Secure Checkout | Suggula's Kitchen", description: "Review and securely checkout your order at Suggula's Kitchen." };
+      case "profile":
+      case "orders":
+      case "wishlist":
+      case "tickets":
+        return { title: "Your Profile | Suggula's Kitchen", description: "Manage your account, view your orders, and contact support." };
+      case "terms":
+        return { title: "Terms of Service | Suggula's Kitchen", description: "Read our terms of service and policies." };
+      case "privacy":
+        return { title: "Privacy Policy | Suggula's Kitchen", description: "Learn how we protect and process your data." };
+      default:
+        return { title: "Suggula's Kitchen | Authentic Indian Foods", description: "Premium homemade Indian foods delivered to your door." };
+    }
+  }, [activeTab, selectedItem]);
+
+  useSEO(seoData);
 
   // ── Data state ───────────────────────────────────────────
   const [menu, setMenu] = useState([]);
