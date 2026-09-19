@@ -54,6 +54,7 @@ class TestBusinessLogic(unittest.TestCase):
         self.customer = User(email="buyer@test.com", role="customer")
         self.customer.set_password("pass123", bcrypt)
         self.customer.loyalty_points = 50 # They have 50 points
+        self.customer.is_email_verified = True
         db.session.add(self.customer)
         db.session.commit()
 
