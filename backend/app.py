@@ -1766,6 +1766,8 @@ The Suggula\'s Kitchen Team"""
                     logger.info(f"[NOTIFICATION] KITCHEN/ADMIN: Item '{menu_item.name}' is now SOLD OUT!")
 
             price = menu_item.price
+            if not customer_id and menu_item.original_price and menu_item.original_price > menu_item.price:
+                price = menu_item.original_price
             total += price * qty
             order_items.append(OrderItem(menu_item_id=mid, price=price, quantity=qty))
         
@@ -1774,6 +1776,9 @@ The Suggula\'s Kitchen Team"""
         discount_pct = 0
         coupon = None
         if coupon_code:
+            if not customer_id:
+                return jsonify({"error": "Bad Request", "message": "Coupons are only available for registered customers."}), 400
+            
             coupon = db.session.scalars(
                 select(Coupon).where(Coupon.code == coupon_code.upper().strip(), Coupon.is_active == True).with_for_update()
             ).first()

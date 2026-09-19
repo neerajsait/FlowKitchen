@@ -2443,3 +2443,15 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+/* Global layout fix: Prevent buttons, icons, and small UI elements from squishing into ovals in flex containers */
+.btn-icon, 
+.modal-close, 
+.stat-card-icon, 
+.empty-state-icon, 
+.badge, 
+.status-indicator, 
+button[style*="border-radius: 50%"], 
+div[style*="border-radius: 50%"] {
+  flex-shrink: 0 !important;
+}

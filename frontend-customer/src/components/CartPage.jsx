@@ -390,9 +390,10 @@ export default function CartPage({
             <div style={{ flex: 1, overflowY: "auto", padding: "1rem 1.25rem", scrollbarWidth: "none" }}
               className="coupon-panel-scroll">
 
-              {/* Coupon section */}
-              <div style={{ marginBottom: "1rem" }}>
-                {appliedCoupon ? (
+              {/* Coupon section - only for logged in users */}
+              {currentUser && (
+                <div style={{ marginBottom: "1rem" }}>
+                  {appliedCoupon ? (
                   <div style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     background: "var(--green-dim)", border: "1.5px solid var(--green)",
@@ -478,9 +479,10 @@ export default function CartPage({
                   </>
                 )}
               </div>
+              )}
 
-              {/* Loyalty points */}
-              {(isLoyaltyEnabled && loyaltyPoints > 0) && (
+              {/* Loyalty Points - only for logged in users */}
+              {currentUser && isLoyaltyEnabled && loyaltyPoints > 0 && (
                 <div style={{ marginBottom: "1rem", background: "var(--bg)", borderRadius: "var(--radius-md)", padding: "0.75rem 0.875rem" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "0.625rem", cursor: "pointer", fontSize: "0.85rem" }}>
                     <input type="checkbox" checked={useLoyaltyPoints} onChange={e => setUseLoyaltyPoints(e.target.checked)}
@@ -499,13 +501,13 @@ export default function CartPage({
                   <span style={{ color: "var(--text-2)" }}>Subtotal ({itemCount} item{itemCount !== 1 ? "s" : ""})</span>
                   <span style={{ fontWeight: 600 }}>₹{cartTotal.toFixed(2)}</span>
                 </div>
-                {discountAmount > 0 && (
+                {currentUser && discountAmount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
                     <span style={{ color: "var(--green)" }}>Coupon discount</span>
                     <span style={{ color: "var(--green)", fontWeight: 700 }}>−₹{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
-                {actualLoyaltyDiscount > 0 && (
+                {currentUser && actualLoyaltyDiscount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
                     <span style={{ color: "var(--green)" }}>Loyalty points</span>
                     <span style={{ color: "var(--green)", fontWeight: 700 }}>−₹{actualLoyaltyDiscount.toFixed(2)}</span>

@@ -92,6 +92,8 @@ export const Mail = (p) => <S {...p}><rect x="2.5" y="5" width="19" height="14" 
 
 export const MapPin = (p) => <S {...p}><path d="M12 21.5s7-5.8 7-11.5a7 7 0 0 0-14 0c0 5.7 7 11.5 7 11.5Z"/><circle cx="12" cy="10" r="2.6"/></S>;
 
+export const Menu = (p) => <S {...p}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></S>;
+
 export const Megaphone = (p) => <S {...p}><path d="M4 10v4a1 1 0 0 0 1 1h2.5L18 19.5v-15L7.5 9H5a1 1 0 0 0-1 1Z"/><path d="M7.5 15v4.5"/><path d="M20.5 9.5a4 4 0 0 1 0 5"/></S>;
 
 export const MessageCircle = (p) => <S {...p}><path d="M21 11.8A8.4 8.4 0 0 1 12.6 20 8.9 8.9 0 0 1 8 18.8L3 20l1.3-4.9A8.3 8.3 0 0 1 3.4 11.8 8.4 8.4 0 0 1 11.8 3.5 8.4 8.4 0 0 1 21 11.8Z"/></S>;

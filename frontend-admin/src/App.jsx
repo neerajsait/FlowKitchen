@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import VerifyEmail from "./components/VerifyEmail";
 import SkeletonLoader from "./components/SkeletonLoader";
+import NotFound404 from "./components/NotFound404";
 import {
   LogOut, Zap, 
   ChevronRight, Lock
@@ -143,6 +144,12 @@ export default function App() {
 
   if (window.location.pathname === "/verify-email") {
     return <VerifyEmail />;
+  }
+
+  // Validate path - if it's not the root, login, or known paths, show 404
+  const validPaths = ["/", "/login", "/verify-email"];
+  if (!validPaths.includes(window.location.pathname)) {
+    return <NotFound404 />;
   }
 
   // No user — show login (no sidebar)

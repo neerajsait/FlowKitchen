@@ -636,7 +636,6 @@ class Order(db.Model):
     notes = Column(Text, nullable=True)
     tax_amount = Column(Numeric(10, 2), nullable=False, default=0.00)
     discount_amount = Column(Numeric(10, 2), nullable=False, default=0.00)
-    qr_code_path = Column(String(255), nullable=True)
     review_code = Column(String(20), unique=True, nullable=True) # Code required to leave a review
     delivery_confirmation_code = Column(String(10), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
@@ -652,7 +651,7 @@ class Order(db.Model):
                  order_type='online', customer_id=None, outlet_id=None, staff_id=None, delivery_address=None,
                  delivery_charge=0.00, loyalty_points_earned=0, loyalty_points_redeemed=0, applied_coupon_code=None, 
                  review_code=None, guest_name=None, guest_email=None, guest_phone=None,
-                 notes=None, tax_amount=0.00, discount_amount=0.00, qr_code_path=None):
+                 notes=None, tax_amount=0.00, discount_amount=0.00):
         self.order_type = order_type
         self.customer_id = customer_id
         self.outlet_id = outlet_id
@@ -672,7 +671,6 @@ class Order(db.Model):
         self.notes = notes
         self.tax_amount = tax_amount
         self.discount_amount = discount_amount
-        self.qr_code_path = qr_code_path
         self.delivery_confirmation_code = None
         self.order_number = f"ORD-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
         if items:
@@ -1121,14 +1119,12 @@ class KitchenProductionBatch(db.Model):
     menu_item = relationship('MenuItem')
     producer = relationship('User', foreign_keys=[produced_by])
 
-    def __init__(self, menu_item_id, batch_number, quantity_produced, expiry_date, produced_by=None, qr_code_base64=None):
+    def __init__(self, menu_item_id, batch_number, quantity_produced, expiry_date, produced_by=None):
         self.menu_item_id = menu_item_id
         self.batch_number = batch_number
         self.quantity_produced = quantity_produced
         self.expiry_date = expiry_date
         self.produced_by = produced_by
-        self.qr_code_base64 = qr_code_base64
-
     def to_dict(self):
         return {
             "id": self.id,
@@ -1140,9 +1136,7 @@ class KitchenProductionBatch(db.Model):
             "expiry_date": self.expiry_date.isoformat() if self.expiry_date else None,
             "produced_by": self.produced_by,
             "producer_email": self.producer.email if self.producer else None,
-            "status": self.status,
-            "has_qr": bool(self.qr_code_base64)
-        }
+            "status": self.status        }
 
 # ---------------------------------------------------------------------------
 # WalletTransaction — loyalty points / wallet credit and debit history

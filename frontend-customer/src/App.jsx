@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import VerifyEmail from "./components/VerifyEmail";
 import CookieConsent from "./components/CookieConsent";
+import NotFound404 from "./components/NotFound404";
 
 // Lazy load views for code splitting
 const CustomerView = lazy(() => import("./components/CustomerView"));
@@ -140,6 +141,12 @@ export default function App() {
   // If user specifically requested login, or we need authentication to proceed (optional later)
   if (showLogin && !currentUser) {
     return <Login onLoginSuccess={(user) => { setShowLogin(false); handleLoginSuccess(user); }} />;
+  }
+
+  // Validate path - if it's not the root or known paths, show 404
+  const validPaths = ["/", "/verify-email"];
+  if (!validPaths.includes(window.location.pathname) && !window.location.pathname.startsWith('/login')) {
+    return <NotFound404 />;
   }
 
   // Render the correct view (allow guests)

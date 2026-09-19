@@ -7,7 +7,7 @@ import {
   Truck, Clock, Trash2, Calendar, RefreshCw, BarChart3,
   X, LogOut, MessageSquare, Star, Tag, ArrowRight, User,
   Megaphone, Image, Settings, Gift, MessageCircle, Edit2,
-  BookOpen, ShoppingCart, Receipt, CreditCard
+  BookOpen, ShoppingCart, Receipt, CreditCard, Menu
 } from "../ui/Icon";
 import QRGenerator from "./QRGenerator";
 import EmptyState from "./EmptyState";
@@ -101,7 +101,7 @@ export default function AdminView({ onLogout, dbMode }) {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== "undefined" && window.innerWidth > 768);
   const [orders, setOrders] = useState([]);
   const [outlets, setOutlets] = useState([]);
   const [menu, setMenu] = useState([]);
@@ -1064,17 +1064,11 @@ export default function AdminView({ onLogout, dbMode }) {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-base)" }}>
+      {/* ── Mobile Sidebar Overlay ── */}
+      <div className={`admin-sidebar-overlay ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)}></div>
+
       {/* ── Fixed Sidebar ── */}
-      <div style={{
-        position: "fixed", top: 0, left: 0, bottom: 0,
-        width: sidebarOpen ? "250px" : "70px",
-        background: "var(--bg-card)",
-        borderRight: "1px solid var(--border-subtle)",
-        transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        zIndex: 100,
-        display: "flex", flexDirection: "column",
-        overflow: "hidden"
-      }}>
+      <div className={`admin-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         {/* Sidebar Header */}
         <div style={{ padding: "1.25rem", display: "flex", alignItems: "center", borderBottom: "1px solid var(--border-subtle)", gap: sidebarOpen ? "1rem" : "0", justifyContent: sidebarOpen ? "flex-start" : "center" }}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer", display: "flex", padding: "0.25rem" }}>
@@ -1113,32 +1107,20 @@ export default function AdminView({ onLogout, dbMode }) {
       </div>
 
       {/* ── Main Content Area ── */}
-      <div style={{ 
-        flex: 1, 
-        marginLeft: sidebarOpen ? "250px" : "70px",
-        transition: "margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        padding: "1.5rem 2rem",
-        minWidth: 0
-      }}>
+      <div className={`admin-main ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="animate-fade-in">
           {/* ── Global Nav Bar ── */}
-          <div className="page-header" style={{ 
-            position: "sticky",
-            top: 0,
-            background: "var(--bg-base)",
-            zIndex: 40,
-            padding: "1rem 2rem",
-            margin: "-1.5rem -2rem 2rem -2rem",
-            borderBottom: "1px solid var(--border-light)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between"
-          }}>
-        <div className="page-header-left" style={{ flex: 1 }}>
-          <h1 style={{ fontSize: "1.5rem", margin: 0 }}>Admin Dashboard</h1>
-          <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Manage your food business — catalog, outlets, orders & analytics</p>
+          <div className="admin-page-header">
+        <div className="page-header-left" style={{ flex: 1, display: "flex", alignItems: "center", gap: "1rem" }}>
+          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)} style={{ background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer", padding: "0.25rem" }}>
+            <Menu size={24} />
+          </button>
+          <div>
+            <h1 style={{ fontSize: "1.5rem", margin: 0 }}>Admin Dashboard</h1>
+            <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Manage your food business — catalog, outlets, orders & analytics</p>
+          </div>
         </div>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
           {dbMode && (
             <div style={{
               display: "flex", alignItems: "center", gap: "6px",
@@ -1153,7 +1135,7 @@ export default function AdminView({ onLogout, dbMode }) {
           
           <div style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
 
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
             <button className="btn-icon" onClick={loadData} disabled={loading} title="Refresh Data" style={{ borderRadius: "var(--r-full)" }}>
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             </button>
@@ -1167,7 +1149,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
           <div style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
 
-          <div style={{ display: "flex", gap: "0.25rem", alignItems: "center", background: "var(--bg-elevated)", padding: "0.25rem", borderRadius: "var(--r-full)", border: "1px solid var(--border-subtle)" }}>
+          <div style={{ display: "flex", gap: "0.25rem", alignItems: "center", flexWrap: "wrap", background: "var(--bg-elevated)", padding: "0.25rem", borderRadius: "var(--r-full)", border: "1px solid var(--border-subtle)" }}>
             <button className="btn btn-secondary" onClick={openProfileModal} style={{ border: "none", background: "transparent", padding: "0.4rem 0.8rem", fontSize: "0.8rem", boxShadow: "none" }}>
               <User size={14} /> My Profile
             </button>
@@ -1186,7 +1168,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {activeTab === "overview" && (
         <div className="animate-fade-in">
           {/* KPI cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
+          <div className="admin-grid-cards">
             <div className="stat-card">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span className="stat-card-label">Total Revenue</span>
@@ -1368,7 +1350,7 @@ export default function AdminView({ onLogout, dbMode }) {
           <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, marginBottom: "1rem" }}>
             Outlet Stations <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400 }}>· inventory and dispatch</span>
           </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
+          <div className="admin-grid-products">
             {outlets.map(outlet => {
               const isAlert = (outlet.items || []).some(i => i.needs_restock);
               return (
@@ -1619,7 +1601,7 @@ export default function AdminView({ onLogout, dbMode }) {
             <div className="empty-state"><div className="empty-state-icon"><BarChart3 size={28} /></div><p>Loading analytics…</p></div>
           ) : (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem", marginBottom: "2rem" }}>
+              <div className="admin-grid-3col">
                 {[
                   { label: "Total Revenue", value: `₹${totalRevenue.toFixed(0)}`, color: "var(--brand)", icon: TrendingUp, bg: "var(--brand-glow)" },
                   { label: "B2C Home Foods", value: `₹${b2cRevenue.toFixed(0)}`, color: "#a78bfa", icon: ShoppingBag, bg: "rgba(139,92,246,0.12)" },
@@ -1832,7 +1814,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {/* ══════════ BATCHES ══════════ */}
       {activeTab === "batches" && (
         <div className="animate-fade-in">
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1.5rem" }}>
+          <div className="admin-grid-2col-wide">
             <div>
               <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", marginBottom: "1rem" }}>Batch Expiry Tracker</h3>
               <div className="table-container">
@@ -2067,7 +2049,7 @@ export default function AdminView({ onLogout, dbMode }) {
               <label className="form-label">Ingredient Name</label>
               <input type="text" className="form-input" value={mpName} onChange={e => setMpName(e.target.value)} required placeholder="e.g. Onions, Tomatoes" />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            <div className="admin-grid-2col-sm">
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Quantity</label>
                 <input type="number" step="0.01" className="form-input" value={mpQty} onChange={e => setMpQty(e.target.value)} placeholder="e.g. 5" />
@@ -2084,7 +2066,7 @@ export default function AdminView({ onLogout, dbMode }) {
                 </select>
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            <div className="admin-grid-2col-sm">
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Category</label>
                 <select className="form-select" value={mpCategory} onChange={e => setMpCategory(e.target.value)}>
@@ -2101,7 +2083,7 @@ export default function AdminView({ onLogout, dbMode }) {
                 <input type="date" className="form-input" value={mpExpirationDate} onChange={e => setMpExpirationDate(e.target.value)} />
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            <div className="admin-grid-2col-sm">
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Total Cost (₹)</label>
                 <input type="number" step="0.01" className="form-input" value={mpCost} onChange={e => setMpCost(e.target.value)} required placeholder="e.g. 250" />
@@ -2623,7 +2605,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {/* ══════════ CRM & WALLETS ══════════ */}
       {activeTab === "crm" && (
         <div className="card fade-in" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <h2>CRM & Wallets</h2>
             <button className="btn btn-primary" onClick={() => setShowBulkCouponModal(true)}>
               <Gift size={16} /> Dynamic Loyalty Offers
@@ -2632,44 +2614,48 @@ export default function AdminView({ onLogout, dbMode }) {
           {!segments ? (
             <p>Loading segments...</p>
           ) : (
-            <div style={{ display: "grid", gap: "1.5rem" }}>
+            <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(0, 1fr)" }}>
               <div>
                 <h3>Frequent Buyers (5+ Orders)</h3>
-                <table className="custom-table">
-                  <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Spent</th><th>Action</th></tr></thead>
-                  <tbody>
-                    {(segments?.frequent_buyers || []).map(c => (
-                      <tr key={c.id}>
-                        <td>{c.first_name} {c.last_name}</td>
-                        <td>{c.email}</td>
-                        <td>{c.order_count}</td>
-                        <td>₹{c.total_spent}</td>
-                        <td>
-                          <button className="btn btn-secondary" onClick={() => { setWalletTargetUser(c); setShowWalletModal(true); }} style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem" }}>Manage Wallet</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="table-responsive">
+                  <table className="custom-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Spent</th><th>Action</th></tr></thead>
+                    <tbody>
+                      {(segments?.frequent_buyers || []).map(c => (
+                        <tr key={c.id}>
+                          <td>{c.first_name} {c.last_name}</td>
+                          <td>{c.email}</td>
+                          <td>{c.order_count}</td>
+                          <td>₹{c.total_spent}</td>
+                          <td>
+                            <button className="btn btn-secondary" onClick={() => { setWalletTargetUser(c); setShowWalletModal(true); }} style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem" }}>Manage Wallet</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
               <div>
                 <h3>High Value (₹5000+ Spent)</h3>
-                <table className="custom-table">
-                  <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Spent</th><th>Action</th></tr></thead>
-                  <tbody>
-                    {(segments?.high_value || []).map(c => (
-                      <tr key={c.id}>
-                        <td>{c.first_name} {c.last_name}</td>
-                        <td>{c.email}</td>
-                        <td>{c.order_count}</td>
-                        <td>₹{c.total_spent}</td>
-                        <td>
-                          <button className="btn btn-secondary" onClick={() => { setWalletTargetUser(c); setShowWalletModal(true); }} style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem" }}>Manage Wallet</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="table-responsive">
+                  <table className="custom-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Spent</th><th>Action</th></tr></thead>
+                    <tbody>
+                      {(segments?.high_value || []).map(c => (
+                        <tr key={c.id}>
+                          <td>{c.first_name} {c.last_name}</td>
+                          <td>{c.email}</td>
+                          <td>{c.order_count}</td>
+                          <td>₹{c.total_spent}</td>
+                          <td>
+                            <button className="btn btn-secondary" onClick={() => { setWalletTargetUser(c); setShowWalletModal(true); }} style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem" }}>Manage Wallet</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -2679,7 +2665,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {/* ══════════ BANNERS ══════════ */}
       {activeTab === "banners" && (
         <div className="card fade-in" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <h2>Dynamic Banners</h2>
             <button className="btn btn-primary" onClick={() => {
               setEditingBannerId(null);
@@ -2694,7 +2680,8 @@ export default function AdminView({ onLogout, dbMode }) {
               <Plus size={16} /> Add Banner
             </button>
           </div>
-          <table className="custom-table" style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1rem" }}>
+          <div className="table-responsive">
+            <table className="custom-table" style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1rem" }}>
             <thead>
               <tr style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)", textAlign: "left", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 <th style={{ padding: "1rem", borderRadius: "var(--r-md) 0 0 var(--r-md)" }}>Image</th>
@@ -2795,6 +2782,7 @@ export default function AdminView({ onLogout, dbMode }) {
             )}
             </tbody>
           </table>
+          </div>
 
         </div>
       )}
@@ -2818,7 +2806,7 @@ export default function AdminView({ onLogout, dbMode }) {
             }
           }}>
             <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}><Settings size={18} /> Global Configuration</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+            <div className="admin-grid-2col">
               
               {/* Status Toggles */}
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

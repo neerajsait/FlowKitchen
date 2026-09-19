@@ -56,7 +56,7 @@ export default function CheckoutPage({
         <div>
           {/* Step 1: Address */}
           {step === 1 && (
-            <div className="card card-padded animate-fade-in">
+            <div className="animate-fade-in" style={{ padding: "1.25rem 0" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <MapPin size={18} color="var(--green)" /> {currentUser ? "Delivery Address" : "Contact & Delivery Info"}
               </h2>
@@ -146,7 +146,7 @@ export default function CheckoutPage({
 
           {/* Step 2: Payment */}
           {step === 2 && (
-            <div className="card card-padded animate-fade-in">
+            <div className="animate-fade-in" style={{ padding: "1.25rem 0" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "1.25rem" }}>Payment Method</h2>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.5rem" }}>
@@ -180,7 +180,7 @@ export default function CheckoutPage({
 
           {/* Step 3: Review */}
           {step === 3 && (
-            <div className="card card-padded animate-fade-in">
+            <div className="animate-fade-in" style={{ padding: "1.25rem 0" }}>
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "1.25rem" }}>Review Your Order</h2>
 
               {/* Delivery address recap */}
@@ -242,8 +242,8 @@ export default function CheckoutPage({
         <div className="order-summary-card">
           <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "1rem" }}>Summary</h2>
           <div className="summary-row"><span style={{ color: "var(--text-2)" }}>Items ({cartItems.reduce((s, i) => s + i.qty, 0)})</span><span>₹{cartTotal.toFixed(2)}</span></div>
-          {discountAmount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Coupon</span><span style={{ color: "var(--green)" }}>−₹{discountAmount.toFixed(2)}</span></div>}
-          {actualLoyaltyDiscount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Points</span><span style={{ color: "var(--green)" }}>−₹{actualLoyaltyDiscount.toFixed(2)}</span></div>}
+          {currentUser && discountAmount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Coupon</span><span style={{ color: "var(--green)" }}>−₹{discountAmount.toFixed(2)}</span></div>}
+          {currentUser && actualLoyaltyDiscount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Points</span><span style={{ color: "var(--green)" }}>−₹{actualLoyaltyDiscount.toFixed(2)}</span></div>}
           <div className="summary-row"><span style={{ color: "var(--text-2)" }}>Delivery</span><span style={{ color: deliveryCharge === 0 ? "var(--green)" : "inherit" }}>{deliveryCharge === 0 ? "FREE" : `₹${deliveryCharge.toFixed(2)}`}</span></div>
           <div className="summary-row total"><span>Total</span><span>₹{finalTotal.toFixed(2)}</span></div>
           <p style={{ fontSize: "0.7rem", color: "var(--text-3)", marginTop: "0.75rem", textAlign: "center" }}> Secure checkout powered by your trust</p>

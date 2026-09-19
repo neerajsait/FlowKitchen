@@ -253,10 +253,20 @@ export const api = {
   // B2C Customer Endpoints
   // -----------------------
   async getFoodsMenu() {
-
     const res = await fetch(`${API_BASE_URL}/foods/menu`);
     if (!res.ok) throw new Error("Failed to load menu");
-    return safeJson(res);
+    const data = await res.json();
+    
+    // If not logged in, nullify the discount so users don't see or get them
+    if (!this.getCurrentUser()) {
+      data.forEach(item => {
+        if (item.original_price && item.original_price > item.price) {
+           item.price = item.original_price;
+           item.original_price = null;
+        }
+      });
+    }
+    return data;
   },
 
   async placeOrder(items, deliveryAddress, paymentMethod = "COD", couponCode = null, pointsToRedeem = 0, deliveryCharge = 0, guestDetails = null) {

@@ -49,10 +49,10 @@ export default function CookieConsent() {
         >
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text)', marginBottom: '0.5rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#ffffff', marginBottom: '0.5rem' }}>
                 We respect your privacy
               </h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-2)', lineHeight: 1.5, margin: 0 }}>
+              <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.5, margin: 0 }}>
                 We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.
               </p>
             </div>
@@ -61,14 +61,14 @@ export default function CookieConsent() {
               <button 
                 onClick={handleAcceptAll}
                 className="btn btn-primary"
-                style={{ padding: '0.75rem 1.5rem', fontWeight: 600 }}
+                style={{ padding: '0.75rem 1.5rem', fontWeight: 600, color: '#ffffff' }}
               >
                 Accept All
               </button>
               <button 
                 onClick={handleEssentialOnly}
                 className="btn btn-secondary"
-                style={{ padding: '0.75rem 1.5rem', background: 'transparent', border: '1px solid var(--border)' }}
+                style={{ padding: '0.75rem 1.5rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff' }}
               >
                 Essential Only
               </button>
