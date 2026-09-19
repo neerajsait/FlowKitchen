@@ -879,11 +879,15 @@ def create_app(config_override=None):
                 data = request.get_json(silent=True) or {}
                 email = data.get("email")
                 if email:
-                    return email.strip().lower()
+                    val = email.strip().lower()
+                    print(f"RATE LIMIT KEY (EMAIL): {val}")
+                    return val
         except Exception as e:
             pass
         from flask_limiter.util import get_remote_address
-        return get_remote_address()
+        res = get_remote_address()
+        print(f"RATE LIMIT KEY (IP): {res}")
+        return res
 
     # --- Refresh-token cookie helpers -------------------------------------
     # The refresh token lives in an HttpOnly cookie scoped to /api/auth so
