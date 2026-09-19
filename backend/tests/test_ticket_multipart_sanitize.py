@@ -38,7 +38,7 @@ def test_ticket_upload_security(client):
     
     res = client.post('/api/customer/tickets', headers=headers, data=data, content_type='multipart/form-data')
     assert res.status_code == 400
-    assert "Disallowed file extension" in res.get_json().get("message", "")
+    assert "Invalid or disallowed file type" in res.get_json().get("message", "")
 
     # Test 2: allowed extension but with XSS in issue_type
     data2 = {
