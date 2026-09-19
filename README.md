@@ -1,139 +1,155 @@
-# Food Ordering Platform & POS
+<div align="center">
+  <h1>🍀 Food Ordering Platform & POS System</h1>
+  <p><i>A robust, zero-trust full-stack ecosystem for modern food service management.</i></p>
+  
+  <p>
+    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=flat-square&logo=react" alt="React"></a>
+    <a href="https://flasi.palletsprojects.com/"><img src="https://img.shields.io/badge/Backend-Flask-000000?style=flat-square&logo=flask" alt="Flask"></a>
+    <a href="https://www.mysql.com/"><img src="https://img.shields.io/badge/Database-MySQL%208-4479A1?style=flat-square&logo=mysql" alt="MySQL"></a>
+    <a href="https://redis.io/"><img src="https://img.shields.io/badge/Cache-Redis-DC382D?style=flat-square&logo=redis" alt="Redis"></a>
+    <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Deploy-Docker%20Compose-2496ED?style=flat-square&logo=docker" alt="Docker"></a>
+  </p>
+</div>
 
-A comprehensive full-stack application providing a complete ecosystem for food service management. It includes a Customer Storefront (B2C/B2B), a Point of Sale (POS) system, a Kitchen Display System (KDS), and a full Admin Dashboard.
+---
 
-## 🚀 Key Features
+A comprehensive full-stack application providing a complete ecosystem for food service management. It includes a **Customer Storefront (B2C/B2B)**, a **Point of Sale (POS)** system, a **Kitchen Display System (KDS)**, and a full **Admin Dashboard**.
 
-*   **Customer Storefront:** Browse menus, dynamic product detail pages, shopping cart, guest checkout, wallet system, coupon catalog, and order tracking.
-*   **Point of Sale (POS):** Fast order entry, POS lock screen, QR code generation, walk-in customer management, and receipt generation.
-*   **Kitchen Display System (KDS):** Real-time order synchronization for the kitchen, status toggling, and ticket management.
-*   **Admin & Management:** Granular audit logs, inventory management, role-based access control, bestseller tracking, and dynamic policy pages.
-*   **Security (Zero Trust):** Robust zero-trust schemas, strict JWT token validation with Redis blocklisting, token versioning, and rate limiting.
+## ✨ Key Features
 
-## 🏗️ Architecture & Tech Stack
+### 👍 Customer Storefront
+- **Dynamic Menus:** Browse menus with rich product detail pages.
+- **Seamless Checkout:** Guest checkout, secure cart management, and online payment integrations (Razorpay).
+- **Loyalty & Wallet:** Integrated digital wallet, loyalty points, and a comprehensive coupon catalog.
+- **Order Tracking:** Real-time order status tracking from kitchen to delivery.
 
-*   **Backend:** Python, Flask, SQLAlchemy (ORM), Flask-Migrate (Alembic), JWT Authentication, Redis, APScheduler (Background jobs)
-*   **Customer Frontend:** React (Vite), Tailwind CSS
-*   **Admin/POS Frontend:** React (Vite), Tailwind CSS
+### 🊬 Point of Sale (POS) & Kitchen
+- **Fast Order Entry:** Touch-friendly interface with QR code generation for walk-ins.
+- **Staff Management:** Clock-in/out tracking, shift management, and secure POS lock screens via staff PINs.
+- **Kitchen Display System (KDS):** Real-time order synchronization for the kitchen, status toggling, and ticket management.
+- **Stock Tracking:** Multi-outlet stock depletion and raw material batch tracking.
 
-## 💻 Getting Started (Local Development)
+### 🛡 Enterprise-Grade Security
+- **Zero-Trust Architecture:** Strict JWT token validation, token versioning (instant global revocation on password change), and Redis-backed JWT blocklisting.
+- **Brute-Force & Rate Limiting:** Dynamic endpoint rate-limiting (e.g., 5 login attempts/min) with Redis storage, protecting against credential stuffing and OTP spam.
+- **Input Sanitization:** Multi-layered defense against SQLi and XSS via strict payload validation, parameterized ORM queries, and HTML escaping.
+- **Secure File Uploads:** Robust multipart sanitization using `python-magic` for MIME-type validation, preventing malicious file executions.
 
-### 1. Clone the repository
+---
+
+## 🏗 Architecture & Tech Stack
+
+|Component|Technology|
+)--------|-----------|
+|**Backend API**|Python, Flask, SQLAlchemy, Alembic (Migrations), JWT, APScheduler|
+|**Frontend (Customer)**|React (Vite), Tailwind CSS, Context API|
+|**Frontend (Admin)**|React (Vite), Tailwind CSS, Chart.js (Analytics)|
+|**Database & Cache**|MySQL 8.0, Redis (Token blocklist & Rate limits)|
+|**Infrastructure**|Docker, Docker Compose, Gunicorn|
+
+---
+
+## 🚀 Getting Started (Docker - Recommended)
+
+The easiest way to run the entire stack (Backend, Frontend, MySQL, and Redis) is using Docker Compose.
+
+1.l Clone & Configure
 ```bash
 git clone <your-repository-url>
 cd food
+
+# Ensure your .env file is populated with production secrets
+cp .env.example .env
 ```
 
-### 2. Backend Setup
+2. Start the Stack
+```bash
+docker-compose up --build -d
+```
+* **Customer Storefront:** http://localhost:3000
+* **Admin Dashboard:** http://localhost:3001
+* **Backend API:** http://localhost:5000
+
+---
+
+## 👹 Local Development (Manual Setup)
+
+If you prefer to run the services bare-metal for development:
+
+1. Backend Setup
 ```bash
 cd backend
 python -m venv venv
-# On Windows:
+
+# Windows:
 venv\Scripts\activate
-# On Mac/Linux:
+# Mac/Linux:
 source venv/bin/activate
 
 pip install -r requirements.txt
-# Make sure to create a .env file for your database and secrets!
+```
+
+Ensure a local Redis instance is running (required for rate limiting):
+```bash
+docker run --name my-redis -p 6379:6379 -d redis:alpine
+```
+
+Start the backend:
+```bash
 flask db upgrade
 flask run
 ```
 
-### 3. Frontend Setup (Admin & Customer)
-Open a new terminal for the admin dashboard:
+2. Frontend Setup
+Run the customer storefront and admin dashboards in separate terminals:
 ```bash
-cd frontend-admin
-npm install
-npm run dev
+cd frontend-admin && npm install && npm run dev
+cd frontend-customer && npm install && npm run dev
 ```
 
-Open another terminal for the customer storefront:
-```bash
-cd frontend-customer
-npm install
-npm run dev
-```
+---
 
-## ⚙️ Deployment & Production Requirements
+## ⚹ Production Deployment Guidelines
 
-### Environment Variables (Backend)
+When deploying to a production server, the application strictly enforces a fail-closed secure state.
 
-*   `FLASK_ENV`: Set to `production` in live environments.
-*   `SECRET_KEY`: **Required.** Used for session signing, QR code generation, etc.
-*   `JWT_SECRET_KEY`: **Required.** Used for JWT signature.
-*   `REDIS_URL`: **Required in production.** Used for JWT token blocklisting (e.g., `redis://localhost:6379/0`).
-*   `ALLOW_SEED=1`: (Optional) Use only if you intentionally want demo seeds.
-*   `DATABASE_URL`: (Optional) Full connection string. Defaults to SQLite if not provided (except in production).
-*   **MySQL Variables (Alternative to `DATABASE_URL`)**:
-    *   `MYSQL_HOST`: e.g., `localhost`
-    *   `MYSQL_USER`: Database username
-    *   `MYSQL_PASSWORD`: Database password
-    *   `MYSQL_DB`: Database name
-*   **Mail Variables**:
-    *   `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USE_TLS`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_DEFAULT_SENDER`, `ADMIN_EMAIL`
+### Required Environment Variables
+If `FLASK_ENV=production` is set, the application **will refuse to start** unless all of the following are configured and reachable:
+* `SECRET_KEY` & `JWT_SECRET_KEY`: Cryptographically secure random strings.
+* `REDIS_URL`: Must be reachable for token blocklisting and rate limiting.
+* `DATABASE_URL`: Must point to a highly available MySQL instance.
+* `FRONTEND_URL`: Used for CORS and email callbacks (e.g. `https://store.example.com,https://admin.example.com`).
 
-### Redis Requirement
+### Docker Compose Hardening
+The provided `docker-compose.yml` is pre-tuned for production with:
+* Resource constraints (`cpus`, `memory` limits) to prevent runaway processes.
+* Docker `healthcheck` attributes for MySQL, Redis, and the Backend API to ensure safe startup ordering.
+* Log rotation (10MB max, 3 files) via the `json-file` driver.
+* Cross-process locking via `fcntl` ensuring APScheduler (daily reports, ticket cleanups) executes exactly once across Gunicorn workers.
 
-**Redis is strictly required in production (`FLASK_ENV=production`).** The application uses Redis for token revocation (blocklist) and rate-limiting. If `REDIS_URL` is missing or the Redis instance cannot be pinged on startup, the application will refuse to start.
+---
 
-To run Redis locally via Docker:
-```bash
-docker run --name my-redis -p 6379:6379 -d redis
-```
+## 🃱 Online Payments (Razorpay)
 
-## 🗄️ Database Migrations
-
-The project uses `Flask-Migrate` (Alembic) to handle database schema changes.
-
-When deploying a new version with schema changes, you can simply run:
-```bash
-flask db upgrade
-```
-*(Note: Manual `ALTER TABLE` commands are no longer needed as Alembic handles schema evolution automatically).*
-
-## 🔐 Authentication & JWT Lifecycle
-
-*   **Access Token**: Expires in 15 minutes.
-*   **Refresh Token**: Expires in 7 days.
-*   **Endpoints**:
-    *   `POST /api/auth/login`: Returns `access_token` + `refresh_token`.
-    *   `POST /api/auth/refresh`: Accepts `Authorization: Bearer <refresh_token>` and returns a new `access_token` and `refresh_token`.
-    *   `POST /api/auth/logout`: Accepts `Authorization: Bearer <access_token>` and body `{"refresh_token": "<token>"}` to revoke tokens using the Redis blocklist.
-
-## 💳 Online Payments (Razorpay)
-
-The backend ships a complete, self-hosting Razorpay integration. Credentials live in
-`StoreSetting` (Fernet-encrypted with `PAYMENT_ENCRYPTION_KEY`) and are managed from
-**Admin → Payment Gateway**. A documented env-var fallback also exists:
-`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `RAZORPAY_MODE`, `RAZORPAY_ENABLED`.
-
-### Endpoints
+The backend ships a complete, self-hosting Razorpay integration. Credentials live in `StoreSetting` (Fernet-encrypted with `PAYMENT_ENCRYPTION_KEY`) and are managed from **Admin → Payment Gateway**.
 
 | Endpoint | Auth | Purpose |
 |---|---|---|
-| `POST /api/payments/razorpay/order` | JWT | Creates a Razorpay order for a customer's pending order, stores `razorpay_order_id`, returns `{razorpay_order_id, amount, currency, key_id, mode}` for checkout.js |
-| `POST /api/payments/razorpay/verify` | JWT | Verifies the checkout.js HMAC signature (`order_id\|payment_id`), marks the order `payment_status='paid'`, records an audit row. Idempotent |
-| `POST /api/payments/razorpay/webhook` | X-Razorpay-Signature | Server-to-server events (`payment.captured`, `payment.failed`, `refund.processed`, `order.paid`). Marks orders paid even if the browser closes mid-payment |
+| `POST /api/payments/razorpay/order` | JWT | Creates a Razorpay order, returns keys for `checkout.js` |
+| `POST /api/payments/razorpay/verify` | JWT | Verifies HMAC signature, marks order `paid`. Idempotent. |
+| `POST /api/payments/razorpay/webhook` | Signature | Server-to-server fallback. Marks orders paid even if the browser closes. |
 
-### Customer flow
+Every payment event is written to the `payment_transactions` table for automated financial reconciliation.
 
-1. Customer places an order choosing **Pay Online** (or taps **Pay Now** on a pending order in *My Orders*).
-2. Frontend calls `/payments/razorpay/order`, then opens the Razorpay checkout window.
-3. On success the frontend posts the signature to `/payments/razorpay/verify`.
-4. The webhook acts as a safety net — both paths are idempotent, so an order is never double-charged or double-marked.
+---
 
-Every payment event is written to the `payment_transactions` table (source: `checkout` or `webhook`,
-including invalid-signature attempts) for reconciliation.
+## 🚕 Testing
 
-## 🛡️ Security & Privacy Notes
+The backend includes a comprehensive pytest suite covering authentication flows, RBAC authorization, business logic, rate limiting, and input sanitization (SQLi/XSS).
 
-*   **Ticket Attachments**: Ticket attachment URLs are located under `/static/uploads/tickets/`. Currently, these URLs are unguessable due to timestamp prefixing.
-*   **Token Caching**: For improved performance at scale, it is recommended to cache `user.token_version` in Redis using a short TTL and invalidate it upon password change.
-
-## 🧪 Running Tests
-
-To run the backend test suite, navigate to the `backend` directory and use pytest:
+To run the test suite:
 ```bash
 cd backend
-REDIS_URL=memory:// python -m pytest tests/ -v --tb=short
+REDIS_URL=memory:// python -m pytest tests/ -v
 ```
+*(Note: `RATELIMIT_STORAGE_URL=memory://` is automatically used during testing to prevent polluting the production Redis cache).*
