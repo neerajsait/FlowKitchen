@@ -10,14 +10,13 @@ services:
     environment:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
-      # Change these secrets in production!
-      - SECRET_KEY=prod_super_secret_key_change_me
-      - JWT_SECRET_KEY=prod_super_secret_jwt_key_change_me
-      # Using SQLite for ease of deployment. If using MySQL:
-      # - DATABASE_URL=mysql+pymysql://user:pass@db:3306/food
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
       - FRONTEND_URL=http://localhost:3000,http://localhost:3001
-      - ALLOW_SEED=1 # Allow seeding on first run
+      - ALLOW_SEED=0 # Disabled in production
     depends_on:
+      - db
       - redis
     volumes:
       - backend_data:/app/instance
@@ -48,6 +47,19 @@ services:
     ports:
       - "6379:6379"
 
+  db:
+    image: mysql:8.0
+    container_name: food_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
 volumes:
   backend_data:
   backend_uploads:
+  mysql_data:

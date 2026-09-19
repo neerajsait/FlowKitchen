@@ -527,14 +527,13 @@ def validate_phone(phone_str):
     # Remove all non-digit characters
     cleaned = re.sub(r'\D', '', phone_str)
     
-    # Check for country code +91
-    if phone_str.startswith('+91'):
-        cleaned = re.sub(r'\D', '', phone_str[3:])
-    # Check for 91 prefix
-    elif len(cleaned) == 12 and cleaned.startswith('91'):
+    # Strip country code variants
+    if cleaned.startswith('91') and len(cleaned) > 10:
         cleaned = cleaned[2:]
-    # Check for 0 prefix
-    elif len(cleaned) == 11 and cleaned.startswith('0'):
+        # After stripping 91, it might still have a leading 0 (e.g., +91 09876543210)
+        if cleaned.startswith('0') and len(cleaned) > 10:
+            cleaned = cleaned[1:]
+    elif cleaned.startswith('0') and len(cleaned) > 10:
         cleaned = cleaned[1:]
         
     # Indian mobile numbers must be exactly 10 digits and start with 6, 7, 8, or 9
