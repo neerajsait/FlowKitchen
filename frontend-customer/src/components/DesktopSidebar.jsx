@@ -17,7 +17,7 @@ export default function DesktopSidebar({ activeTab, setActiveTab, cartCount, onL
       <div className="sidebar-brand">
         <div className="sidebar-logo-box">S</div>
         <div className="sidebar-brand-text">
-          <div className="sidebar-brand-name">Suggula's</div>
+          <div className="sidebar-brand-name">FlowKitchen</div>
           <div className="sidebar-brand-tagline">Kitchen</div>
         </div>
       </div>

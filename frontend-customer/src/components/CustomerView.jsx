@@ -102,7 +102,7 @@ function SiteFooter({ setActiveTab }) {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "1rem" }}>
             <div style={{ width: 36, height: 36, background: "var(--green)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "1rem" }}>S</div>
-            <div style={{ color: "#fff", fontWeight: 800, fontSize: "1rem" }}>Suggula's Kitchen</div>
+            <div style={{ color: "#fff", fontWeight: 800, fontSize: "1rem" }}>FlowKitchen</div>
           </div>
           <p style={{ fontSize: "0.8125rem", lineHeight: 1.7, maxWidth: 280 }}>
             Homemade Indian foods crafted with love and tradition. Premium quality, delivered pan-India.
@@ -132,7 +132,7 @@ function SiteFooter({ setActiveTab }) {
         </div>
       </div>
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: "2rem", paddingTop: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <span style={{ fontSize: "0.75rem" }}>© {new Date().getFullYear()} Suggula's Kitchen. All rights reserved.</span>
+        <span style={{ fontSize: "0.75rem" }}>© {new Date().getFullYear()} FlowKitchen. All rights reserved.</span>
         <span style={{ display: "flex", gap: "1.5rem", fontSize: "0.75rem", alignItems: "center" }}>
           <button onClick={() => setActiveTab("terms")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Terms of Service</button>
           <button onClick={() => setActiveTab("privacy")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Privacy Policy</button>
@@ -182,30 +182,30 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const seoData = useMemo(() => {
     if (selectedItem) {
       return {
-        title: `${selectedItem.name} | Suggula's Kitchen`,
-        description: selectedItem.description || `Buy authentic ${selectedItem.name} online from Suggula's Kitchen.`
+        title: `${selectedItem.name} | FlowKitchen`,
+        description: selectedItem.description || `Buy authentic ${selectedItem.name} online from FlowKitchen.`
       };
     }
     switch (activeTab) {
       case "home":
-        return { title: "Suggula's Kitchen | Authentic Indian Homemade Foods", description: "Order premium homemade Indian foods, pickles, sweets, and snacks online. Pan-India delivery available." };
+        return { title: "FlowKitchen | Authentic Indian Homemade Foods", description: "Order premium homemade Indian foods, pickles, sweets, and snacks online. Pan-India delivery available." };
       case "shop":
-        return { title: "Shop Pickles & Sweets | Suggula's Kitchen", description: "Browse our authentic homemade pickles, sweets, spice powders, and snacks." };
+        return { title: "Shop Pickles & Sweets | FlowKitchen", description: "Browse our authentic homemade pickles, sweets, spice powders, and snacks." };
       case "cart":
       case "checkout":
       case "checkout-flow":
-        return { title: "Secure Checkout | Suggula's Kitchen", description: "Review and securely checkout your order at Suggula's Kitchen." };
+        return { title: "Secure Checkout | FlowKitchen", description: "Review and securely checkout your order at FlowKitchen." };
       case "profile":
       case "orders":
       case "wishlist":
       case "tickets":
-        return { title: "Your Profile | Suggula's Kitchen", description: "Manage your account, view your orders, and contact support." };
+        return { title: "Your Profile | FlowKitchen", description: "Manage your account, view your orders, and contact support." };
       case "terms":
-        return { title: "Terms of Service | Suggula's Kitchen", description: "Read our terms of service and policies." };
+        return { title: "Terms of Service | FlowKitchen", description: "Read our terms of service and policies." };
       case "privacy":
-        return { title: "Privacy Policy | Suggula's Kitchen", description: "Learn how we protect and process your data." };
+        return { title: "Privacy Policy | FlowKitchen", description: "Learn how we protect and process your data." };
       default:
-        return { title: "Suggula's Kitchen | Authentic Indian Foods", description: "Premium homemade Indian foods delivered to your door." };
+        return { title: "FlowKitchen | Authentic Indian Foods", description: "Premium homemade Indian foods delivered to your door." };
     }
   }, [activeTab, selectedItem]);
 
@@ -699,7 +699,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       const doc = new jsPDF({ unit: "mm", format: "a4" });
       let y = 20;
       doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(21, 148, 71);
-      doc.text("SUGGULA'S KITCHEN", 20, y);
+      doc.text("FlowKitchen", 20, y);
       doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.setFont("helvetica", "normal");
       doc.text("Homemade Indian Foods", 20, y + 6);
       y += 22;
@@ -749,7 +749,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       doc.text("Grand Total:", 145, y); doc.text(`Rs. ${grandTotal.toFixed(2)}`, 175, y);
       
       y += 20; doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.setTextColor(150, 150, 150);
-      doc.text("Thank you for choosing Suggula's Kitchen!", 105, y, { align: "center" });
+      doc.text("Thank you for choosing FlowKitchen!", 105, y, { align: "center" });
       doc.save(`Invoice_Order_${order.id}.pdf`);
       alert("Invoice downloaded!");
     } catch (err) { alert("Failed: " + err.message); }

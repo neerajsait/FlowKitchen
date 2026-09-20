@@ -5,7 +5,7 @@ export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('suggulas_cookie_consent');
+    const consent = localStorage.getItem('flowkitchen_cookie_consent');
     if (!consent) {
       // Small delay to ensure it doesn't jarringly appear on instant load
       const timer = setTimeout(() => setShowBanner(true), 1500);
@@ -14,12 +14,12 @@ export default function CookieConsent() {
   }, []);
 
   const handleAcceptAll = () => {
-    localStorage.setItem('suggulas_cookie_consent', 'all');
+    localStorage.setItem('flowkitchen_cookie_consent', 'all');
     setShowBanner(false);
   };
 
   const handleEssentialOnly = () => {
-    localStorage.setItem('suggulas_cookie_consent', 'essential');
+    localStorage.setItem('flowkitchen_cookie_consent', 'essential');
     setShowBanner(false);
   };
 

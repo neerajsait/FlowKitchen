@@ -136,7 +136,7 @@ export default function App() {
           boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)", animation: "pulse-glow 2s ease-in-out infinite"
         }}></div>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-          Starting Suggula's Kitchen…
+          Starting FlowKitchen…
         </p>
       </div>
     );

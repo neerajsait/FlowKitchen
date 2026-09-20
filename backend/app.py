@@ -633,7 +633,7 @@ def create_app(config_override=None):
     if cors_origins:
         origins = cors_origins.split(",")
     else:
-        origins = os.getenv("FRONTEND_URL", "https://suggulaskitchen.local,http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174").split(",")
+        origins = os.getenv("FRONTEND_URL", "https://FlowKitchen.local,http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174").split(",")
     # supports_credentials=True is REQUIRED so the HttpOnly refresh-token
     # cookie flows between frontend and API during login/refresh/logout.
     CORS(app, resources={r"/api/*": {"origins": origins}},
@@ -1258,13 +1258,13 @@ def create_app(config_override=None):
 
             sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
             msg = Message(
-                subject="Suggula\'s Kitchen Password Reset Token",
+                subject="FlowKitchen Password Reset Token",
                 sender=sender,
                 recipients=[email]
             )
             msg.body = f"""Hi {user.first_name or 'User'},
 
-You have requested to reset your password for your Suggula\'s Kitchen account.
+You have requested to reset your password for your FlowKitchen account.
 Please use the following 6-digit code in the password reset form:
 
 Reset Code: {token}
@@ -1272,7 +1272,7 @@ Reset Code: {token}
 This code is valid for 1 hour. If you did not request this, please ignore this email.
 
 Best regards,
-Suggula\'s Kitchen Team
+FlowKitchen Team
 """
             try:
                 mail.send(msg)
@@ -1346,13 +1346,13 @@ Suggula\'s Kitchen Team
 
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
         msg = Message(
-            subject="Suggula\'s Kitchen Password Change Code",
+            subject="FlowKitchen Password Change Code",
             sender=sender,
             recipients=[user.email]
         )
         msg.body = f"""Hi {user.first_name or 'User'},
 
-You have requested to change your password for your Suggula\'s Kitchen account.
+You have requested to change your password for your FlowKitchen account.
 Please use the following 6-digit code in the password change form:
 
 Change Code: {token}
@@ -1360,7 +1360,7 @@ Change Code: {token}
 This code is valid for 1 hour. If you did not request this, please ignore this email.
 
 Best regards,
-The Suggula\'s Kitchen Team"""
+The FlowKitchen Team"""
         try:
             mail.send(msg)
         except Exception as e:
@@ -5813,7 +5813,7 @@ def _seed_admin(app):
                 MenuItem(name="Pappula Podi 250g", price=Decimal("159.00"), business_type="home_foods", category="Spice Powders", description="Homemade Pappula Podi — traditional lentil spice powder for rice and idli.", image_url="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&q=80"),
                 MenuItem(name="Karvepaku Karram 250g", price=Decimal("159.00"), business_type="home_foods", category="Spice Powders", description="Karivepaku Karam — authentic curry leaf spice powder with a pungent aroma.", image_url="https://images.unsplash.com/photo-1599909613253-f3b3a5f7b33f?w=200&q=80"),
                 MenuItem(name="Nuvvula Podi 250g", price=Decimal("169.00"), business_type="home_foods", category="Spice Powders", description="Nuvvula Podi (Roasted Sesame Powder) — nutrient-rich sesame spice blend.", image_url="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=200&q=80"),
-                MenuItem(name="Munagaku Podi 250g", price=Decimal("160.00"), business_type="home_foods", category="Spice Powders", description="Suggula's Kitchen Munagaku Podi — drumstick leaves powder packed with nutrients.", image_url="https://images.unsplash.com/photo-1583394293214-0b3f8ed6e0ab?w=200&q=80"),
+                MenuItem(name="Munagaku Podi 250g", price=Decimal("160.00"), business_type="home_foods", category="Spice Powders", description="FlowKitchen Munagaku Podi — drumstick leaves powder packed with nutrients.", image_url="https://images.unsplash.com/photo-1583394293214-0b3f8ed6e0ab?w=200&q=80"),
                 MenuItem(name="Kandi Podi 250g", price=Decimal("179.00"), business_type="home_foods", category="Spice Powders", description="సాంప్రదాయ రుచికి అసలైన కందిపప్పు పొడి — traditional toor dal spice powder.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
                 MenuItem(name="Curry Leaves Herbal Powder 250g", price=Decimal("289.00"), business_type="home_foods", category="Spice Powders", description="Curry Leaves Herbal Powder — natural health supplement and flavour enhancer.", image_url="https://images.unsplash.com/photo-1591189824344-d7e6c2440e4a?w=200&q=80"),
                 MenuItem(name="Andhra Nallakaram Podi 250g", price=Decimal("140.00"), business_type="home_foods", category="Spice Powders", description="Experience the authentic Andhra Nallakaram podi — fiery and aromatic.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
@@ -5841,7 +5841,7 @@ def _seed_admin(app):
                 MenuItem(name="Pala Penilu 250g", price=Decimal("249.00"), business_type="home_foods", category="Sweets & Treats", description="Experience the authentic taste of Pala Penilu — milk-based traditional sweet.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
                 MenuItem(name="Royal Honey Cashew 250g", price=Decimal("319.00"), business_type="home_foods", category="Sweets & Treats", description="Every bite is rich, crunchy, and coated in pure honey — premium cashew delight.", image_url="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&q=80"),
                 MenuItem(name="Gondhu Laddu 250g", price=Decimal("319.00"), business_type="home_foods", category="Sweets & Treats", description="ఈ గొంధు (కృఫ్ల్) నెయ్యిలో... — traditional Gondhu Laddu with pure ghee.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
-                MenuItem(name="Suggula's Kitchen Sweet 250g", price=Decimal("369.00"), business_type="home_foods", category="Sweets & Treats", description="Suggula's Kitchen Sweet & Special — traditional handmade sweet boxes.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
+                MenuItem(name="FlowKitchen Sweet 250g", price=Decimal("369.00"), business_type="home_foods", category="Sweets & Treats", description="FlowKitchen Sweet & Special — traditional handmade sweet boxes.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
 
                 # Mixes & Instant
                 MenuItem(name="Instant Rasam Mix 250g", price=Decimal("140.00"), business_type="home_foods", category="Mixes & Instant", description="Instant Rasam Mix — Bring the warmth of homemade rasam to your table instantly.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
@@ -5850,7 +5850,7 @@ def _seed_admin(app):
                 MenuItem(name="Instant Gravy Mix 250g", price=Decimal("149.00"), business_type="home_foods", category="Mixes & Instant", description="రెస్తారెంట్ స్టైల్ కర్రీ... — restaurant-style instant curry gravy mix.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
 
                 # Special Products
-                MenuItem(name="Suggula's Kitchen Traditional 250g", price=Decimal("349.00"), business_type="home_foods", category="Special Products", description="Suggula's Kitchen Traditional — handcrafted special recipe from grandma's kitchen.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
+                MenuItem(name="FlowKitchen Traditional 250g", price=Decimal("349.00"), business_type="home_foods", category="Special Products", description="FlowKitchen Traditional — handcrafted special recipe from grandma's kitchen.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
                 MenuItem(name="Ashadam Special Neeyi Annam Podi 250g", price=Decimal("449.00"), business_type="home_foods", category="Special Products", description="Neeyi Annam Podi Ashadam Special — pure ghee rice powder for festive occasions.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
                 MenuItem(name="Saddu Baby Bottu 5g", price=Decimal("99.00"), business_type="home_foods", category="Special Products", description="Saddu Baby Bottu — traditional herbal bottu for infants, a heritage product.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
                 MenuItem(name="Herbal Sunnipindi 250g", price=Decimal("299.00"), business_type="home_foods", category="Special Products", description="Sunni Pindi Herbal Bath Powder — natural herbal body cleansing powder.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
@@ -6044,13 +6044,13 @@ def _get_email_html_wrapper(title, content):
     <body>
         <div class="card">
             <div class="header">
-                <h1>🍱 Suggula\'s Kitchen</h1>
+                <h1>🍱 FlowKitchen</h1>
             </div>
             <div class="body">
                 {content}
             </div>
             <div class="footer">
-                &copy; {datetime.now().year} Suggula\'s Kitchen ERP. All rights reserved.<br>
+                &copy; {datetime.now().year} FlowKitchen ERP. All rights reserved.<br>
                 This is an automated operational email.
             </div>
         </div>
@@ -6065,7 +6065,7 @@ def _send_verification_email(app, user):
         serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
         token = serializer.dumps(user.email, salt="email-verify-salt")
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
-        msg = Message(subject="Verify your Email - Suggula\'s Kitchen 🧡", sender=sender, recipients=[user.email])
+        msg = Message(subject="Verify your Email - FlowKitchen 🧡", sender=sender, recipients=[user.email])
         
         # Determine base URL for frontend
         frontend_url = get_frontend_url(user.role)
@@ -6073,14 +6073,14 @@ def _send_verification_email(app, user):
         
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Verify your email address, {user.first_name or 'Friend'}! 👋</h2>
-        <p>Thank you for signing up to <strong>Suggula\'s Kitchen</strong>! To activate your account and place your first order, please verify your email address.</p>
+        <p>Thank you for signing up to <strong>FlowKitchen</strong>! To activate your account and place your first order, please verify your email address.</p>
         <p>Click the button below to verify your email:</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="{verify_link}" class="btn" style="background: #10b981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify My Email</a>
         </div>
         <p>If you did not sign up for this account, please ignore this email.</p>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Email Verification", content)
         mail.send(msg)
     except Exception as e:
@@ -6090,10 +6090,10 @@ def _send_verification_email(app, user):
 def _send_welcome_email(app, user):
     try:
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
-        msg = Message(subject="Welcome to Suggula\'s Kitchen! 🧡", sender=sender, recipients=[user.email])
+        msg = Message(subject="Welcome to FlowKitchen! 🧡", sender=sender, recipients=[user.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Welcome to the Family, {user.first_name or 'Friend'}! 👋</h2>
-        <p>We are absolutely thrilled to welcome you to <strong>Suggula\'s Kitchen</strong>! Thank you for signing up and joining our community of food lovers.</p>
+        <p>We are absolutely thrilled to welcome you to <strong>FlowKitchen</strong>! Thank you for signing up and joining our community of food lovers.</p>
         <p>Our kitchen is always busy preparing the warmest, freshest, and most delicious home-cooked meals, ready to be delivered straight to your doorstep.</p>
         <p>Here are your account details:</p>
         <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
@@ -6105,7 +6105,7 @@ def _send_welcome_email(app, user):
             <a href="{get_frontend_url(user.role)}" class="btn">Explore the Shop</a>
         </div>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Welcome", content)
         mail.send(msg)
     except Exception as e:
@@ -6158,7 +6158,7 @@ def _send_order_placed_email(app, order, customer):
         </p>
         <p>We'll notify you as soon as your delicious box is dispatched and on its way!</p>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Order Confirmed", content)
         
         import threading
@@ -6176,7 +6176,7 @@ def _send_order_placed_email(app, order, customer):
 def _send_order_shipped_email(app, order, customer, tracking_code):
     try:
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
-        msg = Message(subject="Your Suggula\'s Kitchen Box is on its way! 📦", sender=sender, recipients=[customer.email])
+        msg = Message(subject="Your FlowKitchen Box is on its way! 📦", sender=sender, recipients=[customer.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Your food is on the way! 🛵</h2>
         <p>Hi {customer.first_name or 'there'}, your order #{order.id} has been packed, handed over to our delivery partner, and is officially en route!</p>
@@ -6196,7 +6196,7 @@ def _send_order_shipped_email(app, order, customer, tracking_code):
         
         <p>If you have any questions or need to make last-minute changes, please contact our support team immediately.</p>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Order Shipped", content)
         mail.send(msg)
     except Exception as e:
@@ -6206,10 +6206,10 @@ def _send_order_shipped_email(app, order, customer, tracking_code):
 def _send_admin_created_email(app, admin):
     try:
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
-        msg = Message(subject="Welcome to Suggula\'s Kitchen Admin Team! 🛡️", sender=sender, recipients=[admin.email])
+        msg = Message(subject="Welcome to FlowKitchen Admin Team! 🛡️", sender=sender, recipients=[admin.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Welcome to the Admin Team, {admin.first_name or 'Admin'}! 🛡️</h2>
-        <p>Your administrator profile has been successfully set up on the Suggula\'s Kitchen ERP platform.</p>
+        <p>Your administrator profile has been successfully set up on the FlowKitchen ERP platform.</p>
         <p>Please use the temporary credentials provided to you securely by the system administrator to log in.</p>
         
         <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; line-height: 1.8;">
@@ -6221,7 +6221,7 @@ def _send_admin_created_email(app, admin):
             <a href="{get_frontend_url(admin.role)}" class="btn">Launch Admin Dashboard</a>
         </div>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Admin Onboarding", content)
         mail.send(msg)
     except Exception as e:
@@ -6231,10 +6231,10 @@ def _send_admin_created_email(app, admin):
 def _send_admin_password_changed_email(app, admin):
     try:
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
-        msg = Message(subject="Suggula\'s Kitchen Admin Password Update 🔐", sender=sender, recipients=[admin.email])
+        msg = Message(subject="FlowKitchen Admin Password Update 🔐", sender=sender, recipients=[admin.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Password Successfully Updated 🔐</h2>
-        <p>Hi {admin.first_name or 'Admin'}, the password for your Suggula\'s Kitchen administrator account has been changed.</p>
+        <p>Hi {admin.first_name or 'Admin'}, the password for your FlowKitchen administrator account has been changed.</p>
         
         <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; line-height: 1.8;">
             <strong>Username/Email:</strong> {admin.email}<br>
@@ -6242,7 +6242,7 @@ def _send_admin_password_changed_email(app, admin):
         
         <p>If you did not request this change, please contact support immediately.</p>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Password Changed", content)
         mail.send(msg)
     except Exception as e:
@@ -6252,10 +6252,10 @@ def _send_admin_password_changed_email(app, admin):
 def _send_staff_created_email(app, staff, outlet):
     try:
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
-        msg = Message(subject="Welcome to Suggula\'s Kitchen POS Team! 🏪", sender=sender, recipients=[staff.email])
+        msg = Message(subject="Welcome to FlowKitchen POS Team! 🏪", sender=sender, recipients=[staff.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Welcome to the Team, {staff.first_name or 'Partner'}! 🏪</h2>
-        <p>Your cashier profile has been successfully set up on the Suggula\'s Kitchen ERP platform.</p>
+        <p>Your cashier profile has been successfully set up on the FlowKitchen ERP platform.</p>
         <p>Please use the temporary credentials provided to you securely by the system administrator to log in.</p>
         
         <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; line-height: 1.8;">
@@ -6269,7 +6269,7 @@ def _send_staff_created_email(app, staff, outlet):
             <a href="{get_frontend_url(staff.role)}" class="btn">Launch Cashier POS Terminal</a>
         </div>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Staff Onboarding", content)
         mail.send(msg)
     except Exception as e:
@@ -6327,7 +6327,7 @@ def _send_daily_digest_email(app, report, email_address):
         
         <p style="margin-top: 25px;">Please check the central admin console for specific inventory and auditing reports.</p>
         """
-        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, Suggula\'s Kitchen'
+        msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FlowKitchen'
         msg.html = _get_email_html_wrapper("Daily Digest", content)
         mail.send(msg)
     except Exception as e:

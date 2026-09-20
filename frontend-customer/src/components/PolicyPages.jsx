@@ -19,7 +19,7 @@ export function TermsOfService() {
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", color: "var(--text)", lineHeight: 1.6 }}>
           <section>
             <h2 style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: "0.5rem" }}>1. Acceptance of Terms</h2>
-            <p>By accessing and using Suggula's Kitchen, you accept and agree to be bound by the terms and provision of this agreement.</p>
+            <p>By accessing and using FlowKitchen, you accept and agree to be bound by the terms and provision of this agreement.</p>
           </section>
           <section>
             <h2 style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: "0.5rem" }}>2. Ordering and Payment</h2>

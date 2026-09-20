@@ -103,7 +103,7 @@ export default function Login({ onLoginSuccess }) {
       >
         <div className="split-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1600&q=80')" }}></div>
         <div className="split-overlay-text" style={{ writingMode: "horizontal-tb", transform: "none", textAlign: "center" }}>
-          <div style={{ fontSize: "1rem", color: "var(--green)", marginBottom: "0.5rem", letterSpacing: "1px" }}> SUGGULA'S KITCHEN</div>
+          <div style={{ fontSize: "1rem", color: "var(--green)", marginBottom: "0.5rem", letterSpacing: "1px" }}> FlowKitchen</div>
           <div style={{ fontSize: "1.5rem" }}>SIGN IN</div>
         </div>
         
@@ -112,8 +112,8 @@ export default function Login({ onLoginSuccess }) {
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
               <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula's Kitchen</div>
-                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Suggula's Kitchen</div>
+                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>FlowKitchen</div>
+                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>FlowKitchen</div>
               </div>
             </div>
 
@@ -199,7 +199,7 @@ export default function Login({ onLoginSuccess }) {
       >
         <div className="split-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80')" }}></div>
         <div className="split-overlay-text" style={{ writingMode: "horizontal-tb", transform: "none", textAlign: "center" }}>
-          <div style={{ fontSize: "1rem", color: "var(--green)", marginBottom: "0.5rem", letterSpacing: "1px" }}> SUGGULA'S KITCHEN</div>
+          <div style={{ fontSize: "1rem", color: "var(--green)", marginBottom: "0.5rem", letterSpacing: "1px" }}> FlowKitchen</div>
           <div style={{ fontSize: "1.5rem" }}>REGISTER</div>
         </div>
 
@@ -208,13 +208,13 @@ export default function Login({ onLoginSuccess }) {
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
               <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>Suggula's Kitchen</div>
-                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Suggula's Kitchen</div>
+                <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>FlowKitchen</div>
+                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>FlowKitchen</div>
               </div>
             </div>
             
             <h2 className="glass-title">Create Account</h2>
-            <p className="glass-sub">Join Suggula's Kitchen today.</p>
+            <p className="glass-sub">Join FlowKitchen today.</p>
 
             {error && isRegistering && (
               <div className="alert alert-error" style={{ marginBottom: "1rem", background: "rgba(239, 68, 68, 0.2)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#fff" }}>
