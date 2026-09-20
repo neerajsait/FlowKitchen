@@ -824,13 +824,6 @@ def create_app(config_override=None):
             "error_id": error_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        if os.getenv("FLASK_ENV") != "production":
-            # Development only - structured debug payload. Production NEVER
-            # receives stack traces; correlate via error_id in server logs.
-            response_data["debug"] = {
-                "exception": repr(e),
-                "traceback": traceback.format_exc().splitlines(),
-            }
         return jsonify(response_data), 500
 
     @app.after_request
@@ -867,6 +860,8 @@ def create_app(config_override=None):
     @app.route("/api/health")
     @limiter.limit("120 per minute")
     def health():
+        if request.remote_addr not in ["127.0.0.1", "::1"]:
+            return jsonify({"error": "Forbidden"}), 403
         return jsonify({"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}), 200
 
     # ============================================================
@@ -880,13 +875,11 @@ def create_app(config_override=None):
                 email = data.get("email")
                 if email:
                     val = email.strip().lower()
-                    print(f"RATE LIMIT KEY (EMAIL): {val}")
                     return val
         except Exception as e:
             pass
         from flask_limiter.util import get_remote_address
         res = get_remote_address()
-        print(f"RATE LIMIT KEY (IP): {res}")
         return res
 
     # --- Refresh-token cookie helpers -------------------------------------

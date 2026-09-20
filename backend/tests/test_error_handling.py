@@ -34,4 +34,5 @@ def test_traceback_hidden_in_production(client):
             response, code = client.application.error_handler_spec[None][None][Exception](e)
             assert code == 500
             data = response.get_json()
-            assert "debug" in data and "traceback" in data["debug"]
+            assert "traceback" not in data
+            assert "debug" not in data

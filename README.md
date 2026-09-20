@@ -40,7 +40,7 @@ A comprehensive full-stack application providing a complete ecosystem for food s
 ## 🏗 Architecture & Tech Stack
 
 |Component|Technology|
-)--------|-----------|
+|--------|-----------|
 |**Backend API**|Python, Flask, SQLAlchemy, Alembic (Migrations), JWT, APScheduler|
 |**Frontend (Customer)**|React (Vite), Tailwind CSS, Context API|
 |**Frontend (Admin)**|React (Vite), Tailwind CSS, Chart.js (Analytics)|
@@ -53,10 +53,10 @@ A comprehensive full-stack application providing a complete ecosystem for food s
 
 The easiest way to run the entire stack (Backend, Frontend, MySQL, and Redis) is using Docker Compose.
 
-1.l Clone & Configure
+1. Clone & Configure
 ```bash
 git clone <your-repository-url>
-cd food
+cd skf
 
 # Ensure your .env file is populated with production secrets
 cp .env.example .env
@@ -94,7 +94,7 @@ Ensure a local Redis instance is running (required for rate limiting):
 docker run --name my-redis -p 6379:6379 -d redis:alpine
 ```
 
-Start the backend:
+Start the backend (this will default to a local SQLite database for development; for production, provide MYSQL_* environment variables or DATABASE_URL):
 ```bash
 flask db upgrade
 flask run
@@ -145,11 +145,11 @@ Every payment event is written to the `payment_transactions` table for automated
 
 ## 🚕 Testing
 
-The backend includes a comprehensive pytest suite covering authentication flows, RBAC authorization, business logic, rate limiting, and input sanitization (SQLi/XSS).
+The backend includes a comprehensive test suite covering authentication flows, RBAC authorization, business logic, rate limiting, and input sanitization (SQLi/XSS).
 
 To run the test suite:
 ```bash
 cd backend
-REDIS_URL=memory:// python -m pytest tests/ -v
+REDIS_URL=memory:// python -m unittest discover tests/ -v
 ```
-*(Note: `RATELIMIT_STORAGE_URL=memory://` is automatically used during testing to prevent polluting the production Redis cache).*
+*(Note: `REDIS_URL=memory://` is used during testing to prevent polluting the production Redis cache).*
