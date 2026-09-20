@@ -7,7 +7,7 @@ Flask-Bcrypt==1.0.1
 Flask-Limiter==4.1.1
 python-dotenv==1.2.3
 email-validator==2.3.0
-Flask-Cors==6.0.0
+Flask-Cors==6.0.5
 qrcode[pil]==7.4.2
 APScheduler==3.11.3
 Flask-Mail==0.10.0
