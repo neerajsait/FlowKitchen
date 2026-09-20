@@ -837,10 +837,11 @@ def create_app(config_override=None):
         response.headers['Content-Security-Policy'] = (
             "default-src 'self'; "
             "img-src 'self' data: blob: https:; "
-            "script-src 'self'; "
-            "style-src 'self' https://fonts.googleapis.com; "
+            "script-src 'self' https://checkout.razorpay.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' data: https://fonts.gstatic.com; "
             "connect-src 'self' https: wss:; "
+            "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com; "
             "object-src 'none'; "
             "base-uri 'self'; "
             "frame-ancestors 'none'; "
