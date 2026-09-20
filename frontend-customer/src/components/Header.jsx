@@ -23,7 +23,7 @@ export default function Header({ activeTab, setActiveTab, cartCount, searchQuery
       <div className="header-brand" style={{ cursor: "pointer" }} onClick={() => setActiveTab("home")}>
         <div className="header-brand-logo">S</div>
         <div className="desktop-only">
-          <div className="header-brand-name">FlowKitchen</div>
+          <div className="header-brand-name">FoodPilot</div>
           <div className="header-brand-tagline">Kitchen</div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export function MobileHeader({ searchQuery, setSearchQuery, cartCount, setActive
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div className="header-brand-logo">S</div>
           <div>
-            <div className="header-brand-name" style={{ fontSize: "0.9rem" }}>FlowKitchen</div>
+            <div className="header-brand-name" style={{ fontSize: "0.9rem" }}>FoodPilot</div>
           </div>
         </div>
 

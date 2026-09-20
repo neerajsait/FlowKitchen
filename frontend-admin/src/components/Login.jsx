@@ -120,7 +120,7 @@ export default function Login({ onLoginSuccess }) {
           <div className="login-hero-logo">S</div>
 
           <h1>
-            FlowKitchen<span>Kitchen</span>
+            FoodPilot<span>Kitchen</span>
           </h1>
           <p>
             One platform for home cooking and the full snack supply chain.

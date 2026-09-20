@@ -508,7 +508,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
       let yPos = 10;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
-      doc.text("FlowKitchen ERP", 40, yPos, { align: "center" });
+      doc.text("FoodPilot ERP", 40, yPos, { align: "center" });
       
       yPos += 6;
       doc.setFontSize(9);
@@ -1563,7 +1563,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
             }}>
               <img
                 src={`https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=${encodeURIComponent(
-                  `upi://pay?pa=FlowKitchen@icici&pn=FlowKitchen%20Kitchen%20ERP&am=${getSaleTotalAmount().toFixed(2)}&cu=INR`
+                  `upi://pay?pa=FoodPilot@icici&pn=FoodPilot%20Kitchen%20ERP&am=${getSaleTotalAmount().toFixed(2)}&cu=INR`
                 )}`}
                 alt="UPI QR Code"
                 style={{ display: "block", width: "220px", height: "220px" }}
