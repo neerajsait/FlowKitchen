@@ -57,7 +57,7 @@ services:
     container_name: food_customer
     restart: always
     ports:
-      - "3000:80"
+      - "5173:80"
     depends_on:
       - backend
 
@@ -69,7 +69,7 @@ services:
     container_name: food_admin
     restart: always
     ports:
-      - "3001:80"
+      - "5174:80"
     depends_on:
       - backend
 
