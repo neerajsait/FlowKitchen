@@ -700,7 +700,7 @@ class Order(db.Model):
             "paid_at": self.paid_at.isoformat() if self.paid_at else None,
             "loyalty_points_earned": self.loyalty_points_earned,
             "loyalty_points_redeemed": self.loyalty_points_redeemed,
-            "qr_code_path": self.qr_code_path,
+            "qr_code_base64": getattr(self, 'qr_code_base64', None),
             "review_code": self.review_code,
             "delivery_confirmation_code": self.delivery_confirmation_code,
             "items": [item.to_dict() for item in self.items],
