@@ -49,29 +49,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  frontend-customer:
-    build:
-      context: ./frontend-customer
-      args:
-        - VITE_API_URL=${VITE_API_URL:-http://localhost:5000}
-    container_name: food_customer
-    restart: always
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
-
-  frontend-admin:
-    build:
-      context: ./frontend-admin
-      args:
-        - VITE_API_URL=${VITE_API_URL:-http://localhost:5000}
-    container_name: food_admin
-    restart: always
-    ports:
-      - "5174:80"
-    depends_on:
-      - backend
 
   redis:
     image: redis:alpine
