@@ -7,24 +7,16 @@ services:
     restart: always
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=${SECRET_KEY}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - CORS_ORIGINS=${CORS_ORIGINS}
-      - PAYMENT_ENCRYPTION_KEY=${PAYMENT_ENCRYPTION_KEY}
-      - MAIL_SERVER=${MAIL_SERVER:-}
-      - MAIL_PORT=${MAIL_PORT:-587}
-      - MAIL_USE_TLS=${MAIL_USE_TLS:-True}
-      - MAIL_USERNAME=${MAIL_USERNAME:-}
-      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-}
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
-      - ALLOW_SEED=0 # Disabled in production
-    command: sh -c "flask db upgrade && gunicorn --bind 0.0.0.0:5000 --workers 2 'app:create_app()'"
+      - ALLOW_SEED=0
+    command: >
+      sh -c "flask db upgrade &&
+             gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 'app:create_app()'"
     depends_on:
       db:
         condition: service_healthy
@@ -34,31 +26,32 @@ services:
       - backend_data:/app/instance
       - backend_uploads:/app/static/uploads
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')\" || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 40s
     deploy:
       resources:
         limits:
           cpus: '1.0'
-          memory: 512M
+          memory: 768M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
 
-
   redis:
     image: redis:alpine
     container_name: food_redis
     restart: always
+    command: redis-server --save 60 1 --loglevel warning
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 20s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
@@ -76,16 +69,22 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --innodb-buffer-pool-size=512M
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 30s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 20s
       timeout: 10s
-      retries: 3
+      retries: 10
+      start_period: 60s
     deploy:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1G
+          memory: 1.5G
 
 volumes:
   backend_data:
