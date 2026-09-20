@@ -16,7 +16,6 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PAYMENT_ENCRYPTION_KEY=${PAYMENT_ENCRYPTION_KEY}
-      - CLAMD_HOST=clamav
       - MAIL_SERVER=${MAIL_SERVER:-}
       - MAIL_PORT=${MAIL_PORT:-587}
       - MAIL_USE_TLS=${MAIL_USE_TLS:-True}
@@ -30,8 +29,6 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_healthy
-      clamav:
         condition: service_healthy
     volumes:
       - backend_data:/app/instance
@@ -112,21 +109,6 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
-
-  clamav:
-    image: clamav/clamav:latest
-    container_name: food_clamav
-    restart: always
-    healthcheck:
-      test: ["CMD", "clamdscan", "--ping", "127.0.0.1:3310"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1.5G
 
 volumes:
   backend_data:
