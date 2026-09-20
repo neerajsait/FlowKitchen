@@ -1,1 +1,0 @@
-outlet_owner: Managers or franchisees responsible for a specific restaurant location. They share some permissions with customers (like placing B2B orders) but also have access to their specific outlet's analytics and settings.

@@ -37,3 +37,9 @@ backend/.env
 *.coverage
 backend/.coverage
 backend/static/uploads/*
+
+# Temporary files and scripts
+run.txt
+fix.txt
+reset.py
+reset_mysql.py
