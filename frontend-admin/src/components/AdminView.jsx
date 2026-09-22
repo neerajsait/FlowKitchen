@@ -208,12 +208,14 @@ export default function AdminView({ onLogout, dbMode }) {
   const [tickets, setTickets] = useState([]);
 
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [showManageCategories, setShowManageCategories] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
   const [menuName, setMenuName] = useState("");
   const [menuCode, setMenuCode] = useState("");
   const [menuPrice, setMenuPrice] = useState("");
   const [menuOriginalPrice, setMenuOriginalPrice] = useState("");
-  const [menuCategory, setMenuCategory] = useState("Pickles");
-  const [menuCustomCategory, setMenuCustomCategory] = useState("");
+  const [menuCategory, setMenuCategory] = useState("");
   const [menuType, setMenuType] = useState("home_foods");
   const [menuDesc, setMenuDesc] = useState("");
   const [menuIngredients, setMenuIngredients] = useState("");
@@ -262,8 +264,8 @@ export default function AdminView({ onLogout, dbMode }) {
     if (showSpinner) setLoading(true);
     setError("");
     try {
-      const [ordersData, outletsData, menuData, usersData] = await Promise.allSettled([
-        api.adminGetOrders(), api.adminGetOutlets(), api.adminGetMenuItems(), api.adminGetUsers()
+      const [ordersData, outletsData, menuData, usersData, categoriesData] = await Promise.allSettled([
+        api.adminGetOrders(), api.adminGetOutlets(), api.adminGetMenuItems(), api.adminGetUsers(), api.adminGetCategories()
       ]);
       if (ordersData.status === "fulfilled") {
         setOrders(ordersData.value);
@@ -282,6 +284,12 @@ export default function AdminView({ onLogout, dbMode }) {
         })));
       }
       if (usersData.status === "fulfilled") setUsers(usersData.value);
+      if (categoriesData.status === "fulfilled") {
+        setCategories(categoriesData.value);
+        if (categoriesData.value.length > 0) {
+          setMenuCategory(categoriesData.value[0].id);
+        }
+      }
       try {
         const couponsData = await api.adminGetCoupons();
         setCoupons(couponsData);
@@ -559,10 +567,9 @@ export default function AdminView({ onLogout, dbMode }) {
   const handleAddMenuItem = async (e) => {
     e.preventDefault();
     try {
-      const finalCategory = menuCategory === "Other" && menuCustomCategory.trim() !== "" ? menuCustomCategory.trim() : menuCategory;
-      await api.adminAddMenuItem({ name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category: finalCategory, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, is_veg: menuIsVeg, is_gluten_free: menuIsGlutenFree, spice_level: menuSpiceLevel, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
+      await api.adminAddMenuItem({ name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category_id: menuCategory, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, is_veg: menuIsVeg, is_gluten_free: menuIsGlutenFree, spice_level: menuSpiceLevel, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
       showToast("Product created successfully!", "success"); setShowAddMenu(false);
-      setMenuName(""); setMenuCode(""); setMenuPrice(""); setMenuOriginalPrice(""); setMenuCategory("Pickles"); setMenuCustomCategory(""); setMenuDesc(""); setMenuIngredients(""); setMenuNutritionalInfo(""); setMenuDietaryGuidelines(""); setMenuImageUrl(""); setMenuGlobalStock(""); setMenuIsVeg(true); setMenuIsGlutenFree(false); setMenuSpiceLevel("medium"); setMenuTag(""); setMenuAdminRating(""); setMenuIsBestSeller(false); setMenuIsPopular(false);
+      setMenuName(""); setMenuCode(""); setMenuPrice(""); setMenuOriginalPrice(""); setMenuCategory(categories.length > 0 ? categories[0].id : ""); setMenuDesc(""); setMenuIngredients(""); setMenuNutritionalInfo(""); setMenuDietaryGuidelines(""); setMenuImageUrl(""); setMenuGlobalStock(""); setMenuIsVeg(true); setMenuIsGlutenFree(false); setMenuSpiceLevel("medium"); setMenuTag(""); setMenuAdminRating(""); setMenuIsBestSeller(false); setMenuIsPopular(false);
       loadData();
     } catch (err) { showToast("Failed: " + err.message, "error"); }
   };
@@ -573,14 +580,7 @@ export default function AdminView({ onLogout, dbMode }) {
     setMenuCode(item.code || "");
     setMenuPrice(item.price || "");
     setMenuOriginalPrice(item.original_price || "");
-    const defaultCats = ["Pickles", "Spice Powders", "Snacks & Savories", "Sweets & Treats", "Mixes & Instant", "Special Products", "Other"];
-    if (item.category && !defaultCats.includes(item.category)) {
-      setMenuCategory("Other");
-      setMenuCustomCategory(item.category);
-    } else {
-      setMenuCategory(item.category || "Pickles");
-      setMenuCustomCategory("");
-    }
+    setMenuCategory(item.category_id || (categories.length > 0 ? categories[0].id : ""));
     setMenuType(item.business_type || "home_foods");
     setMenuDesc(item.description || "");
     setMenuIngredients(item.ingredients || "");
@@ -598,11 +598,10 @@ export default function AdminView({ onLogout, dbMode }) {
   const handleUpdateMenuItem = async (e) => {
     e.preventDefault();
     try {
-      const finalCategory = menuCategory === "Other" && menuCustomCategory.trim() !== "" ? menuCustomCategory.trim() : menuCategory;
-      await api.adminUpdateMenuItem(editMenuId, { name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category: finalCategory, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
+      await api.adminUpdateMenuItem(editMenuId, { name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category_id: menuCategory, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
       showToast("Product updated!", "success");
       setShowEditMenu(false);
-      setMenuName(""); setMenuCode(""); setMenuPrice(""); setMenuOriginalPrice(""); setMenuCategory("Pickles"); setMenuCustomCategory(""); setMenuDesc(""); setMenuIngredients(""); setMenuNutritionalInfo(""); setMenuDietaryGuidelines(""); setMenuImageUrl(""); setMenuGlobalStock(""); setMenuTag(""); setMenuAdminRating(""); setMenuIsBestSeller(false); setMenuIsPopular(false);
+      setMenuName(""); setMenuCode(""); setMenuPrice(""); setMenuOriginalPrice(""); setMenuCategory(categories.length > 0 ? categories[0].id : ""); setMenuDesc(""); setMenuIngredients(""); setMenuNutritionalInfo(""); setMenuDietaryGuidelines(""); setMenuImageUrl(""); setMenuGlobalStock(""); setMenuTag(""); setMenuAdminRating(""); setMenuIsBestSeller(false); setMenuIsPopular(false);
       loadData();
     } catch (err) { showToast("Failed to update: " + err.message, "error"); }
   };
@@ -619,6 +618,33 @@ export default function AdminView({ onLogout, dbMode }) {
         } catch (err) {
           showToast("Failed to delete: " + err.message, "error");
           loadData(); // revert on error
+        }
+      }
+    });
+  };
+
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    try {
+      await api.adminAddCategory(newCategoryName);
+      showToast("Category added successfully!", "success");
+      setNewCategoryName("");
+      loadData();
+    } catch (err) {
+      showToast("Failed to add category: " + err.message, "error");
+    }
+  };
+
+  const handleDeleteCategory = (catId) => {
+    setConfirmDeleteModal({
+      message: "Are you sure you want to delete this category? Products in this category will be moved to 'Uncategorized'.",
+      onConfirm: async () => {
+        try {
+          await api.adminDeleteCategory(catId);
+          showToast("Category deleted successfully!", "success");
+          loadData();
+        } catch (err) {
+          showToast("Failed to delete category: " + err.message, "error");
         }
       }
     });
@@ -1296,6 +1322,7 @@ export default function AdminView({ onLogout, dbMode }) {
           {/* Action Row */}
           <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.75rem", flexWrap: "wrap" }}>
             <button onClick={() => setShowAddMenu(true)} className="btn btn-primary"><Plus size={15} /> Add Product</button>
+            <button onClick={() => setShowManageCategories(true)} className="btn btn-secondary">Manage Categories</button>
           </div>
 
           {/* Master Catalog */}
@@ -3221,6 +3248,52 @@ export default function AdminView({ onLogout, dbMode }) {
 
       {/* ══════════ MODALS ══════════ */}
 
+      {/* Manage Categories Modal */}
+      <Modal open={showManageCategories} onClose={() => setShowManageCategories(false)} title="Manage Categories">
+        <div style={{ marginBottom: "1.5rem" }}>
+          <form onSubmit={handleAddCategory} style={{ display: "flex", gap: "0.5rem" }}>
+            <input 
+              type="text" 
+              className="form-input" 
+              style={{ flex: 1 }} 
+              placeholder="New category name" 
+              value={newCategoryName} 
+              onChange={e => setNewCategoryName(e.target.value)} 
+              required 
+            />
+            <button type="submit" className="btn btn-primary">Add</button>
+          </form>
+        </div>
+        
+        <div className="table-container">
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th>Category Name</th>
+                <th style={{ width: "80px", textAlign: "right" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map(cat => (
+                <tr key={cat.id}>
+                  <td>{cat.name}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {cat.name.toLowerCase() !== "uncategorized" && (
+                      <button onClick={() => handleDeleteCategory(cat.id)} className="btn-icon" style={{ color: "var(--danger)" }}>
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "flex-end" }}>
+          <button onClick={() => setShowManageCategories(false)} className="btn btn-secondary">Close</button>
+        </div>
+      </Modal>
+
       {/* Add Product */}
       <Modal open={showAddMenu} onClose={() => setShowAddMenu(false)} title="Add Catalog Product">
         <form onSubmit={handleAddMenuItem} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -3252,11 +3325,9 @@ export default function AdminView({ onLogout, dbMode }) {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Category</label>
               <select className="form-select" value={menuCategory} onChange={e => setMenuCategory(e.target.value)}>
-                {["Pickles", "Spice Powders", "Snacks & Savories", "Sweets & Treats", "Mixes & Instant", "Special Products", "Other"].map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="" disabled>Select a category</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              {menuCategory === "Other" && (
-                <input type="text" className="form-input" placeholder="Enter custom category" value={menuCustomCategory} onChange={e => setMenuCustomCategory(e.target.value)} style={{ marginTop: "0.5rem" }} required />
-              )}
             </div>
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Business Segment</label>
@@ -3344,11 +3415,9 @@ export default function AdminView({ onLogout, dbMode }) {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Category</label>
               <select className="form-select" value={menuCategory} onChange={e => setMenuCategory(e.target.value)}>
-                {["Pickles", "Spice Powders", "Snacks & Savories", "Sweets & Treats", "Mixes & Instant", "Special Products", "Other"].map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="" disabled>Select a category</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              {menuCategory === "Other" && (
-                <input type="text" className="form-input" placeholder="Enter custom category" value={menuCustomCategory} onChange={e => setMenuCustomCategory(e.target.value)} style={{ marginTop: "0.5rem" }} required />
-              )}
             </div>
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Business Segment</label>
@@ -3818,7 +3887,6 @@ export default function AdminView({ onLogout, dbMode }) {
               <option value="brand_story">📖 Brand Story Section</option>
               <option value="checkout">🛒 Checkout Screen</option>
               <option value="popup_after_login">🎉 Popup After Login</option>
-              <option value="cravings">🍟 Cravings (What are you craving?)</option>
             </select>
           </div>
 

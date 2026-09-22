@@ -251,6 +251,23 @@ class KitchenStaff(User):
 
 
 # ---------------------------------------------------------------------------
+# Category — dynamic product categories
+# ---------------------------------------------------------------------------
+class Category(db.Model):
+    __tablename__ = 'categories'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), unique=True, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }
+
+# ---------------------------------------------------------------------------
 # MenuItem — global food catalog
 # ---------------------------------------------------------------------------
 class MenuItem(db.Model):
@@ -265,7 +282,8 @@ class MenuItem(db.Model):
     description = Column(Text, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)
     business_type = Column(String(20), nullable=False)  # 'home_foods', 'snack_supply', 'both'
-    category = Column(String(50), nullable=True)
+    category_id = Column(Integer, ForeignKey('categories.id', ondelete='SET NULL'), nullable=True)
+    category_rel = relationship('Category', backref='menu_items')
     image_url = Column(String(255), nullable=True)
     global_stock = Column(Integer, nullable=True)  # None = unlimited
     is_active = Column(Boolean, default=True)
@@ -283,13 +301,13 @@ class MenuItem(db.Model):
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     deleted_at = Column(DateTime, nullable=True)
 
-    def __init__(self, name, price, business_type, code=None, description=None, category=None, image_url=None, global_stock=None, is_active=True, is_veg=True, is_gluten_free=False, spice_level='medium', tag=None, admin_rating=None, is_popular=False, ingredients=None, nutritional_info=None, dietary_guidelines=None):
+    def __init__(self, name, price, business_type, code=None, description=None, category_id=None, image_url=None, global_stock=None, is_active=True, is_veg=True, is_gluten_free=False, spice_level='medium', tag=None, admin_rating=None, is_popular=False, ingredients=None, nutritional_info=None, dietary_guidelines=None):
         self.code = code
         self.name = name
         self.price = price
         self.business_type = business_type
         self.description = description
-        self.category = category
+        self.category_id = category_id
         self.image_url = image_url
         self.global_stock = global_stock
         self.is_active = is_active
@@ -331,7 +349,8 @@ class MenuItem(db.Model):
             "description": self.description,
             "price": float(self.price),
             "business_type": self.business_type,
-            "category": self.category,
+            "category_id": self.category_id,
+            "category": self.category_rel.name if self.category_rel else "Uncategorized",
             "image_url": self.image_url,
             "global_stock": self.global_stock,
             "is_active": self.is_active,

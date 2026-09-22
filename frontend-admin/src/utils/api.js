@@ -431,6 +431,33 @@ export const api = {
     return result;
   },
 
+  async adminGetCategories() {
+    const res = await fetch(`${API_BASE_URL}/admin/categories`, { headers: getAuthHeader(), cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to load categories");
+    return safeJson(res);
+  },
+
+  async adminAddCategory(name) {
+    const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      body: JSON.stringify({ name })
+    });
+    const result = await safeJson(res);
+    if (!res.ok) throw new Error(result.message || result.error || "Failed to add category");
+    return result;
+  },
+
+  async adminDeleteCategory(catId) {
+    const res = await fetch(`${API_BASE_URL}/admin/categories/${catId}`, {
+      method: "DELETE",
+      headers: getAuthHeader()
+    });
+    const result = await safeJson(res);
+    if (!res.ok) throw new Error(result.message || result.error || "Failed to delete category");
+    return result;
+  },
+
   async adminGetMenuItems() {
 
     const res = await fetch(`${API_BASE_URL}/admin/menu`, { headers: getAuthHeader(), cache: "no-store" });

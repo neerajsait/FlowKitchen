@@ -38,7 +38,7 @@ from models import (
     Supplier, SupplierItem, StockAuditLog, ProductBatch,
     Order, OrderItem, Review, Coupon, StaffShift, Address, Favorite,
     KitchenStaff, KitchenProductionBatch, WalletTransaction, BroadcastMessage, Banner, StoreSetting, SupportTicket, StockRequest, MarketPurchase,
-    AuditLog, MonthlyRevenueHistory, PaymentTransaction
+    AuditLog, MonthlyRevenueHistory, PaymentTransaction, Category
 )
 import bleach
 from audit_utils import log_audit, manual_log_audit
@@ -2229,6 +2229,53 @@ The FoodPilot Team"""
         
         return jsonify({"message": "Ticket updated", "ticket": ticket.to_dict()}), 200
 
+    # --- Categories ---
+    @app.route("/api/admin/categories", methods=["GET"])
+    @department_required("Operations")
+    def admin_get_categories():
+        cats = db.session.scalars(select(Category).order_by(Category.name)).all()
+        return jsonify([c.to_dict() for c in cats]), 200
+
+    @app.route("/api/admin/categories", methods=["POST"])
+    @department_required("Operations")
+    def admin_add_category():
+        data = sanitize_input(request.get_json(silent=True) or {})
+        name = (data.get("name") or "").strip()
+        if not name:
+            return jsonify({"error": "Bad Request", "message": "Category name is required"}), 400
+        
+        existing = db.session.scalars(select(Category).where(func.lower(Category.name) == name.lower())).first()
+        if existing:
+            return jsonify({"error": "Conflict", "message": "Category already exists"}), 409
+            
+        cat = Category(name=name)
+        db.session.add(cat)
+        db.session.commit()
+        return jsonify({"message": "Category created", "category": cat.to_dict()}), 201
+
+    @app.route("/api/admin/categories/<int:cat_id>", methods=["DELETE"])
+    @department_required("Operations")
+    def admin_delete_category(cat_id):
+        cat = db.session.get(Category, cat_id)
+        if not cat:
+            return jsonify({"error": "Not Found", "message": "Category not found"}), 404
+        if cat.name.lower() == "uncategorized":
+            return jsonify({"error": "Forbidden", "message": "Cannot delete the Uncategorized category"}), 403
+            
+        uncategorized = db.session.scalars(select(Category).where(func.lower(Category.name) == "uncategorized")).first()
+        if not uncategorized:
+            uncategorized = Category(name="Uncategorized")
+            db.session.add(uncategorized)
+            db.session.flush()
+            
+        updated_count = db.session.execute(
+            update(MenuItem).where(MenuItem.category_id == cat_id).values(category_id=uncategorized.id)
+        ).rowcount
+        
+        db.session.delete(cat)
+        db.session.commit()
+        return jsonify({"message": "Category deleted successfully", "products_moved": updated_count}), 200
+
     # --- Menu Items ---
     @app.route("/api/admin/menu", methods=["GET"])
     @department_required("Operations")
@@ -2258,7 +2305,8 @@ The FoodPilot Team"""
             existing.price = Decimal(str(price))
             existing.business_type = btype
             existing.description = data.get("description") or existing.description
-            existing.category = data.get("category") or existing.category
+            if "category_id" in data:
+                existing.category_id = data.get("category_id")
             existing.image_url = data.get("image_url") or existing.image_url
             if "global_stock" in data:
                 existing.global_stock = data.get("global_stock")
@@ -2279,7 +2327,7 @@ The FoodPilot Team"""
         code = (data.get("code") or "").strip()
         item = MenuItem(
             name=name, price=Decimal(str(price)), business_type=btype, code=code if code else _generate_unique_code(db.session),
-            description=data.get("description"), category=data.get("category"),
+            description=data.get("description"), category_id=data.get("category_id"),
             image_url=data.get("image_url"), global_stock=data.get("global_stock")
         )
         if not item.code:
@@ -2307,7 +2355,7 @@ The FoodPilot Team"""
         if not item:
             return jsonify({"error": "Not Found"}), 404
         data = (sanitize_input(request.get_json(silent=True)) or {})
-        for field in ("name", "code", "description", "category", "image_url", "global_stock", "is_veg", "is_gluten_free", "spice_level", "tag", "is_popular", "ingredients", "nutritional_info", "dietary_guidelines"):
+        for field in ("name", "code", "description", "category_id", "image_url", "global_stock", "is_veg", "is_gluten_free", "spice_level", "tag", "is_popular", "ingredients", "nutritional_info", "dietary_guidelines"):
             if field in data:
                 setattr(item, field, data[field])
         if "admin_rating" in data:
@@ -5805,56 +5853,67 @@ def _seed_admin(app):
             db.session.commit()
             logger.info("Default outlets seeded")
 
-        # 3. Seed MenuItems if Kobbari Karam is missing
+        # 3. Seed Categories
+        seed_categories = ["Pickles", "Sweets & Treats", "Snacks & Savories", "Mixes & Instant", "Spice Powders", "Special Products", "Uncategorized"]
+        cat_map = {}
+        for cname in seed_categories:
+            c = db.session.scalars(select(Category).where(func.lower(Category.name) == cname.lower())).first()
+            if not c:
+                c = Category(name=cname)
+                db.session.add(c)
+                db.session.commit()
+            cat_map[cname] = c.id
+
+        # 3.5 Seed MenuItems if Kobbari Karam is missing
         if not db.session.scalars(select(MenuItem).where(MenuItem.name == "Kobbari Karam 250g")).first():
             menu_items = [
                 # Spice Powders
-                MenuItem(name="Kobbari Karam 250g", price=Decimal("200.00"), business_type="home_foods", category="Spice Powders", description="Homemade Kobbari Karam — rich coconut spice powder made from fresh coconut and red chillies.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
-                MenuItem(name="Pappula Podi 250g", price=Decimal("159.00"), business_type="home_foods", category="Spice Powders", description="Homemade Pappula Podi — traditional lentil spice powder for rice and idli.", image_url="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&q=80"),
-                MenuItem(name="Karvepaku Karram 250g", price=Decimal("159.00"), business_type="home_foods", category="Spice Powders", description="Karivepaku Karam — authentic curry leaf spice powder with a pungent aroma.", image_url="https://images.unsplash.com/photo-1599909613253-f3b3a5f7b33f?w=200&q=80"),
-                MenuItem(name="Nuvvula Podi 250g", price=Decimal("169.00"), business_type="home_foods", category="Spice Powders", description="Nuvvula Podi (Roasted Sesame Powder) — nutrient-rich sesame spice blend.", image_url="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=200&q=80"),
-                MenuItem(name="Munagaku Podi 250g", price=Decimal("160.00"), business_type="home_foods", category="Spice Powders", description="FoodPilot Munagaku Podi — drumstick leaves powder packed with nutrients.", image_url="https://images.unsplash.com/photo-1583394293214-0b3f8ed6e0ab?w=200&q=80"),
-                MenuItem(name="Kandi Podi 250g", price=Decimal("179.00"), business_type="home_foods", category="Spice Powders", description="సాంప్రదాయ రుచికి అసలైన కందిపప్పు పొడి — traditional toor dal spice powder.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
-                MenuItem(name="Curry Leaves Herbal Powder 250g", price=Decimal("289.00"), business_type="home_foods", category="Spice Powders", description="Curry Leaves Herbal Powder — natural health supplement and flavour enhancer.", image_url="https://images.unsplash.com/photo-1591189824344-d7e6c2440e4a?w=200&q=80"),
-                MenuItem(name="Andhra Nallakaram Podi 250g", price=Decimal("140.00"), business_type="home_foods", category="Spice Powders", description="Experience the authentic Andhra Nallakaram podi — fiery and aromatic.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
-                MenuItem(name="Andhra Koora Karam 250g", price=Decimal("120.00"), business_type="home_foods", category="Spice Powders", description="అమ్మ చేతి కూర కారం — the special Andhra vegetable spice blend.", image_url="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&q=80"),
-                MenuItem(name="Pallila Karam 250g", price=Decimal("180.00"), business_type="home_foods", category="Spice Powders", description="నాన్నేమైన వేరుసేనగలు, సం... — peanut-based Andhra spice powder.", image_url="https://images.unsplash.com/photo-1599909613253-f3b3a5f7b33f?w=200&q=80"),
+                MenuItem(name="Kobbari Karam 250g", price=Decimal("200.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="Homemade Kobbari Karam — rich coconut spice powder made from fresh coconut and red chillies.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
+                MenuItem(name="Pappula Podi 250g", price=Decimal("159.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="Homemade Pappula Podi — traditional lentil spice powder for rice and idli.", image_url="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&q=80"),
+                MenuItem(name="Karvepaku Karram 250g", price=Decimal("159.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="Karivepaku Karam — authentic curry leaf spice powder with a pungent aroma.", image_url="https://images.unsplash.com/photo-1599909613253-f3b3a5f7b33f?w=200&q=80"),
+                MenuItem(name="Nuvvula Podi 250g", price=Decimal("169.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="Nuvvula Podi (Roasted Sesame Powder) — nutrient-rich sesame spice blend.", image_url="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=200&q=80"),
+                MenuItem(name="Munagaku Podi 250g", price=Decimal("160.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="FoodPilot Munagaku Podi — drumstick leaves powder packed with nutrients.", image_url="https://images.unsplash.com/photo-1583394293214-0b3f8ed6e0ab?w=200&q=80"),
+                MenuItem(name="Kandi Podi 250g", price=Decimal("179.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="సాంప్రదాయ రుచికి అసలైన కందిపప్పు పొడి — traditional toor dal spice powder.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
+                MenuItem(name="Curry Leaves Herbal Powder 250g", price=Decimal("289.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="Curry Leaves Herbal Powder — natural health supplement and flavour enhancer.", image_url="https://images.unsplash.com/photo-1591189824344-d7e6c2440e4a?w=200&q=80"),
+                MenuItem(name="Andhra Nallakaram Podi 250g", price=Decimal("140.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="Experience the authentic Andhra Nallakaram podi — fiery and aromatic.", image_url="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80"),
+                MenuItem(name="Andhra Koora Karam 250g", price=Decimal("120.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="అమ్మ చేతి కూర కారం — the special Andhra vegetable spice blend.", image_url="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&q=80"),
+                MenuItem(name="Pallila Karam 250g", price=Decimal("180.00"), business_type="home_foods", category_id=cat_map["Spice Powders"], description="నాన్నేమైన వేరుసేనగలు, సం... — peanut-based Andhra spice powder.", image_url="https://images.unsplash.com/photo-1599909613253-f3b3a5f7b33f?w=200&q=80"),
 
                 # Pickles
-                MenuItem(name="Pandu Mirchi Gongura 250g", price=Decimal("199.00"), business_type="home_foods", category="Pickles", description="Traditional Andhra Pandu Mirchi Gongura pickle — tangy red chilli sorrel blend.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
-                MenuItem(name="Pandumirchi Tamota Pickle 250g", price=Decimal("199.00"), business_type="home_foods", category="Pickles", description="Traditional Andhra Pandumirchi Tomato pickle — a classic tangy combination.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
-                MenuItem(name="Allam Pandumirchi Pickle 250g", price=Decimal("199.00"), business_type="home_foods", category="Pickles", description="Traditional Andhra Allam Chilli pickle — spicy ginger and chilli blend.", image_url="https://images.unsplash.com/photo-1589916836867-5208c1f74e23?w=200&q=80"),
-                MenuItem(name="Pandu Mirchi Pickle 250g", price=Decimal("229.00"), business_type="home_foods", category="Pickles", description="పండిన ఎర్ర మిర్చితో, నాన్చు... — slow-fermented red chilli pickle.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
-                MenuItem(name="Kothimera Pickle 250g", price=Decimal("189.00"), business_type="home_foods", category="Pickles", description="తాజా కొత్తిమేర సువాస... — fresh coriander leaves pickle.", image_url="https://images.unsplash.com/photo-1589916836867-5208c1f74e23?w=200&q=80"),
-                MenuItem(name="Classic Avakaya 250g", price=Decimal("299.00"), business_type="home_foods", category="Pickles", description="అసలైన ఆంధ్ర ఆవకాయ... — the king of Andhra pickles, raw mango.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
+                MenuItem(name="Pandu Mirchi Gongura 250g", price=Decimal("199.00"), business_type="home_foods", category_id=cat_map["Pickles"], description="Traditional Andhra Pandu Mirchi Gongura pickle — tangy red chilli sorrel blend.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
+                MenuItem(name="Pandumirchi Tamota Pickle 250g", price=Decimal("199.00"), business_type="home_foods", category_id=cat_map["Pickles"], description="Traditional Andhra Pandumirchi Tomato pickle — a classic tangy combination.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
+                MenuItem(name="Allam Pandumirchi Pickle 250g", price=Decimal("199.00"), business_type="home_foods", category_id=cat_map["Pickles"], description="Traditional Andhra Allam Chilli pickle — spicy ginger and chilli blend.", image_url="https://images.unsplash.com/photo-1589916836867-5208c1f74e23?w=200&q=80"),
+                MenuItem(name="Pandu Mirchi Pickle 250g", price=Decimal("229.00"), business_type="home_foods", category_id=cat_map["Pickles"], description="పండిన ఎర్ర మిర్చితో, నాన్చు... — slow-fermented red chilli pickle.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
+                MenuItem(name="Kothimera Pickle 250g", price=Decimal("189.00"), business_type="home_foods", category_id=cat_map["Pickles"], description="తాజా కొత్తిమేర సువాస... — fresh coriander leaves pickle.", image_url="https://images.unsplash.com/photo-1589916836867-5208c1f74e23?w=200&q=80"),
+                MenuItem(name="Classic Avakaya 250g", price=Decimal("299.00"), business_type="home_foods", category_id=cat_map["Pickles"], description="అసలైన ఆంధ్ర ఆవకాయ... — the king of Andhra pickles, raw mango.", image_url="https://images.unsplash.com/photo-1567982047351-76b6f93e38ee?w=200&q=80"),
 
                 # Snacks & Savories
-                MenuItem(name="Challa Chakralu 250g", price=Decimal("120.00"), business_type="home_foods", category="Snacks & Savories", description="Traditional Challa Chakralu — crispy butter rice rings, a timeless Andhra snack.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
-                MenuItem(name="Rice Vadiyalu 250g", price=Decimal("120.00"), business_type="home_foods", category="Snacks & Savories", description="సాంప్రదాయ ఆంధ్ర రుచితో... — traditional sun-dried rice crackers.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
-                MenuItem(name="Chekkarala Vadiyalu 250g", price=Decimal("150.00"), business_type="home_foods", category="Snacks & Savories", description="అమ్మ చేతి రుచితో, సాంప్రదా... — handmade chekkarala vadiyalu.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
-                MenuItem(name="Sagubiyam Vadiyalu 250g", price=Decimal("120.00"), business_type="home_foods", category="Snacks & Savories", description="ఎండలో సహజంగా ఆరబెట్టి... — sago sun-dried crackers.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
-                MenuItem(name="Bellam Gavvalu 250g", price=Decimal("195.00"), business_type="home_foods", category="Snacks & Savories", description="Fresh & Crunchy Bellam Gavvalu — sweet jaggery shells, a traditional treat.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
-                MenuItem(name="Karram Gavvalu 250g", price=Decimal("159.00"), business_type="home_foods", category="Snacks & Savories", description="Karam Gavvalu — spicy shell-shaped crispy snack from Andhra.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="Challa Chakralu 250g", price=Decimal("120.00"), business_type="home_foods", category_id=cat_map["Snacks & Savories"], description="Traditional Challa Chakralu — crispy butter rice rings, a timeless Andhra snack.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="Rice Vadiyalu 250g", price=Decimal("120.00"), business_type="home_foods", category_id=cat_map["Snacks & Savories"], description="సాంప్రదాయ ఆంధ్ర రుచితో... — traditional sun-dried rice crackers.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="Chekkarala Vadiyalu 250g", price=Decimal("150.00"), business_type="home_foods", category_id=cat_map["Snacks & Savories"], description="అమ్మ చేతి రుచితో, సాంప్రదా... — handmade chekkarala vadiyalu.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="Sagubiyam Vadiyalu 250g", price=Decimal("120.00"), business_type="home_foods", category_id=cat_map["Snacks & Savories"], description="ఎండలో సహజంగా ఆరబెట్టి... — sago sun-dried crackers.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="Bellam Gavvalu 250g", price=Decimal("195.00"), business_type="home_foods", category_id=cat_map["Snacks & Savories"], description="Fresh & Crunchy Bellam Gavvalu — sweet jaggery shells, a traditional treat.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="Karram Gavvalu 250g", price=Decimal("159.00"), business_type="home_foods", category_id=cat_map["Snacks & Savories"], description="Karam Gavvalu — spicy shell-shaped crispy snack from Andhra.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
 
                 # Sweets & Treats
-                MenuItem(name="Palli Patti 250g", price=Decimal("169.00"), business_type="home_foods", category="Sweets & Treats", description="Peanut Chikki / Palli Patti — crunchy peanut brittle with jaggery.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
-                MenuItem(name="Pala Penilu 250g", price=Decimal("249.00"), business_type="home_foods", category="Sweets & Treats", description="Experience the authentic taste of Pala Penilu — milk-based traditional sweet.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
-                MenuItem(name="Royal Honey Cashew 250g", price=Decimal("319.00"), business_type="home_foods", category="Sweets & Treats", description="Every bite is rich, crunchy, and coated in pure honey — premium cashew delight.", image_url="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&q=80"),
-                MenuItem(name="Gondhu Laddu 250g", price=Decimal("319.00"), business_type="home_foods", category="Sweets & Treats", description="ఈ గొంధు (కృఫ్ల్) నెయ్యిలో... — traditional Gondhu Laddu with pure ghee.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
-                MenuItem(name="FoodPilot Sweet 250g", price=Decimal("369.00"), business_type="home_foods", category="Sweets & Treats", description="FoodPilot Sweet & Special — traditional handmade sweet boxes.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
+                MenuItem(name="Palli Patti 250g", price=Decimal("169.00"), business_type="home_foods", category_id=cat_map["Sweets & Treats"], description="Peanut Chikki / Palli Patti — crunchy peanut brittle with jaggery.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
+                MenuItem(name="Pala Penilu 250g", price=Decimal("249.00"), business_type="home_foods", category_id=cat_map["Sweets & Treats"], description="Experience the authentic taste of Pala Penilu — milk-based traditional sweet.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
+                MenuItem(name="Royal Honey Cashew 250g", price=Decimal("319.00"), business_type="home_foods", category_id=cat_map["Sweets & Treats"], description="Every bite is rich, crunchy, and coated in pure honey — premium cashew delight.", image_url="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&q=80"),
+                MenuItem(name="Gondhu Laddu 250g", price=Decimal("319.00"), business_type="home_foods", category_id=cat_map["Sweets & Treats"], description="ఈ గొంధు (కృఫ్ల్) నెయ్యిలో... — traditional Gondhu Laddu with pure ghee.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
+                MenuItem(name="FoodPilot Sweet 250g", price=Decimal("369.00"), business_type="home_foods", category_id=cat_map["Sweets & Treats"], description="FoodPilot Sweet & Special — traditional handmade sweet boxes.", image_url="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80"),
 
                 # Mixes & Instant
-                MenuItem(name="Instant Rasam Mix 250g", price=Decimal("140.00"), business_type="home_foods", category="Mixes & Instant", description="Instant Rasam Mix — Bring the warmth of homemade rasam to your table instantly.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
-                MenuItem(name="Karram Charu Mix 250g", price=Decimal("165.00"), business_type="home_foods", category="Mixes & Instant", description="Karam Charu Mix (Instant Rasam Powder) — spicy pepper rasam mix.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
-                MenuItem(name="Chinthapandu Pulihora Mix 250g", price=Decimal("165.00"), business_type="home_foods", category="Mixes & Instant", description="Chinthapandu Pulihora Mix — tamarind rice spice blend for perfect pulihora.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
-                MenuItem(name="Instant Gravy Mix 250g", price=Decimal("149.00"), business_type="home_foods", category="Mixes & Instant", description="రెస్తారెంట్ స్టైల్ కర్రీ... — restaurant-style instant curry gravy mix.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
+                MenuItem(name="Instant Rasam Mix 250g", price=Decimal("140.00"), business_type="home_foods", category_id=cat_map["Mixes & Instant"], description="Instant Rasam Mix — Bring the warmth of homemade rasam to your table instantly.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
+                MenuItem(name="Karram Charu Mix 250g", price=Decimal("165.00"), business_type="home_foods", category_id=cat_map["Mixes & Instant"], description="Karam Charu Mix (Instant Rasam Powder) — spicy pepper rasam mix.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
+                MenuItem(name="Chinthapandu Pulihora Mix 250g", price=Decimal("165.00"), business_type="home_foods", category_id=cat_map["Mixes & Instant"], description="Chinthapandu Pulihora Mix — tamarind rice spice blend for perfect pulihora.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
+                MenuItem(name="Instant Gravy Mix 250g", price=Decimal("149.00"), business_type="home_foods", category_id=cat_map["Mixes & Instant"], description="రెస్తారెంట్ స్టైల్ కర్రీ... — restaurant-style instant curry gravy mix.", image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200&q=80"),
 
                 # Special Products
-                MenuItem(name="FoodPilot Traditional 250g", price=Decimal("349.00"), business_type="home_foods", category="Special Products", description="FoodPilot Traditional — handcrafted special recipe from grandma's kitchen.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
-                MenuItem(name="Ashadam Special Neeyi Annam Podi 250g", price=Decimal("449.00"), business_type="home_foods", category="Special Products", description="Neeyi Annam Podi Ashadam Special — pure ghee rice powder for festive occasions.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
-                MenuItem(name="Saddu Baby Bottu 5g", price=Decimal("99.00"), business_type="home_foods", category="Special Products", description="Saddu Baby Bottu — traditional herbal bottu for infants, a heritage product.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
-                MenuItem(name="Herbal Sunnipindi 250g", price=Decimal("299.00"), business_type="home_foods", category="Special Products", description="Sunni Pindi Herbal Bath Powder — natural herbal body cleansing powder.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
-                MenuItem(name="Snack Supply Samosa 250g", price=Decimal("20.00"), business_type="snack_supply", category="Snacks & Savories", description="Crisp pastry filled with spiced potatoes and peas — B2B2C snack supply.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
+                MenuItem(name="FoodPilot Traditional 250g", price=Decimal("349.00"), business_type="home_foods", category_id=cat_map["Special Products"], description="FoodPilot Traditional — handcrafted special recipe from grandma's kitchen.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
+                MenuItem(name="Ashadam Special Neeyi Annam Podi 250g", price=Decimal("449.00"), business_type="home_foods", category_id=cat_map["Special Products"], description="Neeyi Annam Podi Ashadam Special — pure ghee rice powder for festive occasions.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
+                MenuItem(name="Saddu Baby Bottu 5g", price=Decimal("99.00"), business_type="home_foods", category_id=cat_map["Special Products"], description="Saddu Baby Bottu — traditional herbal bottu for infants, a heritage product.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
+                MenuItem(name="Herbal Sunnipindi 250g", price=Decimal("299.00"), business_type="home_foods", category_id=cat_map["Special Products"], description="Sunni Pindi Herbal Bath Powder — natural herbal body cleansing powder.", image_url="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=200&q=80"),
+                MenuItem(name="Snack Supply Samosa 250g", price=Decimal("20.00"), business_type="snack_supply", category_id=cat_map["Snacks & Savories"], description="Crisp pastry filled with spiced potatoes and peas — B2B2C snack supply.", image_url="https://images.unsplash.com/photo-1601000157769-35ac8d01c9d0?w=200&q=80"),
             ]
             for m in menu_items:
                 db.session.add(m)

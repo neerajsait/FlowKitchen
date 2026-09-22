@@ -220,7 +220,6 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const [addresses, setAddresses] = useState([]);
   const [banners, setBanners] = useState([]);
   const [storyBanners, setStoryBanners] = useState([]);
-  const [cravingBanners, setCravingBanners] = useState([]);
   const [middleBanners, setMiddleBanners] = useState([]);
   const [bottomBanners, setBottomBanners] = useState([]);
   const [checkoutBanners, setCheckoutBanners] = useState([]);
@@ -365,11 +364,9 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       const chkBanners   = bannersData.filter(b => b.display_location === "checkout");
       const pBanner      = bannersData.find(b => ["popup", "popup_after_login"].includes(b.display_location));
       const storyBans    = bannersData.filter(b => b.display_location === "brand_story").sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-      const cravingBans  = bannersData.filter(b => b.display_location === "cravings").sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
       setBanners(topBanners);
       setStoryBanners(storyBans);
-      setCravingBanners(cravingBans);
       setMiddleBanners(midBanners);
       setBottomBanners(botBanners);
       setCheckoutBanners(chkBanners);
@@ -862,7 +859,6 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
             {...commonProductProps}
             banners={banners}
             storyBanners={storyBanners}
-            cravingBanners={cravingBanners}
             loading={loading}
             setActiveTab={setActiveTab}
             setActiveCategory={setActiveCategory}
@@ -1020,7 +1016,6 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
             {...commonProductProps}
             banners={banners} loading={loading}
             storyBanners={storyBanners}
-            cravingBanners={cravingBanners}
             setActiveTab={setActiveTab}
             setActiveCategory={setActiveCategory}
           />

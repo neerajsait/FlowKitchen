@@ -7,14 +7,6 @@ import Rating from "./Rating";
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80";
 
-const CRAVINGS = [
-  { id: "Spice Powders", img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=80", label: "Spicy",    desc: "Bold & fiery" },
-  { id: "Pickles",       img: "https://images.unsplash.com/photo-1627308595171-d1b5d6722d56?w=200&q=80", label: "Tangy",    desc: "Zesty & sour" },
-  { id: "Snacks & Savories", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200&q=80", label: "Crunchy", desc: "Crisp & light" },
-  { id: "Sweets & Treats",   img: "https://images.unsplash.com/photo-1599598425947-3300262b3c43?w=200&q=80", label: "Sweet",   desc: "Rich & indulgent" },
-  { id: "Mixes & Instant",   img: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=200&q=80", label: "Savoury", desc: "Quick & tasty" },
-];
-
 const CATEGORIES = [
   { id: "Pickles",          count: "24 Items", label: "Pickles",       color: "#FFF3E0", img: "https://images.unsplash.com/photo-1627308595171-d1b5d6722d56?w=100&q=80" },
   { id: "Spice Powders",    count: "18 Items", label: "Spice Powders", color: "#FCE4EC", img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=100&q=80" },
@@ -79,48 +71,6 @@ function HeroBanner({ banners, loading, onShopNow }) {
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Craving Cards ────────────────────────────────────────────
-function CravingSection({ onFilterCategory, cravingBanners = [] }) {
-  const items = cravingBanners.length > 0 ? cravingBanners.map(b => ({
-    id: b.target_url || "Snacks & Savories",
-    img: b.image_url,
-    label: b.title,
-    desc: b.description
-  })) : CRAVINGS;
-  return (
-    <div className="mb-2xl">
-      <div className="section-header">
-        <div>
-          <h2 className="section-title">What are you craving?</h2>
-          <p className="section-subtitle">Tap to find your perfect snack</p>
-        </div>
-      </div>
-      <div className="craving-grid">
-        {items.map(c => (
-          <button
-            key={c.id}
-            onClick={() => onFilterCategory(c.id)}
-            className="craving-card"
-            style={{
-              background: "var(--bg-card)", border: "1px solid var(--border)",
-              borderRadius: "var(--radius-xl)",
-              padding: "1.25rem 1rem",
-              cursor: "pointer", display: "flex", flexDirection: "column",
-              alignItems: "center", gap: "0.375rem", transition: "all var(--t-fast)"
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--green)"; e.currentTarget.style.boxShadow = "var(--shadow-hover)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
-          >
-            <img src={c.img} alt={c.label} style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", marginBottom: "0.375rem", boxShadow: "0 4px 10px rgba(0,0,0,0.06)" }} loading="lazy" onError={e => { e.target.src = FALLBACK_IMG; }} />
-            <span style={{ fontWeight: 800, fontSize: "0.875rem", color: "var(--text)" }}>{c.label}</span>
-            <span style={{ fontSize: "0.75rem", color: "var(--text-3)", fontWeight: 500 }}>{c.desc}</span>
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
@@ -352,7 +302,7 @@ function ReviewsSection({ items }) {
 
 
 // ── Main HomePage Component ───────────────────────────────────
-export default function HomePage({ menu, banners, storyBanners = [], cravingBanners = [], cart, favorites, loading, onAdd, onRemove, onToggleFav, onItemClick, setActiveTab, setActiveCategory }) {
+export default function HomePage({ menu, banners, storyBanners = [], cart, favorites, loading, onAdd, onRemove, onToggleFav, onItemClick, setActiveTab, setActiveCategory }) {
 
   const popularItems = [...menu]
     .sort((a, b) => (parseFloat(b.average_rating) || 0) - (parseFloat(a.average_rating) || 0))
@@ -369,7 +319,6 @@ export default function HomePage({ menu, banners, storyBanners = [], cravingBann
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div className="page-content">
         <HeroBanner banners={banners} loading={loading && menu.length === 0} onShopNow={() => setActiveTab("shop")} />
-        <CravingSection onFilterCategory={handleFilterCategory} cravingBanners={cravingBanners} />
         <CategoryRow onSelectCategory={handleFilterCategory} menu={menu} />
 
         <ProductCarousel
