@@ -3818,6 +3818,7 @@ export default function AdminView({ onLogout, dbMode }) {
               <option value="brand_story">📖 Brand Story Section</option>
               <option value="checkout">🛒 Checkout Screen</option>
               <option value="popup_after_login">🎉 Popup After Login</option>
+              <option value="cravings">🍟 Cravings (What are you craving?)</option>
             </select>
           </div>
 

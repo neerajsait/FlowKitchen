@@ -84,7 +84,13 @@ function HeroBanner({ banners, loading, onShopNow }) {
 }
 
 // ── Craving Cards ────────────────────────────────────────────
-function CravingSection({ onFilterCategory }) {
+function CravingSection({ onFilterCategory, cravingBanners = [] }) {
+  const items = cravingBanners.length > 0 ? cravingBanners.map(b => ({
+    id: b.target_url || "Snacks & Savories",
+    img: b.image_url,
+    label: b.title,
+    desc: b.description
+  })) : CRAVINGS;
   return (
     <div className="mb-2xl">
       <div className="section-header">
@@ -94,7 +100,7 @@ function CravingSection({ onFilterCategory }) {
         </div>
       </div>
       <div className="craving-grid">
-        {CRAVINGS.map(c => (
+        {items.map(c => (
           <button
             key={c.id}
             onClick={() => onFilterCategory(c.id)}
@@ -346,7 +352,7 @@ function ReviewsSection({ items }) {
 
 
 // ── Main HomePage Component ───────────────────────────────────
-export default function HomePage({ menu, banners, storyBanners = [], cart, favorites, loading, onAdd, onRemove, onToggleFav, onItemClick, setActiveTab, setActiveCategory }) {
+export default function HomePage({ menu, banners, storyBanners = [], cravingBanners = [], cart, favorites, loading, onAdd, onRemove, onToggleFav, onItemClick, setActiveTab, setActiveCategory }) {
 
   const popularItems = [...menu]
     .sort((a, b) => (parseFloat(b.average_rating) || 0) - (parseFloat(a.average_rating) || 0))
@@ -363,7 +369,7 @@ export default function HomePage({ menu, banners, storyBanners = [], cart, favor
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div className="page-content">
         <HeroBanner banners={banners} loading={loading && menu.length === 0} onShopNow={() => setActiveTab("shop")} />
-        <CravingSection onFilterCategory={handleFilterCategory} />
+        <CravingSection onFilterCategory={handleFilterCategory} cravingBanners={cravingBanners} />
         <CategoryRow onSelectCategory={handleFilterCategory} menu={menu} />
 
         <ProductCarousel
