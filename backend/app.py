@@ -1673,7 +1673,7 @@ The FoodPilot Team"""
             select(MenuItem).where(
                 MenuItem.is_active == True,
                 MenuItem.business_type.in_(["home_foods", "both"])
-            ).options(selectinload(MenuItem.reviews)).order_by(MenuItem.category, MenuItem.name)
+            ).options(selectinload(MenuItem.reviews)).order_by(MenuItem.category_id, MenuItem.name)
         ).all()
         return jsonify([i.to_dict() for i in items]), 200
 
@@ -3852,7 +3852,7 @@ The FoodPilot Team"""
                     "name": s.menu_item.name,
                     "price": float(s.menu_item.price),
                     "description": s.menu_item.description,
-                    "category": s.menu_item.category,
+                    "category": s.menu_item.category_rel.name if s.menu_item.category_rel else "Uncategorized",
                     "current_stock": s.current_stock,
                     "restock_limit": s.restock_limit,
                     "needs_restock": s.needs_restock
