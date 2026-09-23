@@ -1,6 +1,6 @@
 import unittest
 from app import create_app, db, bcrypt
-from models import Staff, Outlet, MenuItem, OutletStock
+from models import Staff, Outlet, MenuItem, OutletStock, Category
 
 class PosTestCase(unittest.TestCase):
     def setUp(self):
@@ -17,6 +17,10 @@ class PosTestCase(unittest.TestCase):
         
         db.create_all()
         
+        self.category = Category(name="Main")
+        db.session.add(self.category)
+        db.session.commit()
+        
         # Setup Outlet
         self.outlet = Outlet(name="Test POS Outlet", address="123 Test St")
         db.session.add(self.outlet)
@@ -30,7 +34,7 @@ class PosTestCase(unittest.TestCase):
         db.session.commit()
 
         # Setup Menu Item and Stock
-        self.item = MenuItem(name="Pizza", price=20.00, category="Main", code="P001", business_type="both")
+        self.item = MenuItem(name="Pizza", price=20.00, category_id=self.category.id, code="P001", business_type="both")
         db.session.add(self.item)
         db.session.commit()
 

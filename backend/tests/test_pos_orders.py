@@ -1,6 +1,6 @@
 import unittest
 from app import create_app, db, bcrypt
-from models import Customer, Staff, Outlet, MenuItem, OutletStock, Order, OrderItem
+from models import Customer, Staff, Outlet, MenuItem, OutletStock, Order, OrderItem, Category
 
 class PosOrdersTestCase(unittest.TestCase):
     def setUp(self):
@@ -16,6 +16,10 @@ class PosOrdersTestCase(unittest.TestCase):
         self.ctx.push()
         
         db.create_all()
+        
+        self.category = Category(name="Main")
+        db.session.add(self.category)
+        db.session.commit()
         
         # 1. Setup Outlet
         self.outlet = Outlet(name="Test Outlet", address="123 Test St")
@@ -36,7 +40,7 @@ class PosOrdersTestCase(unittest.TestCase):
         db.session.commit()
 
         # 4. Setup Menu Item and Stock
-        self.item = MenuItem(name="Burger", price=10.00, category="Main", code="B001", business_type="both")
+        self.item = MenuItem(name="Burger", price=10.00, category_id=self.category.id, code="B001", business_type="both")
         db.session.add(self.item)
         db.session.commit()
 
@@ -138,7 +142,7 @@ class PosOrdersTestCase(unittest.TestCase):
 
     def test_coupon_usage_atomic(self):
         # Create a coupon
-        from models import Coupon
+        from models import Coupon, Category
         coupon = Coupon(code="ATOMIC10", discount_pct=10, usage_limit=1)
         db.session.add(coupon)
         db.session.commit()

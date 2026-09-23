@@ -1,6 +1,6 @@
 import unittest
 from app import create_app, db, bcrypt
-from models import Admin, Customer, MenuItem, Outlet, Staff, Coupon
+from models import Admin, Customer, MenuItem, Outlet, Staff, Coupon, Category
 
 class AdminTestCase(unittest.TestCase):
     def setUp(self):
@@ -16,6 +16,10 @@ class AdminTestCase(unittest.TestCase):
         self.ctx.push()
         
         db.create_all()
+        
+        self.category = Category(name="Main")
+        db.session.add(self.category)
+        db.session.commit()
         
         # Setup initial admin user
         self.admin = Admin(email="admin@test.com", first_name="Admin")
@@ -43,7 +47,7 @@ class AdminTestCase(unittest.TestCase):
         resp = self.client.post("/api/admin/menu", json={
             "name": "Test Burger",
             "price": 10.99,
-            "category": "Main",
+            "category_id": self.category.id,
             "description": "A delicious burger",
             "code": "B001",
             "loyalty_points_cost": 50,
@@ -60,7 +64,7 @@ class AdminTestCase(unittest.TestCase):
 
     def test_admin_edit_menu(self):
         # First add one directly
-        item = MenuItem(name="Pizza", price=12.00, category="Main", description="Cheese", code="P001", business_type="B2C")
+        item = MenuItem(name="Pizza", price=12.00, category_id=self.category.id, description="Cheese", code="P001", business_type="B2C")
         db.session.add(item)
         db.session.commit()
         
@@ -74,7 +78,7 @@ class AdminTestCase(unittest.TestCase):
         self.assertEqual(item.price, 15.00)
 
     def test_admin_delete_menu(self):
-        item = MenuItem(name="To Delete", price=5.00, category="Side", code="D001", business_type="B2C")
+        item = MenuItem(name="To Delete", price=5.00, category_id=self.category.id, code="D001", business_type="B2C")
         db.session.add(item)
         db.session.commit()
         
@@ -138,7 +142,7 @@ class AdminTestCase(unittest.TestCase):
         coupon = Coupon(code="TO_DEL", discount_pct=5.00)
 import unittest
 from app import create_app, db, bcrypt
-from models import Admin, Customer, MenuItem, Outlet, Staff, Coupon
+from models import Admin, Customer, MenuItem, Outlet, Staff, Coupon, Category
 
 class AdminTestCase(unittest.TestCase):
     def setUp(self):
@@ -154,6 +158,10 @@ class AdminTestCase(unittest.TestCase):
         self.ctx.push()
         
         db.create_all()
+        
+        self.category = Category(name="Main")
+        db.session.add(self.category)
+        db.session.commit()
         
         # Setup initial admin user
         self.admin = Admin(email="admin@test.com", first_name="Admin")
@@ -181,7 +189,7 @@ class AdminTestCase(unittest.TestCase):
         resp = self.client.post("/api/admin/menu", json={
             "name": "Test Burger",
             "price": 10.99,
-            "category": "Main",
+            "category_id": self.category.id,
             "description": "A delicious burger",
             "code": "B001",
             "loyalty_points_cost": 50,
@@ -198,7 +206,7 @@ class AdminTestCase(unittest.TestCase):
 
     def test_admin_edit_menu(self):
         # First add one directly
-        item = MenuItem(name="Pizza", price=12.00, category="Main", description="Cheese", code="P001", business_type="B2C")
+        item = MenuItem(name="Pizza", price=12.00, category_id=self.category.id, description="Cheese", code="P001", business_type="B2C")
         db.session.add(item)
         db.session.commit()
         
@@ -212,7 +220,7 @@ class AdminTestCase(unittest.TestCase):
         self.assertEqual(item.price, 15.00)
 
     def test_admin_delete_menu(self):
-        item = MenuItem(name="To Delete", price=5.00, category="Side", code="D001", business_type="B2C")
+        item = MenuItem(name="To Delete", price=5.00, category_id=self.category.id, code="D001", business_type="B2C")
         db.session.add(item)
         db.session.commit()
         
@@ -284,7 +292,7 @@ class AdminTestCase(unittest.TestCase):
         res2 = self.client.post('/api/admin/menu', json={
             'name': 'Test Item Scheme',
             'price': '10.00',
-            'category': 'Test',
+            'category_id': self.category.id,
             'business_type': 'home_foods',
             'image_url': 'javascript:alert(1)'
         }, headers=self.admin_headers)
@@ -294,7 +302,7 @@ class AdminTestCase(unittest.TestCase):
         res3 = self.client.post('/api/admin/menu', json={
             'name': 'Test Item Scheme 2',
             'price': '10.00',
-            'category': 'Test',
+            'category_id': self.category.id,
             'business_type': 'home_foods',
             'image_url': 'http://example.com/image.png'
         }, headers=self.admin_headers)
