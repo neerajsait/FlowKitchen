@@ -3299,17 +3299,17 @@ export default function AdminView({ onLogout, dbMode }) {
         <form onSubmit={handleAddMenuItem} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Product Name</label>
+              <label className="form-label">Product Name *</label>
               <input type="text" required className="form-input" placeholder="e.g. Kandi Podi 250g" value={menuName} onChange={e => setMenuName(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Product Code (Optional)</label>
+              <label className="form-label">Product Code</label>
               <input type="text" className="form-input" placeholder="e.g. som1" value={menuCode} onChange={e => setMenuCode(e.target.value)} />
             </div>
           </div>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Price (₹)</label>
+              <label className="form-label">Price (₹) *</label>
               <input type="number" step="0.01" required className="form-input" placeholder="179.00" value={menuPrice} onChange={e => setMenuPrice(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
@@ -3323,14 +3323,14 @@ export default function AdminView({ onLogout, dbMode }) {
           </div>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Category</label>
-              <select className="form-select" value={menuCategory} onChange={e => setMenuCategory(e.target.value)}>
+              <label className="form-label">Category *</label>
+              <select required className="form-select" value={menuCategory} onChange={e => setMenuCategory(e.target.value)}>
                 <option value="" disabled>Select a category</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Business Segment</label>
+              <label className="form-label">Business Segment *</label>
               <select className="form-select" value={menuType} onChange={e => setMenuType(e.target.value)}>
                 <option value="home_foods">Home Foods (B2C)</option>
                 <option value="snack_supply">Snack Supply (B2B2C)</option>
@@ -3339,7 +3339,7 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
           </div>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label">Image URL</label>
+            <label className="form-label">Image URL *</label>
             <input type="text" className="form-input" placeholder="https://images.unsplash.com/..." value={menuImageUrl} onChange={e => setMenuImageUrl(processImageUrl(e.target.value))} />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
@@ -3364,18 +3364,18 @@ export default function AdminView({ onLogout, dbMode }) {
               <input type="text" className="form-input" placeholder="e.g.  New, Best Seller" value={menuTag} onChange={e => setMenuTag(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Manual Rating Override</label>
+              <label className="form-label">Manual Rating </label>
               <input type="number" step="0.1" max="5" min="1" className="form-input" placeholder="e.g. 4.5" value={menuAdminRating} onChange={e => setMenuAdminRating(e.target.value)} />
             </div>
-            <div style={{ display: "flex", gap: "1.5rem" }}>
-              <div className="form-group" style={{ margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <input type="checkbox" id="addBestSeller" checked={menuIsBestSeller} onChange={e => setMenuIsBestSeller(e.target.checked)} style={{ width: "1rem", height: "1rem" }} />
-                <label htmlFor="addBestSeller" className="form-label" style={{ margin: 0 }}>Mark as Best Seller</label>
-              </div>
-              <div className="form-group" style={{ margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <input type="checkbox" id="addPopular" checked={menuIsPopular} onChange={e => setMenuIsPopular(e.target.checked)} style={{ width: "1rem", height: "1rem" }} />
-                <label htmlFor="addPopular" className="form-label" style={{ margin: 0 }}>Mark as Popular Item</label>
-              </div>
+          </div>
+          <div style={{ display: "flex", gap: "1.5rem" }}>
+            <div className="form-group" style={{ margin: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+              <input type="checkbox" id="addBestSeller" checked={menuIsBestSeller} onChange={e => setMenuIsBestSeller(e.target.checked)} style={{ width: "1rem", height: "1rem", margin: 0 }} />
+              <label htmlFor="addBestSeller" className="form-label" style={{ margin: 0 }}>Mark as Best Seller</label>
+            </div>
+            <div className="form-group" style={{ margin: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+              <input type="checkbox" id="addPopular" checked={menuIsPopular} onChange={e => setMenuIsPopular(e.target.checked)} style={{ width: "1rem", height: "1rem", margin: 0 }} />
+              <label htmlFor="addPopular" className="form-label" style={{ margin: 0 }}>Mark as Popular Item</label>
             </div>
           </div>
           <div style={{ display: "flex", gap: "0.75rem" }}>
@@ -3389,17 +3389,17 @@ export default function AdminView({ onLogout, dbMode }) {
         <form onSubmit={handleUpdateMenuItem} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Product Name</label>
+              <label className="form-label">Product Name *</label>
               <input type="text" required className="form-input" placeholder="e.g. Kandi Podi 250g" value={menuName} onChange={e => setMenuName(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Product Code (Optional)</label>
+              <label className="form-label">Product Code</label>
               <input type="text" className="form-input" placeholder="e.g. som1" value={menuCode} onChange={e => setMenuCode(e.target.value)} />
             </div>
           </div>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Price (₹)</label>
+              <label className="form-label">Price (₹) *</label>
               <input type="number" step="0.01" required className="form-input" placeholder="179.00" value={menuPrice} onChange={e => setMenuPrice(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
@@ -3413,14 +3413,14 @@ export default function AdminView({ onLogout, dbMode }) {
           </div>
           <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Category</label>
-              <select className="form-select" value={menuCategory} onChange={e => setMenuCategory(e.target.value)}>
+              <label className="form-label">Category *</label>
+              <select required className="form-select" value={menuCategory} onChange={e => setMenuCategory(e.target.value)}>
                 <option value="" disabled>Select a category</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Business Segment</label>
+              <label className="form-label">Business Segment *</label>
               <select className="form-select" value={menuType} onChange={e => setMenuType(e.target.value)}>
                 <option value="home_foods">Home Foods (B2C)</option>
                 <option value="snack_supply">Snack Supply (B2B2C)</option>
@@ -3429,7 +3429,7 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
           </div>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label">Image URL</label>
+            <label className="form-label">Image URL *</label>
             <input type="text" className="form-input" placeholder="https://images.unsplash.com/..." value={menuImageUrl} onChange={e => setMenuImageUrl(e.target.value)} />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
@@ -3454,18 +3454,18 @@ export default function AdminView({ onLogout, dbMode }) {
               <input type="text" className="form-input" placeholder="e.g.  New, Best Seller" value={menuTag} onChange={e => setMenuTag(e.target.value)} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Manual Rating Override</label>
+              <label className="form-label">Manual Rating </label>
               <input type="number" step="0.1" max="5" min="1" className="form-input" placeholder="e.g. 4.5" value={menuAdminRating} onChange={e => setMenuAdminRating(e.target.value)} />
             </div>
-            <div style={{ display: "flex", gap: "1.5rem" }}>
-              <div className="form-group" style={{ margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <input type="checkbox" id="editBestSeller" checked={menuIsBestSeller} onChange={e => setMenuIsBestSeller(e.target.checked)} style={{ width: "1rem", height: "1rem" }} />
-                <label htmlFor="editBestSeller" className="form-label" style={{ margin: 0 }}>Mark as Best Seller</label>
-              </div>
-              <div className="form-group" style={{ margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <input type="checkbox" id="editPopular" checked={menuIsPopular} onChange={e => setMenuIsPopular(e.target.checked)} style={{ width: "1rem", height: "1rem" }} />
-                <label htmlFor="editPopular" className="form-label" style={{ margin: 0 }}>Mark as Popular Item</label>
-              </div>
+          </div>
+          <div style={{ display: "flex", gap: "1.5rem" }}>
+            <div className="form-group" style={{ margin: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+              <input type="checkbox" id="editBestSeller" checked={menuIsBestSeller} onChange={e => setMenuIsBestSeller(e.target.checked)} style={{ width: "1rem", height: "1rem", margin: 0 }} />
+              <label htmlFor="editBestSeller" className="form-label" style={{ margin: 0 }}>Mark as Best Seller</label>
+            </div>
+            <div className="form-group" style={{ margin: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+              <input type="checkbox" id="editPopular" checked={menuIsPopular} onChange={e => setMenuIsPopular(e.target.checked)} style={{ width: "1rem", height: "1rem", margin: 0 }} />
+              <label htmlFor="editPopular" className="form-label" style={{ margin: 0 }}>Mark as Popular Item</label>
             </div>
           </div>
           <div style={{ display: "flex", gap: "0.75rem" }}>
