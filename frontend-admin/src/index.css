@@ -36,9 +36,8 @@
 
   /* ── Text ── */
   --text-primary: #333333;
-  /* Text */
   --text-secondary: #333333;
-  --text-muted: #333333;
+  --text-muted: #999999;
 
   /* ── Semantic Colors ── */
   --success: #43A047;
