@@ -1085,6 +1085,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab || "home"}
+              id="main-scroll-container"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}

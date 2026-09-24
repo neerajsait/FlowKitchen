@@ -11,7 +11,6 @@ const FALLBACK = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w
 
 export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemove, onToggleFav, onBack, menu, cart, favorites, onItemClick, onGoToCart }) {
   const [activeTab, setActiveTab] = useState("ingredients");
-  const [qty, setQty] = useState(Math.max(1, cartQty));
   const carouselRef = React.useRef(null);
   const [descExpanded, setDescExpanded] = useState(false);
   const [reviews, setReviews] = useState([]);
@@ -19,7 +18,12 @@ export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemov
 
 
   React.useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const scrollContainer = document.getElementById('main-scroll-container');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     
     if (!reviewsLoaded && item?.id) {
       api.getMenuItemReviews(item.id)
@@ -51,16 +55,6 @@ export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemov
       carouselRef.current.scrollBy({ left: dir * 300, behavior: 'smooth' });
     }
   };
-
-  const handleAddQty = () => {
-    // Add qty to cart
-    const currentInCart = cartQty;
-    for (let i = currentInCart; i < qty; i++) onAdd(item.id);
-    for (let i = currentInCart; i > qty; i--) onRemove(item.id);
-  };
-
-
-
   return (
     <div>
       {/* Back button */}
@@ -122,30 +116,26 @@ export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemov
 
             {/* Quantity + Add */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <span style={{ fontSize: "0.8125rem", fontWeight: 600, color: "var(--text-2)" }}>Quantity</span>
-                <div className="qty-selector">
-                  <button className="qty-btn" onClick={() => setQty(q => Math.max(1, q - 1))}><Minus size={15} /></button>
-                  <span className="qty-val">{qty}</span>
-                  <button className="qty-btn" onClick={() => setQty(q => Math.min(99, q + 1))}><Plus size={15} /></button>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", gap: "0.75rem" }}>
+              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
                 {cartQty > 0 ? (
-                  <button
-                    className="btn btn-primary"
-                    style={{ flex: 1 }}
-                    onClick={onGoToCart}
-                  >
-                    <ShoppingCart size={18} />
-                    Go to Cart
-                  </button>
+                  <>
+                    <div className="qty-selector">
+                      <button className="qty-btn" onClick={() => onRemove(item.id)}><Minus size={15} /></button>
+                      <span className="qty-val">{cartQty}</span>
+                      <button className="qty-btn" onClick={() => onAdd(item.id)}><Plus size={15} /></button>
+                    </div>
+                    <button
+                      className="btn btn-primary"
+                      onClick={onGoToCart}
+                    >
+                      <ShoppingCart size={18} />
+                      Go to Cart
+                    </button>
+                  </>
                 ) : (
                   <button
                     className="btn btn-primary"
-                    style={{ flex: 1 }}
-                    onClick={handleAddQty}
+                    onClick={() => onAdd(item.id)}
                   >
                     <ShoppingCart size={18} />
                     Add to Cart
