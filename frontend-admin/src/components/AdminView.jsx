@@ -1327,7 +1327,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
           {/* Master Catalog */}
           <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, marginBottom: "1rem", marginTop: "1rem" }}>
-            Master Food Catalog <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400 }}>· all items</span>
+            Master Food Catalog <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400 }}> all items</span>
           </h3>
           <div className="table-container" style={{ marginBottom: "2.5rem" }}>
             <table className="custom-table">
@@ -1375,7 +1375,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
           {/* Outlets Grid */}
           <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, marginBottom: "1rem" }}>
-            Outlet Stations <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400 }}>· inventory and dispatch</span>
+            Outlet Stations <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400 }}> inventory and dispatch</span>
           </h3>
           <div className="admin-grid-products">
             {outlets.map(outlet => {
@@ -1458,8 +1458,8 @@ export default function AdminView({ onLogout, dbMode }) {
       {(activeTab === "customer_orders" || activeTab === "outlet_orders") && (
         <div className="animate-fade-in">
           <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, marginBottom: "1rem" }}>
-            {activeTab === "customer_orders" ? "B2C Customer Shipments" : "Outlet POS Orders"} 
-            <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400 }}>awaiting dispatch</span>
+            {activeTab === "customer_orders" ? "B2C Customer Shipments" : "Outlet POS Orders"}
+            <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 400, marginLeft: "0.5rem" }}>awaiting dispatch</span>
           </h3>
           <div className="table-container">
             <table className="custom-table">
@@ -1589,7 +1589,6 @@ export default function AdminView({ onLogout, dbMode }) {
               <h1 className="content-title">Revenue Share Report</h1>
               <p className="content-subtitle">Brand cut from completed orders per outlet.</p>
             </div>
-            <button className="btn btn-secondary" onClick={loadData}><RefreshCw size={15} /> Refresh</button>
           </header>
           <div className="card">
             <div className="table-responsive">
@@ -1668,10 +1667,10 @@ export default function AdminView({ onLogout, dbMode }) {
 
                 <div className="panel" style={{ padding: "1.5rem", marginTop: "1.5rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", margin: 0 }} title="AI-driven estimate of future sales based on past data, weather, and holidays">AI Demand Forecast (Next 7 Days) ℹ</h3>
+                    <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", margin: 0 }} title="AI-driven estimate of future sales based on past data, weather and holidays">AI Demand Forecast (Next 7 Days) ℹ</h3>
                     <span style={{ fontSize: "0.75rem", background: "rgba(139,92,246,0.12)", color: "#8b5cf6", padding: "4px 8px", borderRadius: "12px", fontWeight: 700 }}>Powered by AI</span>
                   </div>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>Predicted order volume based on historical data, weather, and upcoming holidays.</p>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>Predicted order volume based on historical data, weather and upcoming holidays.</p>
                   <div style={{ width: '100%', height: 250, marginTop: "1rem" }}>
                     <ResponsiveContainer>
                       <BarChart data={[
@@ -1741,7 +1740,7 @@ export default function AdminView({ onLogout, dbMode }) {
                 Staff Timesheets & Shifts
               </h2>
               <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", margin: "0.2rem 0 0" }}>
-                Monitor staff clock-in/out times, hours worked, and cash drawer discrepancies.
+                Monitor staff clock-in/out times, hours worked and cash drawer discrepancies.
               </p>
             </div>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -2151,7 +2150,7 @@ export default function AdminView({ onLogout, dbMode }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "1rem" }}>
             <div>
               <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>Registered User Accounts</h3>
-              <p style={{ color: "var(--text-secondary)", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>Manage customer, staff, and outlet owner accounts and credentials.</p>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>Manage customer, staff and outlet owner accounts and credentials.</p>
             </div>
             <button className="btn btn-secondary" onClick={() => setShowAddStaff(true)}>
               <Users size={15} /> Create Staff Account
@@ -2820,7 +2819,7 @@ export default function AdminView({ onLogout, dbMode }) {
           
           <div>
             <h2 style={{ fontSize: "1.75rem", margin: 0 }}>Store Settings</h2>
-            <p style={{ color: "var(--text-muted)", marginTop: "0.25rem" }}>Manage core operational parameters, payment methods, and system data.</p>
+            <p style={{ color: "var(--text-muted)", marginTop: "0.25rem" }}>Manage core operational parameters, payment methods and system data.</p>
           </div>
 
           <form className="card" style={{ padding: "2rem", borderTop: "4px solid var(--brand)" }} onSubmit={async (e) => {
@@ -3166,7 +3165,7 @@ export default function AdminView({ onLogout, dbMode }) {
       {activeTab === "forecast" && (
         <div className="animate-fade-in">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-            <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, margin: 0 }} title="AI-driven estimate of future sales based on past data, weather, and holidays">
+            <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, margin: 0 }} title="AI-driven estimate of future sales based on past data, weather and holidays">
               Demand & Stockout Forecast
             </h3>
             <span style={{ fontSize: "0.85rem", background: "rgba(139,92,246,0.12)", color: "#8b5cf6", padding: "6px 12px", borderRadius: "12px", fontWeight: 700 }}>Powered by AI</span>
