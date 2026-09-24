@@ -256,6 +256,9 @@ class KitchenStaff(User):
 class Category(db.Model):
     __tablename__ = 'categories'
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

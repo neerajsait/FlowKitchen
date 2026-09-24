@@ -1995,8 +1995,15 @@ The FoodPilot Team"""
         if not 1 <= rating <= 5:
             return jsonify({"error": "Bad Request", "message": "Rating must be 1–5"}), 400
 
+        menu_item_id = data.get("menu_item_id")
+
+        if not menu_item_id:
+            first_item = db.session.scalars(select(OrderItem).where(OrderItem.order_id == order_id)).first()
+            if first_item:
+                menu_item_id = first_item.menu_item_id
+
         fb = Review(order_id=order_id, customer_id=customer_id,
-                      menu_item_id=data.get("menu_item_id"),
+                      menu_item_id=menu_item_id,
                       rating=rating, comment=data.get("comment"))
         db.session.add(fb)
         db.session.commit()

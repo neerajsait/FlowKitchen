@@ -1,9 +1,3 @@
-# admin.py
-# Flask Blueprint containing all /api/admin/* routes extracted from app.py.
-# Imports shared helpers from app.py (role_required, department_required,
-# sanitize_input, log_admin_action, log_stock_change, _generate_unique_code,
-# get_razorpay_credentials, clear_razorpay_cache, etc.)
-# to avoid circular imports — app.py only ever calls register_blueprint(admin_bp).
 
 import io
 import os
