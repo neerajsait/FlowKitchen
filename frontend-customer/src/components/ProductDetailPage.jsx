@@ -90,7 +90,12 @@ export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemov
               </h1>
             </div>
 
-            <Rating value={avgRating} count={reviews.length || item.reviews_count} size={16} />
+            <div 
+              style={{ cursor: "pointer", display: "inline-block", width: "max-content" }}
+              onClick={() => document.getElementById("customer-reviews")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            >
+              <Rating value={avgRating} count={reviews.length || item.reviews_count} size={16} />
+            </div>
 
             <PriceDisplay price={item.price} originalPrice={item.original_price} size="lg" />
 
@@ -198,7 +203,7 @@ export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemov
         </div>
 
         {/* Reviews */}
-        <div className="card card-padded mb-2xl">
+        <div id="customer-reviews" className="card card-padded mb-2xl" style={{ scrollMarginTop: "80px" }}>
           <h2 className="section-title" style={{ marginBottom: "1.25rem" }}>Customer Reviews</h2>
 
           {reviews.length === 0 && reviewsLoaded && (

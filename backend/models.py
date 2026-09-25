@@ -740,7 +740,8 @@ class Order(db.Model):
                 "notes": self.notes,
                 "delivery_address": self.delivery_address,
                 "delivery_charge": float(self.delivery_charge) if self.delivery_charge else 0,
-                "feedback_submitted": self.review is not None
+                "feedback_submitted": self.review is not None,
+                "feedback_rating": self.review.rating if self.review else None
             })
         return d
 

@@ -2843,8 +2843,8 @@ export default function AdminView({ onLogout, dbMode }) {
                   setStoreSettings(prev => ({ ...prev, is_store_online: val }));
                 }} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--success)" }} />
                 <div>
-                  <strong style={{ display: "block", color: "var(--text-primary)" }}>Store Online (Accepting Orders)</strong>
-                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Toggle whether the store is accepting new customer orders.</span>
+                  <strong style={{ display: "block", color: "var(--text-primary)" }}>Store Online (Not Accepting Orders)</strong>
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Toggle whe the store is not accepting new customer orders.</span>
                 </div>
               </label>
               

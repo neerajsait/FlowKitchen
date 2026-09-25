@@ -110,6 +110,7 @@ async function safeJson(res) {
 // Exportable API client
 // ----------------------------------------------------------------
 export const api = {
+  getAccessToken,
   // Ping the backend health endpoint; result drives the status banner in the UI
   async getMode() {
     try {
