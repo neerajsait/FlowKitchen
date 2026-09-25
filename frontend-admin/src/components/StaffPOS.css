@@ -85,6 +85,32 @@
   background: rgba(239, 68, 68, 0.15);
 }
 
+.sidebar-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--pos-text);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.sidebar-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--pos-border);
+}
+
+.sidebar-btn:active {
+  transform: scale(0.98);
+}
+
 /* Main Layout Grid */
 .pos-grid {
   display: grid;
@@ -94,6 +120,11 @@
   flex: 1;
   overflow: hidden;
   min-height: 0; /* Fixes flex child overflow in grid */
+  min-width: 0;
+}
+
+.pos-grid > * {
+  min-width: 0;
 }
 
 /* Left Panel (Menu & Search) */
@@ -193,45 +224,40 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1rem;
+  align-content: start;
 }
 
 .pos-item-card {
-  background: var(--pos-surface);
-  border: 1px solid var(--pos-border);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
   padding: 1.25rem;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 0.5rem;
-}
-
-.pos-item-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .pos-item-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--pos-accent);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 15px var(--pos-accent-glow);
+  transform: translateY(-2px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-.pos-item-card:hover::before {
-  opacity: 1;
+.pos-item-card.selected {
+  border-color: var(--pos-accent);
+  background: rgba(16, 185, 129, 0.03);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
 .pos-item-card:active {
-  transform: translateY(-2px);
+  transform: translateY(0);
 }
 
 .pos-menu-icon {

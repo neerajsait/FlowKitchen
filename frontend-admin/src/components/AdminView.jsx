@@ -1142,13 +1142,13 @@ export default function AdminView({ onLogout, dbMode }) {
             <Menu size={24} />
           </button>
           <div>
-            <h1 style={{ fontSize: "1.5rem", margin: 0 }}>Admin Dashboard</h1>
-            <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Manage your food business — catalog, outlets, orders & analytics</p>
+            <h1 style={{ fontSize: "1.25rem", margin: 0 }}>Admin Dashboard</h1>
+            <p className="hide-mobile" style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Manage your food business — catalog, outlets, orders & analytics</p>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
           {dbMode && (
-            <div style={{
+            <div className="hide-mobile" style={{
               display: "flex", alignItems: "center", gap: "6px",
               fontSize: "0.75rem", color: dbMode.includes("Live") ? "var(--success)" : "var(--warning)",
               background: dbMode.includes("Live") ? "rgba(67, 160, 71, 0.1)" : "rgba(239, 83, 80, 0.1)",
@@ -1159,21 +1159,21 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
           )}
           
-          <div style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
+          <div className="hide-mobile" style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
 
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-            <button className="btn-icon" onClick={loadData} disabled={loading} title="Refresh Data" style={{ borderRadius: "var(--r-full)" }}>
+            <button className="btn-icon hide-mobile" onClick={loadData} disabled={loading} title="Refresh Data" style={{ borderRadius: "var(--r-full)" }}>
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             </button>
-            <button className="btn btn-primary" onClick={() => setShowAddMenu(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
+            <button className="btn btn-primary hide-mobile" onClick={() => setShowAddMenu(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
               <Plus size={14} /> New Product
             </button>
-            <button className="btn btn-secondary" onClick={() => setShowAddStaff(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
+            <button className="btn btn-secondary hide-mobile" onClick={() => setShowAddStaff(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
               <Users size={14} /> Add Staff
             </button>
           </div>
 
-          <div style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
+          <div className="hide-mobile" style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
 
           <div style={{ display: "flex", gap: "0.25rem", alignItems: "center", flexWrap: "wrap", background: "var(--bg-elevated)", padding: "0.25rem", borderRadius: "var(--r-full)", border: "1px solid var(--border-subtle)" }}>
             <button className="btn btn-secondary" onClick={openProfileModal} style={{ border: "none", background: "transparent", padding: "0.4rem 0.8rem", fontSize: "0.8rem", boxShadow: "none" }}>
@@ -1503,7 +1503,9 @@ export default function AdminView({ onLogout, dbMode }) {
                     <td><span className={`badge-status status-${o.status}`}>{o.status}</span></td>
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{o.payment_method || "COD"}</span>
+                        {o.payment_method && o.payment_method !== "COD" && (
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{o.payment_method}</span>
+                        )}
                         {o.payment_status === "paid" ? (
                           <span className="badge-status status-delivered">Paid </span>
                         ) : o.payment_status === "refunded" ? (
@@ -1511,9 +1513,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         ) : o.payment_status === "failed" ? (
                           <span className="badge-status status-cancelled">Failed</span>
                         ) : (
-                          <span className={`badge-status ${o.payment_method && o.payment_method !== "COD" ? "status-cancelled" : "status-pending"}`}>
-                            {o.payment_method && o.payment_method !== "COD" ? "Unpaid " : "On delivery"}
-                          </span>
+                          <span className="badge-status status-cancelled">{o.payment_method && o.payment_method !== "COD" ? "Unpaid" : "COD"}</span>
                         )}
                       </div>
                     </td>

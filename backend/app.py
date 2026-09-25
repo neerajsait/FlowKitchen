@@ -2764,22 +2764,10 @@ The FoodPilot Team"""
         oid = int(oid)
 
         data = (sanitize_input(request.get_json(silent=True)) or {})
-        email = (data.get("email") or "").strip().lower()
-        pin = (data.get("pin") or "").strip()
-
-        if not email or not pin:
-            return jsonify({"error": "Bad Request", "message": "Email and PIN are required"}), 400
-
-        # Validate PIN belongs to the currently logged-in staff
+        
         staff = db.session.get(User, staff_id)
-        if not staff or staff.email.lower() != email:
-            return jsonify({"error": "Unauthorized", "message": "Email does not match your account"}), 401
-
-        if not staff.pin_hash:
-            return jsonify({"error": "Forbidden", "message": "No PIN set. Contact your administrator."}), 403
-
-        if not staff.check_pin(pin, bcrypt):
-            return jsonify({"error": "Unauthorized", "message": "Incorrect PIN"}), 401
+        if not staff:
+            return jsonify({"error": "Unauthorized", "message": "User not found"}), 401
 
         # Check for already active shift
         active = db.session.scalars(

@@ -755,6 +755,7 @@ body {
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   white-space: nowrap;
+  text-align: left;
 }
 
 .custom-table td {
@@ -2662,11 +2663,15 @@ input[type=number] {
 }
 @media (max-width: 768px) {
   .admin-page-header {
-    margin: -1rem -1rem 1.5rem -1rem !important;
-    padding: 1rem !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 1rem !important;
+    margin: -1rem -1rem 1rem -1rem !important;
+    padding: 0.75rem 1rem !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+  }
+  .hide-mobile {
+    display: none !important;
   }
 }
 
