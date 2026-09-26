@@ -1199,7 +1199,7 @@ export const api = {
   },
   async getForecast() {
     return _fetch('/api/admin/forecast');
-  },,
+  },
 
   async adminGetTickets() {
     const res = await fetch(`${API_BASE_URL}/admin/tickets`, { headers: getAuthHeader() });
@@ -1414,7 +1414,7 @@ export const api = {
   },
   async getForecast() {
     return _fetch('/api/admin/forecast');
-  },,
+  },
 
   async adminGetTickets() {
     const res = await fetch(`${API_BASE_URL}/admin/tickets`, { headers: getAuthHeader() });
