@@ -784,7 +784,9 @@ def admin_create_staff():
     role_required = _get("role_required")
     sanitize_input = _get("sanitize_input")
     validate_phone = _get("validate_phone")
+    limiter = _get("limiter")
 
+    @limiter.limit("5 per minute")
     @role_required("admin", "outlet_owner")
     def _inner():
         import secrets

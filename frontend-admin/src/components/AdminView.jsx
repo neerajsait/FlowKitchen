@@ -64,11 +64,8 @@ export default function AdminView({ onLogout, dbMode }) {
   const [printOrder, setPrintOrder] = useState(null);
   const [toast, setToast] = useState(null);
   const showToast = (msg, type = "success") => setToast({ message: msg, type });
-  // Legacy alert() wrapper kept for any remaining calls from nested components
-  const alert = (msg) => {
-    setToast({ message: msg, type: msg.toLowerCase().includes("failed") || msg.toLowerCase().includes("error") ? "error" : "success" });
-  };
-
+  // Legacy showToast(, "success") wrapper kept for any remaining calls from nested components
+  
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => setToast(null), 3500);
@@ -378,7 +375,7 @@ export default function AdminView({ onLogout, dbMode }) {
           setReviewsLoading(false);
         })
         .catch(err => {
-          alert("Failed to load reviews: " + err.message);
+          showToast("Failed to load reviews: " + err.message, "error");
           setReviewsLoading(false);
         });
     }
@@ -500,11 +497,11 @@ export default function AdminView({ onLogout, dbMode }) {
     if (!reviewToDelete) return;
     try {
       await api.adminDeleteReview(reviewToDelete);
-      alert("Review deleted successfully!");
+      showToast("Review deleted successfully!", "success");
       const data = await api.adminGetReviews();
       setReviews(data);
     } catch (err) {
-      alert("Failed to delete review: " + err.message);
+      showToast("Failed to delete review: " + err.message, "error");
     } finally {
       setReviewToDelete(null);
     }
@@ -2260,10 +2257,10 @@ export default function AdminView({ onLogout, dbMode }) {
                                 const oId = val ? parseInt(val) : null;
                                 try {
                                   await api.adminUpdateUser(user.id, { outlet_id: oId });
-                                  alert("Outlet assigned successfully!");
+                                  showToast("Outlet assigned successfully!", "success");
                                   loadData();
                                 } catch (err) {
-                                  alert("Failed to assign: " + err.message);
+                                  showToast("Failed to assign: " + err.message, "error");
                                 }
                               }}
                             >
@@ -2292,7 +2289,7 @@ export default function AdminView({ onLogout, dbMode }) {
                                     showToast(err.message, "error");
                                   }
                                 } else if (newPin !== null) {
-                                  alert("PIN must be exactly 4 digits.");
+                                  showToast("PIN must be exactly 4 digits.", "success");
                                 }
                               }} style={{ background: "none", border: "1px solid var(--border-light)", cursor: "pointer", color: "var(--text-secondary)", padding: "0.2rem 0.5rem", borderRadius: "4px", fontSize: "0.75rem" }} title="Reset PIN">
                                 Reset PIN
@@ -3045,49 +3042,49 @@ export default function AdminView({ onLogout, dbMode }) {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={() => {
                   if (window.confirm("Are you sure you want to clear Analytics, Sales Data & Wallets? This will reset revenue to ₹0.")) {
-                    api.resetAnalytics().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.resetAnalytics().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Clear Analytics & Sales Data
                 </button>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={() => {
                   if (window.confirm("Are you sure you want to clear all abandoned carts?")) {
-                    api.clearAbandonedCarts().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.clearAbandonedCarts().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Clear Abandoned Carts
                 </button>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)", backgroundColor: "#fee2e2" }} onClick={() => {
                   if (window.confirm("DANGER: Are you sure you want to Factory Reset the Menu? This deletes ALL menu items and categories!")) {
-                    api.resetMenu().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.resetMenu().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Factory Reset Menu
                 </button>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={() => {
                   if (window.confirm("Are you sure you want to delete all TEST orders?")) {
-                    api.resetTestOrders().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.resetTestOrders().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Delete Test Orders
                 </button>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={() => {
                   if (window.confirm("Are you sure you want to clear ALL reviews?")) {
-                    api.resetReviews().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.resetReviews().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Clear All Reviews
                 </button>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={() => {
                   if (window.confirm("Are you sure you want to reset ALL stock levels to 100?")) {
-                    api.resetStockLevels().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.resetStockLevels().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Reset Stock Levels
                 </button>
                 <button type="button" className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={() => {
                   if (window.confirm("Are you sure you want to clear ALL test customers (non-admins)?")) {
-                    api.resetTestCustomers().then(res => alert(res.message)).catch(err => alert(err.message));
+                    api.resetTestCustomers().then(res => showToast(res.message, "success")).catch(err => showToast(err.message, "success"));
                   }
                 }}>
                   Clear Test Accounts
@@ -3870,7 +3867,7 @@ export default function AdminView({ onLogout, dbMode }) {
                   try {
                     const res = await api.adminUploadImage(e.target.files[0]);
                     if (res.success) setBannerImageUrl(res.path);
-                  } catch (err) { alert("Failed to upload image"); }
+                  } catch (err) { showToast("Failed to upload image", "error"); }
                 }
               }} style={{ width: '120px' }} />
             </div>

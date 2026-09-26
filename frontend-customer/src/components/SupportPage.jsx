@@ -92,7 +92,7 @@ export default function SupportPage({ tickets, onCreateTicket, onEditTicket, onD
       setTicketForm({ issue_type: "", description: "", order_id: "", attachment: null });
       setShowForm(false);
     } catch (err) {
-      alert("Failed: " + err.message);
+      showToast("Failed: " + err.message, "error");
     } finally {
       setSubmitting(false);
     }

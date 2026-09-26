@@ -15,7 +15,7 @@ export default function ProfilePage({
   if (!user) return null;
 
   const redeemRate = parseFloat(storeSettings?.loyalty_redeem_rate || "0.01");
-  const displayName = [user.first_name, user.last_name].filter(Boolean).join(" ") || user.email?.split("@")[0] || "You";
+  const displayName = user.full_name || user.email?.split("@")[0] || "You";
   const initials = displayName.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
 
   return (
@@ -55,7 +55,7 @@ export default function ProfilePage({
           </h2>
           {!isEditingProfile && (
             <button className="btn btn-ghost btn-sm" onClick={() => {
-              setProfileForm({ first_name: user.first_name || "", last_name: user.last_name || "", phone: user.phone || "", address: user.address || "" });
+              setProfileForm({ full_name: user.full_name || "", phone: user.phone || "", address: user.address || "" });
               setIsEditingProfile(true);
             }} style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
               <Edit2 size={13} /> Edit
@@ -65,7 +65,7 @@ export default function ProfilePage({
 
         {!isEditingProfile ? (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-            {[["First Name", user.first_name || "—"], ["Last Name", user.last_name || "—"], ["Email", user.email], ["Phone", user.phone || "—"]].map(([label, val]) => (
+            {[["Full Name", user.full_name || "—"], ["Email", user.email], ["Phone", user.phone || "—"]].map(([label, val]) => (
               <div key={label}>
                 <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.25rem" }}>{label}</div>
                 <div style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--text)" }}>{val}</div>
@@ -77,7 +77,7 @@ export default function ProfilePage({
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
               <div className="form-group">
                 <label className="form-label">First Name</label>
-                <input className="form-input" value={profileForm.first_name} onChange={e => setProfileForm(f => ({ ...f, first_name: e.target.value }))} />
+                <input className="form-input" value={profileForm.full_name} onChange={e => setProfileForm(f => ({ ...f, full_name: e.target.value }))} />
               </div>
               <div className="form-group">
                 <label className="form-label">Last Name</label>

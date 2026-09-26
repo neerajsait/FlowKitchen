@@ -180,7 +180,7 @@ export const api = {
       }
     } catch (e) {
       console.error("Logout failed:", e);
-      alert("Warning: Could not reach the server to securely log out. Local session cleared, but remote session may remain active.");
+      console.warn("Warning: Could not reach the server to securely log out. Local session cleared, but remote session may remain active.");
     }
 
     clearAccessToken();

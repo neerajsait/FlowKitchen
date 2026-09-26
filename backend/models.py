@@ -118,7 +118,7 @@ class User(db.Model):
     # --- STI Subclass Fields ---
     rfid_tag = Column(String(50), unique=True, nullable=True)
     loyalty_points = Column(Integer, default=0, nullable=False)
-    outlet_id = Column(Integer, ForeignKey('outlets.id', ondelete='SET NULL'), nullable=True)
+    outlet_id = Column(Integer, ForeignKey('outlets.id', ondelete='CASCADE'), nullable=True)
     pin_hash = Column(String(100), nullable=True)
     staff_code = Column(String(10), unique=True, nullable=True)
     referral_code = Column(String(20), unique=True, nullable=True)

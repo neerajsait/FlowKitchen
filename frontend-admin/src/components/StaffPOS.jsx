@@ -43,7 +43,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
     setProfileUpdating(true);
     try {
       await api.updateProfile(profileForm);
-      alert("Profile updated successfully!");
+      showToast("Profile updated successfully!", "success");
       setShowProfileModal(false);
     } catch (err) {
       setAlertMsg("Failed to update profile: " + err.message);
@@ -112,10 +112,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
 
   const [toast, setToast] = useState(null);
-  const alert = (msg) => {
-    setToast({ message: msg, type: msg.toLowerCase().includes("failed") || msg.toLowerCase().includes("error") ? "error" : "success" });
-  };
-
+  
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => setToast(null), 3500);
@@ -134,7 +131,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
           // Auto clock-in
           const clockInRes = await api.posClockIn("", "");
           setActiveShift(clockInRes.shift);
-          alert("Shift started automatically.");
+          showToast("Shift started automatically.", "success");
         }
       } catch (err) {
         console.error("Failed to check or start shift", err);
@@ -153,10 +150,10 @@ export default function StaffPOS({ onLogout, _dbMode }) {
     try {
       const res = await api.posClockIn("", "");
       setActiveShift(res.shift);
-      alert("Shift started!");
+      showToast("Shift started!", "success");
       loadData();
     } catch (err) {
-      alert("Clock-in failed: " + err.message);
+      showToast("Clock-in failed: " + err.message, "error");
     } finally {
       setClockInLoading(false);
     }
@@ -167,7 +164,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
     e.preventDefault();
     const cashVal = parseFloat(actualCashInput);
     if (isNaN(cashVal) || cashVal < 0) {
-      alert("Please enter a valid non-negative cash amount");
+      showToast("Please enter a valid non-negative cash amount", "success");
       return;
     }
     setClockOutLoading(true);
@@ -178,7 +175,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
       setActualCashInput("");
       setShowClockOutModal(false);
     } catch (err) {
-      alert("Clock-out failed: " + err.message);
+      showToast("Clock-out failed: " + err.message, "error");
     } finally {
       setClockOutLoading(false);
     }
@@ -304,7 +301,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
     if (!item) return;
     const currentSelected = activeSale[itemId] || 0;
     if (item.current_stock <= currentSelected) {
-      alert(`Cannot add more. Station only has ${item.current_stock} of ${item.name} in stock.`);
+      showToast(`Cannot add more. Station only has ${item.current_stock} of ${item.name} in stock.`, "success");
       return;
     }
     setActiveSale(prev => ({
@@ -317,7 +314,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
     const item = displayMenu.find(m => m.id === itemId);
     if (!item) return;
     if (item.current_stock <= (activeSale[itemId] || 0)) {
-      alert(`Only ${item.current_stock} available in stock.`);
+      showToast(`Only ${item.current_stock} available in stock.`, "success");
       return;
     }
     setActiveSale(prev => ({
@@ -357,7 +354,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
       const coupon = await api.validateCoupon(couponCodeInput.trim());
       setAppliedCoupon(coupon);
       setCouponCodeInput("");
-      alert(`Coupon "${coupon.code}" applied! (${coupon.discount_pct}% off)`);
+      showToast(`Coupon "${coupon.code}" applied! (${coupon.discount_pct}% off, "success")`);
     } catch (err) {
       setCouponError(err.message || "Invalid coupon code");
       setAppliedCoupon(null);
@@ -398,7 +395,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
         null,
         0
       );
-      alert(`POS Transaction successful! Total: ₹${finalTotalAmount.toFixed(2)}`);
+      showToast(`POS Transaction successful! Total: ₹${finalTotalAmount.toFixed(2, "success")}`);
       setActiveSale({});
       setShowUPIScanModal(false);
       
@@ -544,9 +541,9 @@ export default function StaffPOS({ onLogout, _dbMode }) {
       doc.text("Thank you for shopping!", 40, yPos, { align: "center" });
 
       doc.save(`POS_Receipt_${sale.id}.pdf`);
-      alert("Receipt PDF downloaded successfully!");
+      showToast("Receipt PDF downloaded successfully!", "success");
     } catch (err) {
-      alert("Failed to download POS receipt: " + err.message);
+      showToast("Failed to download POS receipt: " + err.message, "error");
     }
   };
 
@@ -554,18 +551,18 @@ export default function StaffPOS({ onLogout, _dbMode }) {
   const handleLogDisposal = async (e) => {
     e.preventDefault();
     if (!dispItemId) {
-      alert("Please select a food item to dispose of");
+      showToast("Please select a food item to dispose of", "success");
       return;
     }
     setLoading(true);
     try {
       await api.posLogDisposal(dispItemId, parseInt(dispQty), dispReason);
-      alert("Inventory disposal logged successfully!");
+      showToast("Inventory disposal logged successfully!", "success");
       setShowDisposalForm(false);
       setDispQty("1");
       loadData();
     } catch (err) {
-      alert("Disposal failed: " + err.message);
+      showToast("Disposal failed: " + err.message, "error");
     } finally {
       setLoading(false);
     }
@@ -582,10 +579,10 @@ export default function StaffPOS({ onLogout, _dbMode }) {
         quantity: parseInt(restockQty),
         type: "Restock"
       });
-      alert("Restock request sent to kitchen!");
+      showToast("Restock request sent to kitchen!", "success");
       setShowRestockForm(false);
     } catch (err) {
-      alert("Request failed: " + err.message);
+      showToast("Request failed: " + err.message, "error");
     } finally {
       setLoading(false);
     }
@@ -1009,7 +1006,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
 
                       <button onClick={() => {
                         if (!activeShift) {
-                          alert("Please clock in to start taking orders.");
+                          showToast("Please clock in to start taking orders.", "success");
                           return;
                         }
                         setShowCheckoutModal(true);
@@ -1062,7 +1059,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                 <span style={{ color: "var(--brand)" }}>₹{shiftTotals.total.toFixed(0)}</span>
               </div>
             </div>
-            <button onClick={() => { setShowShiftReport(false); alert("Shift summary printed!"); }} className="btn btn-primary" style={{ width: "100%", padding: "0.875rem" }}>
+            <button onClick={() => { setShowShiftReport(false); showToast("Shift summary printed!", "success"); }} className="btn btn-primary" style={{ width: "100%", padding: "0.875rem" }}>
               Print Summary
             </button>
           </div>

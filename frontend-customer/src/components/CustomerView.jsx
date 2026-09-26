@@ -160,8 +160,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   };
 
   // Override global alert for compatibility with legacy handlers
-  const alert = showAlert;
-  const confirm = (message, onConfirm) => setConfirmModal({ message, onConfirm });
+    const confirm = (message, onConfirm) => setConfirmModal({ message, onConfirm });
 
   useEffect(() => {
     if (toast) {
@@ -281,7 +280,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   // ── Profile editing ──────────────────────────────────────
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [profileForm, setProfileForm] = useState({ first_name: "", last_name: "", phone: "", address: "" });
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", address: "" });
   const [profileUpdating, setProfileUpdating] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ old_password: "", otp: "", new_password: "" });
   const [otpRequested, setOtpRequested] = useState(false);
@@ -399,13 +398,13 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   // Cart helpers
   // ────────────────────────────────────────────────────────────
   const addToCart = (itemId) => {
-    if (storeSettings.is_store_online === "false") { alert("Store is currently offline."); return; }
-    if (storeSettings.is_holiday === "true")       { alert("We're on a holiday break."); return; }
+    if (storeSettings.is_store_online === "false") { showToast("Store is currently offline.", "success"); return; }
+    if (storeSettings.is_holiday === "true")       { showToast("We're on a holiday break.", "success"); return; }
     const item = menu.find(m => m.id === itemId);
     if (!item) return;
     const currentQty = cart[itemId] || 0;
     if (item.global_stock != null && currentQty >= item.global_stock) {
-      alert(`Only ${item.global_stock} available in stock.`);
+      showToast(`Only ${item.global_stock} available in stock.`, "success");
       return;
     }
     setCart(prev => ({ ...prev, [itemId]: currentQty + 1 }));
@@ -461,7 +460,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const toggleFavorite = async (itemId, e) => {
     e?.stopPropagation?.();
     if (!currentUser) {
-      alert("Please login to save your favorite items!");
+      showToast("Please login to save your favorite items!", "success");
       return;
     }
     const isFav = favorites.includes(itemId);
@@ -471,7 +470,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       else       await api.addFavorite(itemId);
     } catch {
       setFavorites(prev => !isFav ? prev.filter(id => id !== itemId) : [...prev, itemId]);
-      alert("Failed to update wishlist");
+      showToast("Failed to update wishlist", "error");
     }
   };
 
@@ -482,25 +481,25 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   };
 
   const handlePlaceOrder = async () => {
-    if (storeSettings.is_store_online === "false") { alert("Store is currently offline."); return; }
-    if (storeSettings.is_holiday === "true")       { alert("We're on a holiday break."); return; }
+    if (storeSettings.is_store_online === "false") { showToast("Store is currently offline.", "success"); return; }
+    if (storeSettings.is_holiday === "true")       { showToast("We're on a holiday break.", "success"); return; }
 
     const minOrder = parseFloat(storeSettings.min_order_value || "0");
-    if (getCartTotal() < minOrder) { alert(`Minimum order value is ₹${minOrder.toFixed(0)}.`); return; }
+    if (getCartTotal() < minOrder) { showToast(`Minimum order value is ₹${minOrder.toFixed(0, "success")}.`); return; }
 
     const items = Object.entries(cart).map(([id, qty]) => ({ menu_item_id: parseInt(id), quantity: qty }));
     if (!items.length) return;
-    if (!checkoutAddress.trim()) { alert("Please select or add a delivery address."); return; }
+    if (!checkoutAddress.trim()) { showToast("Please select or add a delivery address.", "success"); return; }
 
     if (!currentUser) {
       if (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim()) {
-        alert("Please provide your contact details (Name, Email, Phone) to place a guest order.");
+        showToast("Please provide your contact details (Name, Email, Phone, "success") to place a guest order.");
         return;
       }
     }
 
     if (paymentMethod === "ONLINE" && !currentUser) {
-      alert("Online payment requires an account. Please login, or choose Cash on Delivery.");
+      showToast("Online payment requires an account. Please login, or choose Cash on Delivery.", "success");
       return;
     }
 
@@ -546,7 +545,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         ? "Order placed and payment received. It is being prepared now."
         : "Order placed successfully. Your order is being prepared.");
     } catch (err) {
-      alert("Order failed: " + err.message);
+      showToast("Order failed: " + err.message, "error");
     } finally {
       setPaymentProcessing(false);
     }
@@ -566,7 +565,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         description: `Payment for Order #${orderId}`,
         order_id: rpOrder.razorpay_order_id,
         prefill: {
-          name: currentUser?.first_name || guestName || "",
+          name: currentUser?.full_name || guestName || "",
           email: currentUser?.email || guestEmail || "",
           contact: currentUser?.phone || guestPhone || ""
         },
@@ -590,17 +589,17 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
 
   // "Pay Now" from My Orders for orders left pending/unpaid.
   const handlePayNow = async (orderId) => {
-    if (!currentUser) { alert("Please login to pay online."); return; }
+    if (!currentUser) { showToast("Please login to pay online.", "success"); return; }
     setPaymentProcessing(true);
     try {
       await openRazorpayCheckout(orderId);
       loadData();
-      alert(`Payment received. Order #${orderId} is confirmed.`);
+      showToast(`Payment received. Order #${orderId} is confirmed.`, "success");
     } catch (err) {
       if (/closed|cancel/i.test(err?.message || "")) {
-        alert("Payment wasn't completed — you can pay anytime from My Orders.");
+        showToast("Payment wasn't completed — you can pay anytime from My Orders.", "success");
       } else {
-        alert("Payment failed: " + (err?.message || "Unknown error"));
+        showToast("Payment failed: " + (err?.message || "Unknown error", "error"));
       }
     } finally {
       setPaymentProcessing(false);
@@ -655,8 +654,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       setSelectedAddressId(newAddr.id);
       setCheckoutAddress(newAddr.address_line);
       setNewAddrVal(""); setNewAddrLabel("Home"); setShowAddressManager(false);
-      alert("Address saved!");
-    } catch { alert("Failed to add address"); }
+      showToast("Address saved!", "success");
+    } catch { showToast("Failed to add address", "error"); }
   };
 
   const handleDeleteAddress = async (id, e) => {
@@ -668,18 +667,18 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         const remaining = addresses.filter(a => a.id !== id);
         setSelectedAddressId(remaining[0]?.id || null);
       }
-    } catch { alert("Failed to delete address"); }
+    } catch { showToast("Failed to delete address", "error"); }
   };
 
   const handleConfirmReceipt = async (orderId) => {
     const code = trackingCodes[orderId];
-    if (!code?.trim()) { alert("Please enter the tracking code"); return; }
+    if (!code?.trim()) { showToast("Please enter the tracking code", "success"); return; }
     try {
       await api.confirmReceipt(orderId, code);
       setTrackingCodes(prev => ({ ...prev, [orderId]: "" }));
       loadData();
-      alert("Receipt confirmed!");
-    } catch (err) { alert("Error: " + err.message); }
+      showToast("Receipt confirmed!", "success");
+    } catch (err) { showToast("Error: " + err.message, "error"); }
   };
 
   const handleCancelOrder = async (orderId) => {
@@ -689,8 +688,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         loadData();
         const u = await api.refreshUser();
         if (u) setLiveUser(u);
-        alert("Order cancelled successfully.");
-      } catch (err) { alert("Error: " + err.message); }
+        showToast("Order cancelled successfully.", "success");
+      } catch (err) { showToast("Error: " + err.message, "error"); }
     });
   };
 
@@ -751,8 +750,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       y += 20; doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.setTextColor(150, 150, 150);
       doc.text("Thank you for choosing FoodPilot!", 105, y, { align: "center" });
       doc.save(`Invoice_Order_${order.id}.pdf`);
-      alert("Invoice downloaded!");
-    } catch (err) { alert("Failed: " + err.message); }
+      showToast("Invoice downloaded!", "success");
+    } catch (err) { showToast("Failed: " + err.message, "error"); }
   };
 
   const handleSubmitFeedback = async (orderId) => {
@@ -760,59 +759,59 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
     const comment = feedbackComments[orderId] || "";
     try {
       await api.submitFeedback(orderId, rating, comment);
-      loadData(); alert("Thank you for your feedback.");
-    } catch (err) { alert("Feedback failed: " + err.message); }
+      loadData(); showToast("Thank you for your feedback.", "success");
+    } catch (err) { showToast("Feedback failed: " + err.message, "error"); }
   };
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); setProfileUpdating(true);
     try {
       await api.updateProfile(profileForm);
-      alert("Profile updated successfully!");
+      showToast("Profile updated successfully!", "success");
       setIsEditingProfile(false);
-    } catch (err) { alert("Failed: " + err.message); } finally { setProfileUpdating(false); }
+    } catch (err) { showToast("Failed: " + err.message, "error"); } finally { setProfileUpdating(false); }
   };
 
   const handleRequestOtp = async (e) => {
     e.preventDefault(); setPasswordUpdating(true);
     try {
       await api.requestPasswordChangeOtp(passwordForm.old_password);
-      setOtpRequested(true); alert("OTP sent to your email.");
-    } catch (err) { alert("Failed: " + err.message); } finally { setPasswordUpdating(false); }
+      setOtpRequested(true); showToast("OTP sent to your email.", "success");
+    } catch (err) { showToast("Failed: " + err.message, "error"); } finally { setPasswordUpdating(false); }
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault(); setPasswordUpdating(true);
     try {
       await api.changePassword(passwordForm.old_password, passwordForm.otp, passwordForm.new_password);
-      alert("Password changed successfully!");
+      showToast("Password changed successfully!", "success");
       setOtpRequested(false); setPasswordForm({ old_password: "", otp: "", new_password: "" }); setIsEditingPassword(false);
-    } catch (err) { alert("Failed: " + err.message); } finally { setPasswordUpdating(false); }
+    } catch (err) { showToast("Failed: " + err.message, "error"); } finally { setPasswordUpdating(false); }
   };
 
   const handleDeleteAccount = async () => {
     if (!window.confirm("Are you sure? This is irreversible.")) return;
-    try { await api.deleteAccount(); alert("Account deleted."); window.location.reload(); }
-    catch (err) { alert("Failed: " + err.message); }
+    try { await api.deleteAccount(); showToast("Account deleted.", "success"); window.location.reload(); }
+    catch (err) { showToast("Failed: " + err.message, "error"); }
   };
 
   const handleDeleteMyReview = (id) => {
     confirm("Delete this review?", async () => {
-      try { await api.deleteCustomerReview(id); setMyReviews(prev => prev.filter(r => r.id !== id)); alert("Review deleted."); }
-      catch (err) { alert("Failed: " + err.message); }
+      try { await api.deleteCustomerReview(id); setMyReviews(prev => prev.filter(r => r.id !== id)); showToast("Review deleted.", "success"); }
+      catch (err) { showToast("Failed: " + err.message, "error"); }
     });
   };
 
   const handleCreateTicket = async (formData) => {
     await api.createTicket(formData);
-    alert("Support ticket submitted! We'll get back to you soon.");
+    showToast("Support ticket submitted! We'll get back to you soon.", "success");
     api.getCustomerTickets().then(setTickets).catch(() => {});
   };
 
   const handleDeleteTicket = (id) => {
     confirm("Delete this ticket?", async () => {
-      try { await api.deleteTicket(id); setTickets(prev => prev.filter(t => t.id !== id)); alert("Ticket deleted."); }
-      catch (err) { alert("Failed: " + err.message); }
+      try { await api.deleteTicket(id); setTickets(prev => prev.filter(t => t.id !== id)); showToast("Ticket deleted.", "success"); }
+      catch (err) { showToast("Failed: " + err.message, "error"); }
     });
   };
 

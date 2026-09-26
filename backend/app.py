@@ -494,7 +494,7 @@ def validate_public_url(url: str | None) -> bool:
         return u.startswith("https://")
     return u.startswith("http://") or u.startswith("https://")
 
-def sanitize_input(data, skip_keys=None):
+def sanitize_input(data, skip_keys=None, max_len=5000):
     if skip_keys is None:
         skip_keys = ["password", "new_password", "old_password", "image_url", "target_url", "icon", "attachment"]
         
@@ -505,12 +505,16 @@ def sanitize_input(data, skip_keys=None):
                 if not validate_public_url(v):
                     from werkzeug.exceptions import BadRequest
                     raise BadRequest("Invalid URL scheme")
-            result[k] = v if k in skip_keys else sanitize_input(v, skip_keys)
+            result[k] = v if k in skip_keys else sanitize_input(v, skip_keys, max_len=max_len)
         return result
     elif isinstance(data, list):
-        return [sanitize_input(i, skip_keys) for i in data]
+        return [sanitize_input(i, skip_keys, max_len=max_len) for i in data]
     elif isinstance(data, str):
-        return bleach.clean(data)
+        cleaned = bleach.clean(data)
+        if len(cleaned) > max_len:
+            from werkzeug.exceptions import BadRequest
+            raise BadRequest(f"Input exceeds maximum allowed length of {max_len} characters")
+        return cleaned
     return data
 
 
@@ -677,7 +681,9 @@ def create_app(config_override=None):
         if not db_url:
             if os.getenv("FLASK_ENV") == "production":
                 raise RuntimeError("MySQL database credentials must be provided in production.")
-            db_url = "sqlite:///food.db"
+            db_url = "sqlite:///instance/food.db"
+        
+        os.makedirs("instance", exist_ok=True)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

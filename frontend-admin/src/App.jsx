@@ -22,6 +22,8 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [dbMode, setDbMode] = useState("Checking...");
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   // Force password change state
   const [newPassword, setNewPassword] = useState("");
@@ -29,9 +31,10 @@ export default function App() {
   const [forceChangeLoading, setForceChangeLoading] = useState(false);
   const [forceChangeError, setForceChangeError] = useState("");
 
-
   const checkSession = async () => {
     try {
+      setLoading(true);
+      setFetchError(false);
       const mode = await api.getMode();
       setDbMode(mode);
       
@@ -52,14 +55,32 @@ export default function App() {
       }
     } catch (err) {
       console.error("Session init failed:", err);
-      api.logout();
-      setCurrentUser(null);
+      // Only treat as fatal initialization error if network is actually down or API is 5xx down
+      if (!navigator.onLine || err.message.includes("fetch")) {
+        setFetchError(true);
+      } else {
+        api.logout();
+        setCurrentUser(null);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { checkSession(); }, []);
+  useEffect(() => { 
+    checkSession();
+    
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
@@ -122,7 +143,7 @@ export default function App() {
   };
 
 
-  if (loading) {
+  if (loading || fetchError) {
     return (
       <div style={{
         minHeight: "100vh", display: "flex", alignItems: "center",
@@ -130,17 +151,34 @@ export default function App() {
       }}>
         <div style={{
           width: 56, height: 56,
-          background: "var(--brand)",
+          background: fetchError ? "#ef4444" : "var(--brand)",
           borderRadius: "var(--r-xl)", display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: "1.75rem",
-          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)", animation: "pulse-glow 2s ease-in-out infinite"
-        }}></div>
+          justifyContent: "center", fontSize: "1.75rem", color: "#fff",
+          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)", animation: fetchError ? "none" : "pulse-glow 2s ease-in-out infinite"
+        }}>
+          {fetchError ? <Zap size={24} /> : null}
+        </div>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-          Starting FoodPilot…
+          {fetchError ? "Unable to connect to the server." : "Starting FoodPilot…"}
         </p>
+        {fetchError && (
+          <button onClick={checkSession} className="btn btn-primary" style={{ marginTop: "1rem" }}>
+            Retry Connection
+          </button>
+        )}
       </div>
     );
   }
+
+  // Common banner for offline status across all views
+  const offlineBanner = isOffline ? (
+    <div style={{
+      background: "#ef4444", color: "#fff", padding: "0.5rem", textAlign: "center",
+      fontSize: "0.85rem", fontWeight: "600", position: "sticky", top: 0, zIndex: 9999
+    }}>
+      You are currently offline. Some features may not be available.
+    </div>
+  ) : null;
 
   if (window.location.pathname === "/verify-email") {
     return <VerifyEmail />;
@@ -161,6 +199,7 @@ export default function App() {
   return (
     <ErrorBoundary fallbackLabel="Application">
       <div>
+        {offlineBanner}
         <Suspense fallback={<SkeletonLoader />}>
           {currentUser.role === 'admin' && (
             <ErrorBoundary fallbackLabel="Admin Panel">
