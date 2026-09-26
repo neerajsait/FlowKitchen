@@ -1465,7 +1465,6 @@ The FoodPilot Team"""
         return jsonify({"message": "Account deleted successfully"}), 200
 
     @app.route("/api/admin/profile", methods=["PATCH"])
-    @jwt_required()
     @role_required("admin")
     def patch_admin_profile():
         uid = int(get_jwt_identity())
@@ -2374,12 +2373,10 @@ The FoodPilot Team"""
         return jsonify([req.to_dict() for req in requests]), 200
 
     @app.route("/api/kitchen/stock-requests", methods=["POST"])
-    @jwt_required()
+    @role_required("staff", "admin", "outlet_owner", "kitchen")
     def create_stock_request():
         uid = int(get_jwt_identity())
         user = db.session.get(User, uid)
-        if not user or user.role not in ("staff", "admin", "outlet_owner", "kitchen"):
-            return jsonify({"error": "Forbidden"}), 403
             
         data = sanitize_input(request.get_json(silent=True)) or {}
         outlet_id = data.get("outlet_id")
@@ -3207,12 +3204,10 @@ The FoodPilot Team"""
         return jsonify([r.to_dict() for r in reviews]), 200
 
     @app.route("/api/foods/menu-items/<int:item_id>/reviews", methods=["POST"])
-    @jwt_required()
+    @role_required("customer")
     def create_menu_item_review(item_id):
         uid = int(get_jwt_identity())
         user = db.session.get(User, uid)
-        if not user or user.role != "customer":
-            return jsonify({"error": "Forbidden", "message": "Only customers can submit reviews"}), 403
         
         item = db.session.get(MenuItem, item_id)
         if not item:
