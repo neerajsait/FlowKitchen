@@ -2,6 +2,14 @@ import React from "react";
 import { Star, StarHalf } from "../ui/Icon";
 
 export default function Rating({ value = 0, count = null, size = 14, showValue = true, interactive = false, onRate = null }) {
+  if (!interactive && value === 0) {
+    return (
+      <div className="rating-row" style={{ color: "var(--text-3)", fontSize: "0.8125rem", fontStyle: "italic" }}>
+        No ratings yet
+      </div>
+    );
+  }
+
   const full  = Math.floor(value);
   const half  = value - full >= 0.5;
   const empty = Math.max(0, 5 - full - (half ? 1 : 0));

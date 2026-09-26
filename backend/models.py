@@ -335,7 +335,7 @@ class MenuItem(db.Model):
             return avg
         if self.admin_rating is not None:
             return float(self.admin_rating)
-        return 4.0
+        return None
 
     @property
     def reviews_count(self):
