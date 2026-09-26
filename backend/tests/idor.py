@@ -31,7 +31,7 @@ class TestIDORVulnerabilities(unittest.TestCase):
         # ==========================================
         # 4. CREATE USER A (The "Attacker" / Tester)
         # ==========================================
-        self.attacker = User(email="attacker@test.com", role="customer", first_name="Attacker")
+        self.attacker = User(email="attacker@test.com", role="customer", full_name="Attacker")
         self.attacker.set_password("pass123", bcrypt)
         db.session.add(self.attacker)
         db.session.commit()
@@ -49,7 +49,7 @@ class TestIDORVulnerabilities(unittest.TestCase):
         # ==========================================
         # 5. CREATE USER B (The "Victim") & THEIR DATA
         # ==========================================
-        self.victim = User(email="victim@test.com", role="customer", first_name="Victim")
+        self.victim = User(email="victim@test.com", role="customer", full_name="Victim")
         self.victim.set_password("pass123", bcrypt)
         db.session.add(self.victim)
         db.session.commit()

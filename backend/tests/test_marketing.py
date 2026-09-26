@@ -18,7 +18,7 @@ class MarketingTestCase(unittest.TestCase):
         db.create_all()
         
         # Setup Users
-        self.admin = User(email="admin@test.com", first_name="Admin", role="admin")
+        self.admin = User(email="admin@test.com", full_name="Admin", role="admin")
         self.admin.admin_department = "Finance"
         self.admin.set_password("adminpass", bcrypt)
         db.session.add(self.admin)

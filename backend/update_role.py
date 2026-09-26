@@ -1,1 +1,0 @@
-from app import create_app, db; from sqlalchemy import text; app = create_app(); app.app_context().push(); db.session.execute(text("UPDATE users SET role='kitchen' WHERE staff_code='3134'")); db.session.commit(); print('Role updated!')

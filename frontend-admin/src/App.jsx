@@ -159,13 +159,29 @@ export default function App() {
 
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary fallbackLabel="Application">
       <div>
         <Suspense fallback={<SkeletonLoader />}>
-          {currentUser.role === 'admin' && <AdminView onLogout={handleLogout} dbMode={dbMode} />}
-          {currentUser.role === 'staff' && <StaffPOS onLogout={handleLogout} dbMode={dbMode} />}
-          {currentUser.role === 'outlet_owner' && <OutletOwnerView onLogout={handleLogout} dbMode={dbMode} />}
-          {currentUser.role === 'kitchen' && <KitchenView onLogout={handleLogout} dbMode={dbMode} />}
+          {currentUser.role === 'admin' && (
+            <ErrorBoundary fallbackLabel="Admin Panel">
+              <AdminView onLogout={handleLogout} dbMode={dbMode} />
+            </ErrorBoundary>
+          )}
+          {currentUser.role === 'staff' && (
+            <ErrorBoundary fallbackLabel="Staff POS">
+              <StaffPOS onLogout={handleLogout} dbMode={dbMode} />
+            </ErrorBoundary>
+          )}
+          {currentUser.role === 'outlet_owner' && (
+            <ErrorBoundary fallbackLabel="Outlet Owner Dashboard">
+              <OutletOwnerView onLogout={handleLogout} dbMode={dbMode} />
+            </ErrorBoundary>
+          )}
+          {currentUser.role === 'kitchen' && (
+            <ErrorBoundary fallbackLabel="Kitchen Display">
+              <KitchenView onLogout={handleLogout} dbMode={dbMode} />
+            </ErrorBoundary>
+          )}
           {currentUser.role !== 'admin' && currentUser.role !== 'staff' && currentUser.role !== 'outlet_owner' && currentUser.role !== 'kitchen' && (
             <div style={{ padding: "3rem", textAlign: "center" }}>
               <div className="empty-state">

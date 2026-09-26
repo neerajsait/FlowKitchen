@@ -38,9 +38,9 @@ class PaymentsFlowTestCase(unittest.TestCase):
 
         db.create_all()
 
-        self.customer = User(email="cust@test.com", first_name="Cust", role="customer")
+        self.customer = User(email="cust@test.com", full_name="Cust", role="customer")
         self.customer.set_password("custpass", bcrypt)
-        self.other = User(email="other@test.com", first_name="Other", role="customer")
+        self.other = User(email="other@test.com", full_name="Other", role="customer")
         self.other.set_password("otherpass", bcrypt)
         db.session.add_all([self.customer, self.other])
         db.session.commit()

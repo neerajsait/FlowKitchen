@@ -9,7 +9,7 @@ def client():
         with app.app_context():
             db.create_all()
             from models import User
-            admin = User(email="test@admin.com", first_name="Test", last_name="Admin", role="admin")
+            admin = User(email="test@admin.com", full_name="Test", role="admin")
             from app import bcrypt
             admin.set_password("admin", bcrypt)
             db.session.add(admin)
@@ -101,7 +101,7 @@ def test_refresh_preserves_claims(client):
     db.session.flush()
     
     # Create staff user
-    staff = User(email="staff@test.com", first_name="Staff", role="staff")
+    staff = User(email="staff@test.com", full_name="Staff", role="staff")
     staff.outlet_id = outlet.id
     staff.staff_code = "5555"
     staff.set_password("staff", bcrypt)

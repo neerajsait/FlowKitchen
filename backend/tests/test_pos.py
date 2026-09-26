@@ -27,7 +27,7 @@ class PosTestCase(unittest.TestCase):
         db.session.commit()
 
         # Setup Staff for POS
-        self.staff = Staff(email="staff@pos.com", first_name="Staff", outlet_id=self.outlet.id)
+        self.staff = Staff(email="staff@pos.com", full_name="Staff", outlet_id=self.outlet.id)
         self.staff.set_password("pospass", bcrypt)
         self.staff.set_pin("1234", bcrypt)
         db.session.add(self.staff)

@@ -18,7 +18,7 @@ class TestRBACAndPrivilegeEscalation(unittest.TestCase):
         db.create_all()
 
         # 3. Create a standard Customer (The "Attacker")
-        self.customer = User(email="sneaky_customer@test.com", role="customer", first_name="Sneaky")
+        self.customer = User(email="sneaky_customer@test.com", role="customer", full_name="Sneaky")
         self.customer.set_password("pass123", bcrypt)
         db.session.add(self.customer)
         db.session.commit()

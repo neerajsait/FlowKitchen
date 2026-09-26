@@ -27,7 +27,7 @@ class KitchenTestCase(unittest.TestCase):
         db.session.commit()
 
         # Setup Kitchen Staff
-        self.staff = KitchenStaff(email="kitchen@test.com", first_name="Kitchen", outlet_id=self.outlet.id)
+        self.staff = KitchenStaff(email="kitchen@test.com", full_name="Kitchen", outlet_id=self.outlet.id)
         self.staff.set_password("kitchenpass", bcrypt)
         db.session.add(self.staff)
         db.session.commit()

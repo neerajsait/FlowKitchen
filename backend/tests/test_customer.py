@@ -27,7 +27,7 @@ class CustomerTestCase(unittest.TestCase):
         db.session.commit()
 
         # Setup Customer
-        self.customer = User(email="customer@test.com", first_name="Customer", role="customer")
+        self.customer = User(email="customer@test.com", full_name="Customer", role="customer")
         self.customer.set_password("customerpass", bcrypt)
         self.customer.loyalty_points = 150
         db.session.add(self.customer)

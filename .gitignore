@@ -33,6 +33,8 @@ env/
 .DS_Store
 Thumbs.db
 backend/.env
+frontend-admin/.env
+frontend-customer/.env
 .env
 *.coverage
 backend/.coverage
@@ -43,3 +45,20 @@ run.txt
 fix.txt
 reset.py
 reset_mysql.py
+
+# Debug / one-off scripts (should not be committed)
+backend/check.py
+backend/check_user.py
+backend/create_owner.py
+backend/fix_staff_code.py
+backend/test_create.py
+backend/update_role.py
+migrate.py
+migrate_mysql.py
+refactor.py
+refactor_frontend.py
+fix_tests.py
+fix_tests_full_name.py
+test_create_staff.py
+backend/categories_grep.txt
+category_files.txt

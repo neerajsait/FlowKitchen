@@ -59,7 +59,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
         payload = {
             "email": "hacker@test.com",
             "password": "ValidPass123",
-            "first_name": "<script>alert('XSS')</script>",
+            "full_name": "<script>alert('XSS')</script>",
             "last_name": "Hacker",
             "phone": "9876543210", "address": "123 Test Street"
         }
@@ -80,7 +80,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
             payload = {
                 "email": f"test_{phone}@test.com",
                 "password": "ValidPass123",
-                "first_name": "John",
+                "full_name": "John",
                 "last_name": "Doe",
                 "phone": phone
             }
@@ -97,7 +97,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
         payload = {
             "email": "throwaway@10minutemail.com",
             "password": "ValidPass123",
-            "first_name": "Spammer",
+            "full_name": "Spammer",
             "last_name": "Bot",
             "phone": "9998887776"
         }

@@ -13,7 +13,7 @@ def client():
         with app.app_context():
             db.create_all()
             from models import Customer
-            c = Customer(email="test@cust.com", first_name="Test", last_name="Cust")
+            c = Customer(email="test@cust.com", full_name="Test")
             c.set_password("custpass", bcrypt)
             db.session.add(c)
             db.session.commit()
@@ -70,7 +70,7 @@ def test_url_validation_rejects_javascript(client):
     headers = {"Authorization": f"Bearer {token}"}
     
     data = {
-        "first_name": "Test",
+        "full_name": "Test",
         "image_url": "javascript:alert(1)"
     }
     res2 = client.put('/api/auth/profile', headers=headers, json=data)

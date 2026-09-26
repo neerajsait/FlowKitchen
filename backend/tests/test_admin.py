@@ -22,7 +22,7 @@ class AdminTestCase(unittest.TestCase):
         db.session.commit()
         
         # Setup initial admin user
-        self.admin = Admin(email="admin@test.com", first_name="Admin")
+        self.admin = Admin(email="admin@test.com", full_name="Admin")
         self.admin.is_superadmin = True
         self.admin.set_password("adminpass", bcrypt)
         db.session.add(self.admin)
@@ -111,7 +111,7 @@ class AdminTestCase(unittest.TestCase):
         resp = self.client.post("/api/admin/staff", json={
             "email": "staff@test.com",
             "password": "staffpass123",
-            "first_name": "Staff",
+            "full_name": "Staff",
             "last_name": "Member",
             "phone": "9876543210", "address": "123 Test Street",
             "pin": "1234",
@@ -121,7 +121,7 @@ class AdminTestCase(unittest.TestCase):
         self.assertIn(resp.status_code, [200, 201])
 
     def test_admin_delete_staff(self):
-        staff = Staff(email="temp@test.com", first_name="Temp")
+        staff = Staff(email="temp@test.com", full_name="Temp")
         staff.set_password("pass", bcrypt)
         db.session.add(staff)
         db.session.commit()
@@ -164,7 +164,7 @@ class AdminTestCase(unittest.TestCase):
         db.session.commit()
         
         # Setup initial admin user
-        self.admin = Admin(email="admin@test.com", first_name="Admin")
+        self.admin = Admin(email="admin@test.com", full_name="Admin")
         self.admin.is_superadmin = True
         self.admin.set_password("adminpass", bcrypt)
         db.session.add(self.admin)
@@ -253,7 +253,7 @@ class AdminTestCase(unittest.TestCase):
         resp = self.client.post("/api/admin/staff", json={
             "email": "staff@test.com",
             "password": "staffpass123",
-            "first_name": "Staff",
+            "full_name": "Staff",
             "last_name": "Member",
             "phone": "9876543210", "address": "123 Test Street",
             "pin": "1234",
@@ -263,7 +263,7 @@ class AdminTestCase(unittest.TestCase):
         self.assertIn(resp.status_code, [200, 201])
 
     def test_admin_delete_staff(self):
-        staff = Staff(email="temp@test.com", first_name="Temp")
+        staff = Staff(email="temp@test.com", full_name="Temp")
         staff.set_password("pass", bcrypt)
         db.session.add(staff)
         db.session.commit()

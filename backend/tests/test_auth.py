@@ -20,11 +20,11 @@ class AuthTestCase(unittest.TestCase):
         db.session.commit()
         
         # Setup initial users
-        self.admin = Admin(email="admin@test.com", first_name="Admin")
+        self.admin = Admin(email="admin@test.com", full_name="Admin")
         self.admin.is_superadmin = True
         self.admin.set_password("adminpass", bcrypt)
         
-        self.customer = Customer(email="customer@test.com", first_name="Cust")
+        self.customer = Customer(email="customer@test.com", full_name="Cust")
         self.customer.set_password("custpass", bcrypt)
         
         db.session.add_all([self.admin, self.customer])
@@ -47,7 +47,7 @@ class AuthTestCase(unittest.TestCase):
         resp = self.client.post("/api/auth/register", json={
             "email": "new@test.com",
             "password": "newpass123",
-            "first_name": "New",
+            "full_name": "New",
             "last_name": "User",
             "role": "customer",
             "phone": "9876543210", "address": "123 Test Street"
@@ -113,13 +113,13 @@ class AuthTestCase(unittest.TestCase):
     def test_update_profile(self):
         headers = self.get_jwt_headers("customer@test.com", "custpass")
         resp = self.client.put("/api/auth/profile", json={
-            "first_name": "UpdatedName"
+            "full_name": "UpdatedName"
         }, headers=headers)
         self.assertEqual(resp.status_code, 200)
         
         # Verify it stuck
         resp2 = self.client.get("/api/auth/me", headers=headers)
-        self.assertEqual(resp2.json["first_name"], "UpdatedName")
+        self.assertEqual(resp2.json["full_name"], "UpdatedName")
 
     # --- Password Tests ---
     def test_change_password(self):

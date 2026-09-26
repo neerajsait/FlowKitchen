@@ -27,13 +27,13 @@ class PosOrdersTestCase(unittest.TestCase):
         db.session.commit()
 
         # 2. Setup Staff for POS
-        self.staff = Staff(email="staff@test.com", first_name="Staff", outlet_id=self.outlet.id)
+        self.staff = Staff(email="staff@test.com", full_name="Staff", outlet_id=self.outlet.id)
         self.staff.set_password("staffpass", bcrypt)
         db.session.add(self.staff)
         db.session.commit()
 
         # 3. Setup Customer for Orders
-        self.customer = Customer(email="customer@test.com", first_name="Cust")
+        self.customer = Customer(email="customer@test.com", full_name="Cust")
         self.customer.is_email_verified = True
         self.customer.set_password("custpass", bcrypt)
         db.session.add(self.customer)

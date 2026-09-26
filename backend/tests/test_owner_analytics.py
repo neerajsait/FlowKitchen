@@ -27,12 +27,12 @@ class OwnerAnalyticsTestCase(unittest.TestCase):
         db.session.commit()
 
         # Setup Users
-        self.admin = User(email="admin@test.com", first_name="Admin", role="admin")
+        self.admin = User(email="admin@test.com", full_name="Admin", role="admin")
         self.admin.admin_department = "Operations"
         self.admin.set_password("adminpass", bcrypt)
         db.session.add(self.admin)
 
-        self.owner = User(email="owner@test.com", first_name="Owner", role="outlet_owner")
+        self.owner = User(email="owner@test.com", full_name="Owner", role="outlet_owner")
         self.owner.outlet_id = self.outlet.id
         self.owner.set_password("ownerpass", bcrypt)
         db.session.add(self.owner)
