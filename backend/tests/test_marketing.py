@@ -49,12 +49,6 @@ class MarketingTestCase(unittest.TestCase):
         db.drop_all()
         self.ctx.pop()
 
-    def test_whatsapp_webhook(self):
-        import os
-        os.environ["WHATSAPP_VERIFY_TOKEN"] = "test-token"
-        resp = self.client.get("/api/whatsapp/webhook?hub.mode=subscribe&hub.verify_token=test-token&hub.challenge=123")
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.text, "123")
 
     def test_get_coupons(self):
         resp = self.client.get("/api/admin/coupons", headers=self.admin_headers)

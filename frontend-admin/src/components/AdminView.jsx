@@ -228,7 +228,6 @@ export default function AdminView({ onLogout, dbMode }) {
   const [menuIsPopular, setMenuIsPopular] = useState(false);
   const [showEditMenu, setShowEditMenu] = useState(false);
   const [editMenuId, setEditMenuId] = useState(null);
-  const [whatsappMessages, setWhatsappMessages] = useState([]);
 
   const [showAddOutlet, setShowAddOutlet] = useState(false);
   const [editingOutletId, setEditingOutletId] = useState(null);
@@ -298,7 +297,6 @@ export default function AdminView({ onLogout, dbMode }) {
       try { const t = await api.adminGetTickets(); setTickets(t); } catch (err) { }
       try { const r = await api.adminGetFinance(); setRevenueShare(r.revenue_share || []); } catch (err) { }
       try { const reqs = await api.getStockRequests(); setStockRequests(reqs); } catch (err) { }
-      try { const wa = await api.adminGetWhatsAppMessages(); setWhatsappMessages(wa); } catch (err) { }
       try {
         const res = await fetch(`${API_BASE_URL}/admin/batches`, { headers: { "Authorization": `Bearer ${api.getAccessToken()}` } });
         if (res.ok) setBatches(await res.json());
@@ -970,7 +968,6 @@ export default function AdminView({ onLogout, dbMode }) {
     { id: "qr", label: "QR Dispatch", icon: QrCode, depts: ["SuperAdmin", "Operations"] },
     { id: "coupons", label: "Discount Coupons", icon: Tag, depts: ["SuperAdmin", "Finance"] },
     { id: "tickets", label: "Support Tickets", icon: MessageSquare, depts: ["SuperAdmin", "Operations"] },
-    { id: "whatsapp", label: "WhatsApp Logs", icon: MessageCircle, depts: ["SuperAdmin", "Operations"] },
     { id: "crm", label: "CRM & Wallets", icon: Megaphone, depts: ["SuperAdmin", "Operations", "Finance"] },
     { id: "banners", label: "Banners", icon: Image, depts: ["SuperAdmin", "Operations"] },
     { id: "settings", label: "Store Settings", icon: Settings, depts: ["SuperAdmin"] },

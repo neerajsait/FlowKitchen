@@ -1774,21 +1774,6 @@ def admin_delete_review(review_id):
     return _inner()
 
 
-# ============================================================
-# ADMIN ROUTES – WhatsApp
-# ============================================================
-
-@admin_bp.route("/api/admin/whatsapp", methods=["GET"])
-def admin_get_whatsapp_messages():
-    role_required = _get("role_required")
-
-    @role_required("admin")
-    def _inner():
-        from models import WhatsAppMessage
-        messages = db.session.execute(db.select(WhatsAppMessage).order_by(WhatsAppMessage.created_at.desc())).scalars().all()
-        return jsonify([m.to_dict() for m in messages]), 200
-    return _inner()
-
 
 # ============================================================
 # ADMIN ROUTES – Wallet & CRM
