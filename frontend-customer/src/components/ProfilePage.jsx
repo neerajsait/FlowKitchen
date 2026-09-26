@@ -74,14 +74,10 @@ export default function ProfilePage({
           </div>
         ) : (
           <form onSubmit={handleUpdateProfile} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.875rem" }}>
               <div className="form-group">
-                <label className="form-label">First Name</label>
+                <label className="form-label">Full Name</label>
                 <input className="form-input" value={profileForm.full_name} onChange={e => setProfileForm(f => ({ ...f, full_name: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Last Name</label>
-                <input className="form-input" value={profileForm.last_name} onChange={e => setProfileForm(f => ({ ...f, last_name: e.target.value }))} />
               </div>
             </div>
             <div className="form-group">

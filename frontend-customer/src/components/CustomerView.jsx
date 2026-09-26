@@ -485,7 +485,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
     if (storeSettings.is_holiday === "true")       { showToast("We're on a holiday break.", "success"); return; }
 
     const minOrder = parseFloat(storeSettings.min_order_value || "0");
-    if (getCartTotal() < minOrder) { showToast(`Minimum order value is ₹${minOrder.toFixed(0, "success")}.`); return; }
+    if (getCartTotal() < minOrder) { showToast(`Minimum order value is ₹${minOrder.toFixed(0)}.`, "warning"); return; }
 
     const items = Object.entries(cart).map(([id, qty]) => ({ menu_item_id: parseInt(id), quantity: qty }));
     if (!items.length) return;
@@ -493,7 +493,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
 
     if (!currentUser) {
       if (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim()) {
-        showToast("Please provide your contact details (Name, Email, Phone, "success") to place a guest order.");
+        showToast("Please provide your contact details (Name, Email, Phone) to place a guest order.", "warning");
         return;
       }
     }
@@ -599,7 +599,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       if (/closed|cancel/i.test(err?.message || "")) {
         showToast("Payment wasn't completed — you can pay anytime from My Orders.", "success");
       } else {
-        showToast("Payment failed: " + (err?.message || "Unknown error", "error"));
+        showToast("Payment failed: " + (err?.message || "Unknown error"), "error");
       }
     } finally {
       setPaymentProcessing(false);
