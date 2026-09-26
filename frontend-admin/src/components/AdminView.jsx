@@ -1165,12 +1165,6 @@ export default function AdminView({ onLogout, dbMode }) {
             <button className="btn-icon hide-mobile" onClick={loadData} disabled={loading} title="Refresh Data" style={{ borderRadius: "var(--r-full)" }}>
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             </button>
-            <button className="btn btn-primary hide-mobile" onClick={() => setShowAddMenu(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
-              <Plus size={14} /> New Product
-            </button>
-            <button className="btn btn-secondary hide-mobile" onClick={() => setShowAddStaff(true)} style={{ borderRadius: "var(--r-full)", padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
-              <Users size={14} /> Add Staff
-            </button>
           </div>
 
           <div className="hide-mobile" style={{ width: "1px", height: "24px", background: "var(--border-subtle)" }}></div>
@@ -1640,7 +1634,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         <card.icon size={18} />
                       </div>
                     </div>
-                    <div className="stat-card-value" style={{ color: card.color }}>{card.value}</div>
+                    <div className="stat-card-value">{card.value}</div>
                   </div>
                 ))}
               </div>
@@ -1654,7 +1648,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         <XAxis dataKey="date" axisLine={false} tickLine={false} />
                         <YAxis hide />
                         <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: "8px", background: "var(--bg-card)" }} />
-                        <Bar dataKey="b2c" stackId="a" fill="var(--brand)" radius={[0, 0, 4, 4]} />
+                        <Bar dataKey="b2c" stackId="a" fill="var(--brand)" radius={[4, 4, 0, 0]} />
                         <Bar dataKey="pos" stackId="a" fill="var(--info)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -1665,7 +1659,7 @@ export default function AdminView({ onLogout, dbMode }) {
                   </div>
                 </div>
 
-                <div className="panel" style={{ padding: "1.5rem", marginTop: "1.5rem" }}>
+                <div className="panel" style={{ padding: "1.5rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
                     <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", margin: 0 }} title="AI-driven estimate of future sales based on past data, weather and holidays">AI Demand Forecast (Next 7 Days) ℹ</h3>
                     <span style={{ fontSize: "0.75rem", background: "rgba(139,92,246,0.12)", color: "#8b5cf6", padding: "4px 8px", borderRadius: "12px", fontWeight: 700 }}>Powered by AI</span>
