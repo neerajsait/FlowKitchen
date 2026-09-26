@@ -674,6 +674,17 @@ export const api = {
     return safeJson(res);
   },
 
+  async adminCreateUser(data) {
+    const res = await fetch(`${API_BASE_URL}/admin/staff`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      body: JSON.stringify(data)
+    });
+    const result = await safeJson(res);
+    if (!res.ok) throw new Error(result.message || result.error || "Failed to create user");
+    return result;
+  },
+
   async adminUpdateUser(userId, data) {
     const res = await fetch(`${API_BASE_URL}/admin/staff/${userId}`, {
       method: "PUT",

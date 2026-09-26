@@ -281,12 +281,12 @@ export default function Login({ onLoginSuccess }) {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPass(!showPass)}
+                      onClick={(e) => { e.preventDefault(); setShowPass(!showPass); }}
                       style={{
-                        position: "absolute", right: "0.9rem", top: "50%",
-                        transform: "translateY(-50%)", background: "none",
+                        position: "absolute", right: "0.5rem", top: "50%",
+                        transform: "translateY(-50%)", background: "transparent",
                         border: "none", color: "var(--text-muted)", cursor: "pointer",
-                        display: "flex"
+                        display: "flex", zIndex: 100, pointerEvents: "auto", padding: "0.5rem"
                       }}
                     >
                       {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -330,12 +330,12 @@ export default function Login({ onLoginSuccess }) {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPass(!showPass)}
+                      onClick={(e) => { e.preventDefault(); setShowPass(!showPass); }}
                       style={{
-                        position: "absolute", right: "0.9rem", top: "50%",
-                        transform: "translateY(-50%)", background: "none",
+                        position: "absolute", right: "0.5rem", top: "50%",
+                        transform: "translateY(-50%)", background: "transparent",
                         border: "none", color: "var(--text-muted)", cursor: "pointer",
-                        display: "flex"
+                        display: "flex", zIndex: 100, pointerEvents: "auto", padding: "0.5rem"
                       }}
                     >
                       {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -378,19 +378,6 @@ export default function Login({ onLoginSuccess }) {
             </button>
           </form>
 
-          {/* Toggle mode */}
-          <div style={{ textAlign: "center", marginTop: "1rem" }}>
-            <button
-              onClick={() => { setIsRegistering(!isRegistering); setError(""); setMessage(""); }}
-              style={{
-                background: "none", border: "none", color: "var(--text-secondary)",
-                cursor: "pointer", fontWeight: 600, fontSize: "0.82rem",
-                textDecoration: "underline", fontFamily: "var(--font-body)"
-              }}
-            >
-              {isRegistering ? "← Back to Sign In" : "New customer? Create account"}
-            </button>
-          </div>
         </div>
       </div>
 

@@ -769,6 +769,11 @@ def admin_get_staff():
             User.role.in_(["staff", "outlet_owner", "kitchen", "customer"]),
             User.deleted_at.is_(None)
         ).order_by(User.created_at.desc())
+        
+        if current_user.role == "outlet_owner":
+            owner_outlet_ids = [o.id for o in getattr(current_user, 'owned_outlets', [])]
+            query = query.where(User.outlet_id.in_(owner_outlet_ids), User.role == "staff")
+            
         staff = db.session.scalars(query).all()
         return jsonify([u.to_dict() for u in staff]), 200
     return _inner()
@@ -776,11 +781,11 @@ def admin_get_staff():
 
 @admin_bp.route("/api/admin/staff", methods=["POST"])
 def admin_create_staff():
-    department_required = _get("department_required")
+    role_required = _get("role_required")
     sanitize_input = _get("sanitize_input")
     validate_phone = _get("validate_phone")
 
-    @department_required("HR")
+    @role_required("admin", "outlet_owner")
     def _inner():
         import secrets
         import string
@@ -802,13 +807,22 @@ def admin_create_staff():
         role = (data.get("role") or "staff").strip().lower()
         if role not in ("staff", "admin", "outlet_owner", "kitchen"):
             return jsonify({"error": "Bad Request", "message": "Invalid role"}), 400
-
         claims = get_jwt()
-        if role == "admin" and not claims.get("is_superadmin"):
-            return jsonify({"error": "Forbidden", "message": "Only super-admins can create admin accounts"}), 403
-        if role == "outlet_owner" and claims.get("role") != "admin":
-            return jsonify({"error": "Forbidden", "message": "Only admins can create outlet owners"}), 403
-
+        current_user = db.session.get(User, get_jwt_identity())
+        
+        if claims.get("role") == "admin":
+            if not claims.get("is_superadmin") and claims.get("admin_department") not in ("HR", "SuperAdmin"):
+                return jsonify({"error": "Forbidden", "message": "HR department required"}), 403
+            if role == "admin" and not claims.get("is_superadmin"):
+                return jsonify({"error": "Forbidden", "message": "Only super-admins can create admin accounts"}), 403
+        elif claims.get("role") == "outlet_owner":
+            if role != "staff":
+                return jsonify({"error": "Forbidden", "message": "Outlet owners can only create staff roles"}), 403
+            if not outlet_id:
+                return jsonify({"error": "Bad Request", "message": "outlet_id is required"}), 400
+            owner_outlet_ids = [o.id for o in getattr(current_user, 'owned_outlets', [])]
+            if outlet_id not in owner_outlet_ids:
+                return jsonify({"error": "Forbidden", "message": "You can only assign staff to your own outlets."}), 403
         if not email:
             return jsonify({"error": "Bad Request", "message": "email required"}), 400
         if db.session.scalars(select(User).where(User.email == email)).first():
@@ -864,20 +878,32 @@ def admin_create_staff():
 
 @admin_bp.route("/api/admin/staff/<int:user_id>", methods=["PUT"])
 def admin_edit_staff(user_id):
-    department_required = _get("department_required")
+    role_required = _get("role_required")
     sanitize_input = _get("sanitize_input")
     validate_phone = _get("validate_phone")
     log_admin_action = _get("log_admin_action")
 
-    @department_required("HR")
+    @role_required("admin", "outlet_owner")
     def _inner():
         import re
         _send_admin_password_changed_email = _get("_send_admin_password_changed_email")
         from flask import current_app
 
+        claims = get_jwt()
+        if claims.get("role") == "admin":
+            if not claims.get("is_superadmin") and claims.get("admin_department") not in ("HR", "SuperAdmin"):
+                return jsonify({"error": "Forbidden", "message": "HR department required"}), 403
+
         user = db.session.get(User, user_id)
         if not user or user.role not in ("staff", "admin", "outlet_owner", "kitchen", "customer"):
             return jsonify({"error": "Not Found"}), 404
+            
+        current_user = db.session.get(User, get_jwt_identity())
+        if claims.get("role") == "outlet_owner":
+            owner_outlet_ids = [o.id for o in getattr(current_user, 'owned_outlets', [])]
+            if user.role != "staff" or user.outlet_id not in owner_outlet_ids:
+                return jsonify({"error": "Forbidden", "message": "You can only edit staff in your assigned outlets."}), 403
+
         if getattr(user, 'is_superadmin', False):
             return jsonify({"error": "Forbidden", "message": "Cannot modify a super-admin."}), 403
         data = (sanitize_input(request.get_json(silent=True)) or {})

@@ -72,6 +72,62 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
     }
   };
 
+  const [showEditStaff, setShowEditStaff] = useState(false);
+  const [editStaffId, setEditStaffId] = useState(null);
+  const [editStaffForm, setEditStaffForm] = useState({ first_name: "", last_name: "", phone: "", is_active: true, outlet_id: "" });
+  const [staffUpdating, setStaffUpdating] = useState(false);
+
+  const openEditStaff = (staff) => {
+    setEditStaffId(staff.id);
+    setEditStaffForm({
+      first_name: staff.first_name || "",
+      last_name: staff.last_name || "",
+      phone: staff.phone || "",
+      is_active: staff.is_active,
+      outlet_id: staff.outlet_id || ""
+    });
+    setShowEditStaff(true);
+  };
+
+  const handleUpdateStaff = async (e) => {
+    e.preventDefault();
+    setStaffUpdating(true);
+    try {
+      await api.adminUpdateUser(editStaffId, editStaffForm);
+      alert("Staff updated successfully!");
+      setShowEditStaff(false);
+      loadData();
+    } catch (err) {
+      alert("Failed to update staff: " + err.message);
+    } finally {
+      setStaffUpdating(false);
+    }
+  };
+
+  const [showAddStaff, setShowAddStaff] = useState(false);
+  const [addStaffForm, setAddStaffForm] = useState({ first_name: "", last_name: "", email: "", phone: "", role: "staff", outlet_id: "" });
+  const [staffAdding, setStaffAdding] = useState(false);
+
+  const handleAddStaff = async (e) => {
+    e.preventDefault();
+    if (!addStaffForm.outlet_id) {
+      alert("Please select an outlet for this staff.");
+      return;
+    }
+    setStaffAdding(true);
+    try {
+      await api.adminCreateUser(addStaffForm);
+      alert("Staff added successfully!");
+      setShowAddStaff(false);
+      setAddStaffForm({ first_name: "", last_name: "", email: "", phone: "", role: "staff", outlet_id: "" });
+      loadData();
+    } catch (err) {
+      alert("Failed to add staff: " + err.message);
+    } finally {
+      setStaffAdding(false);
+    }
+  };
+
   // const [activeTab, setActiveTab] = useState("outlets");
   const [outlets, setOutlets] = useState([]);
   const [selectedOutlet, setSelectedOutlet] = useState(null);
@@ -262,37 +318,16 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
           <p style={{ opacity: 0.85, fontSize: "0.9rem", margin: "0.25rem 0 0", fontWeight: 500 }}>Monitor live stock levels, configure retail stations, and audit safety limits</p>
         </div>
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap", position: "relative", zIndex: 2 }}>
-          {dbMode && (
-            <div style={{
-              fontSize: "0.72rem", color: "#FFF",
-              background: "rgba(255,255,255,0.15)",
-              backdropFilter: "blur(4px)",
-              padding: "0.4rem 0.85rem", borderRadius: "var(--r-full)", fontWeight: 700,
-              border: "1px solid rgba(255,255,255,0.25)",
-              textTransform: "uppercase", letterSpacing: "0.05em"
-            }}>
-              {dbMode.includes("Live") ? "● Live Database" : "● Server Offline"}
-            </div>
-          )}
-          <button className="btn" onClick={loadData} disabled={loading} style={{
+          <button className="btn" onClick={loadData} disabled={loading} title="Refresh" style={{
             background: "rgba(255,255,255,0.2)", color: "#FFF", border: "1px solid rgba(255,255,255,0.25)",
-            padding: "0.6rem 1.2rem", borderRadius: "10px", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem",
+            padding: "0.6rem", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center",
             cursor: "pointer", transition: "all 0.2s"
           }}
           onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.3)"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.2)"; }}>
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            {loading ? "Refreshing..." : "Refresh"}
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </button>
-          <button className="btn" onClick={() => setShowAddOutlet(true)} style={{
-            background: "#FFF", color: "var(--brand)", border: "none",
-            padding: "0.6rem 1.2rem", borderRadius: "10px", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem",
-            cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.08)", transition: "all 0.2s"
-          }}
-          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.12)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)"; }}>
-            <Plus size={14} /> Register Outlet
-          </button>
+
           <button className="btn" onClick={openProfileModal} style={{
             background: "rgba(255,255,255,0.1)", color: "#FFF", border: "1px solid rgba(255,255,255,0.15)",
             padding: "0.6rem 1.2rem", borderRadius: "10px", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem",
@@ -368,13 +403,13 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
       </div>
 
       <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-light)", paddingBottom: "0.5rem" }}>
-        {["inventory", "users", "reviews"].map(t => (
+        {["inventory", "staff"].map(t => (
           <button key={t} onClick={() => setActiveTab(t)} style={{
             background: "none", border: "none", fontSize: "1rem", fontWeight: activeTab === t ? 700 : 500,
             color: activeTab === t ? "var(--brand)" : "var(--text-secondary)", cursor: "pointer",
             borderBottom: activeTab === t ? "2px solid var(--brand)" : "none", paddingBottom: "0.5rem"
           }}>
-            {t === "inventory" ? "Inventory" : t === "users" ? "Users & Loyalty" : "Reviews"}
+            {t === "inventory" ? "Inventory" : "Staff"}
           </button>
         ))}
       </div>
@@ -384,41 +419,35 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
           <div className="spinner" style={{ margin: "0 auto 1rem" }}></div>
           <p>Loading owner dashboard...</p>
         </div>
-      ) : activeTab === "users" ? (
+      ) : activeTab === "staff" ? (
         <div className="table-container">
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+            <button className="btn btn-primary" onClick={() => setShowAddStaff(true)} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <User size={16} /> Add Staff
+            </button>
+          </div>
           <table className="custom-table">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Role</th><th>Loyalty Points</th></tr>
+              <tr><th>Name</th><th>Email</th><th>Outlet</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>{u.first_name} {u.last_name}</td>
-                  <td>{u.email}</td>
-                  <td><span className="status-badge" style={{ background: "var(--bg-secondary)", color: "var(--text-primary)" }}>{u.role}</span></td>
-                  <td><strong>{u.loyalty_points || 0}</strong> pts</td>
-                </tr>
-              ))}
-              {users.length === 0 && <tr><td colSpan="4" style={{ textAlign: "center", padding: "2rem" }}>No users found.</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      ) : activeTab === "reviews" ? (
-        <div className="table-container">
-          <table className="custom-table">
-            <thead>
-              <tr><th>Date</th><th>Customer</th><th>Rating</th><th>Comment</th></tr>
-            </thead>
-            <tbody>
-              {reviews.map(r => (
-                <tr key={r.id}>
-                  <td>{new Date(r.created_at).toLocaleDateString()}</td>
-                  <td>{r.customer_name}</td>
-                  <td>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</td>
-                  <td>{r.comment || "-"}</td>
-                </tr>
-              ))}
-              {reviews.length === 0 && <tr><td colSpan="4" style={{ textAlign: "center", padding: "2rem" }}>No reviews found.</td></tr>}
+              {users.filter(u => u.role === "staff").map(u => {
+                const staffOutlet = outlets.find(o => o.id === u.outlet_id);
+                return (
+                  <tr key={u.id}>
+                    <td>{u.first_name} {u.last_name}</td>
+                    <td>{u.email}</td>
+                    <td>{staffOutlet ? staffOutlet.name : "Unassigned"}</td>
+                    <td><span className="status-badge" style={{ background: u.is_active ? "var(--success-bg)" : "var(--error-bg)", color: u.is_active ? "var(--success)" : "var(--error)" }}>{u.is_active ? "Active" : "Inactive"}</span></td>
+                    <td>
+                      <button className="btn-icon" onClick={() => openEditStaff(u)} title="Edit Staff" style={{ color: "var(--brand)", background: "none", border: "none", cursor: "pointer", padding: "0.4rem" }}>
+                        <Edit3 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {users.filter(u => u.role === "staff").length === 0 && <tr><td colSpan="4" style={{ textAlign: "center", padding: "2rem" }}>No staff found for your outlets.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -435,7 +464,7 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
         }}>
           <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", fontWeight: 800, marginBottom: "1.25rem", color: "var(--text-primary)" }}>My Outlets</h2>
           {outlets.length === 0 ? (
-            <EmptyState icon={Store} message="No outlets registered yet. Click 'Register Outlet' to add one." />
+            <EmptyState icon={Store} message="No outlets assigned to your account yet. Please contact an administrator." />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {outlets.map(o => {
@@ -709,6 +738,75 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
           <button type="submit" disabled={profileUpdating} className="btn btn-primary" style={{ marginTop: "0.5rem", padding: "0.75rem", fontWeight: "700" }}>
             {profileUpdating ? "Saving..." : "Save Changes"}
           </button>
+        </form>
+      </Modal>
+
+      <Modal open={showEditStaff} onClose={() => setShowEditStaff(false)} title="Edit Staff Member">
+        <form onSubmit={handleUpdateStaff} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          <div className="grid-responsive-2col" style={{ gap: "1rem" }}>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">First Name</label>
+              <input type="text" className="form-input" required value={editStaffForm.first_name} onChange={e => setEditStaffForm({ ...editStaffForm, first_name: e.target.value })} />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">Last Name</label>
+              <input type="text" className="form-input" required value={editStaffForm.last_name} onChange={e => setEditStaffForm({ ...editStaffForm, last_name: e.target.value })} />
+            </div>
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label">Phone Number</label>
+            <input type="tel" maxLength={10} className="form-input" pattern="\d{10}" placeholder="9876543210" value={editStaffForm.phone} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setEditStaffForm({ ...editStaffForm, phone: val }); }} />
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+              <input type="checkbox" checked={editStaffForm.is_active} onChange={e => setEditStaffForm({ ...editStaffForm, is_active: e.target.checked })} style={{ width: "16px", height: "16px" }} />
+              Active Status
+            </label>
+            <small style={{ color: "var(--text-muted)", fontSize: "0.8rem", display: "block" }}>Unchecking this will disable the staff account.</small>
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
+            <button type="submit" disabled={staffUpdating} className="btn btn-primary" style={{ flex: 1, padding: "0.75rem", fontWeight: "700" }}>
+              {staffUpdating ? "Saving..." : "Save Changes"}
+            </button>
+            <button type="button" onClick={() => setShowEditStaff(false)} className="btn btn-secondary" style={{ flex: 1, padding: "0.75rem", fontWeight: "700" }}>Cancel</button>
+          </div>
+        </form>
+      </Modal>
+      <Modal open={showAddStaff} onClose={() => setShowAddStaff(false)} title="Add Staff Member">
+        <form onSubmit={handleAddStaff} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          <div className="grid-responsive-2col" style={{ gap: "1rem" }}>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">First Name</label>
+              <input type="text" className="form-input" required value={addStaffForm.first_name} onChange={e => setAddStaffForm({ ...addStaffForm, first_name: e.target.value })} />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">Last Name</label>
+              <input type="text" className="form-input" required value={addStaffForm.last_name} onChange={e => setAddStaffForm({ ...addStaffForm, last_name: e.target.value })} />
+            </div>
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label">Email Address</label>
+            <input type="email" className="form-input" required value={addStaffForm.email} onChange={e => setAddStaffForm({ ...addStaffForm, email: e.target.value.toLowerCase() })} />
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label">Phone Number</label>
+            <input type="tel" maxLength={10} className="form-input" pattern="\d{10}" required placeholder="9876543210" value={addStaffForm.phone} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setAddStaffForm({ ...addStaffForm, phone: val }); }} />
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label">Assign to Outlet</label>
+            <select className="form-select" value={addStaffForm.outlet_id} onChange={e => setAddStaffForm({ ...addStaffForm, outlet_id: parseInt(e.target.value) || "" })} required>
+              <option value="">Select an outlet...</option>
+              {outlets.map(o => (
+                <option key={o.id} value={o.id}>{o.name}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
+            <button type="submit" disabled={staffAdding} className="btn btn-primary" style={{ flex: 1, padding: "0.75rem", fontWeight: "700" }}>
+              {staffAdding ? "Adding..." : "Add Staff"}
+            </button>
+            <button type="button" onClick={() => setShowAddStaff(false)} className="btn btn-secondary" style={{ flex: 1, padding: "0.75rem", fontWeight: "700" }}>Cancel</button>
+          </div>
         </form>
       </Modal>
 

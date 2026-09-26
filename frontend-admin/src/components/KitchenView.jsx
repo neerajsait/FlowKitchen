@@ -227,6 +227,72 @@ const premiumStyles = `
     animation: spin 1s linear infinite;
   }
   @keyframes spin { 100% { transform: rotate(360deg); } }
+  
+  @media (max-width: 768px) {
+    .kv-wrapper {
+      flex-direction: column;
+    }
+    .kv-sidebar {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.5rem 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .kv-brand {
+      margin-bottom: 0;
+    }
+    .kv-sidebar > div:nth-child(2) {
+      display: flex;
+      flex-direction: row;
+      flex: none !important;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: space-between;
+      order: 3;
+      margin-top: 0.5rem;
+    }
+    .operations-label {
+      display: none;
+    }
+    .kv-nav-btn {
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+    .kv-main {
+      padding: 1rem;
+    }
+    .kv-grid {
+      grid-template-columns: 1fr;
+    }
+    .desktop-only {
+      display: none !important;
+    }
+  }
+  
+  .mobile-only {
+    display: none !important;
+  }
+  @media (max-width: 768px) {
+    .mobile-only {
+      display: flex !important;
+    }
+    .kv-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+    }
+    .kv-title {
+      font-size: 1.1rem;
+    }
+  }
 `;
 
 export default function KitchenView({ onLogout, dbMode }) {
@@ -306,16 +372,26 @@ export default function KitchenView({ onLogout, dbMode }) {
       <style>{premiumStyles}</style>
       <div className="kv-wrapper">
         <aside className="kv-sidebar">
-          <div className="kv-brand">
-            <div className="kv-brand-icon"><ChefHat size={28} /></div>
-            <div>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#0f172a" }}>Kitchen Hub</h2>
-              <p style={{ fontSize: "0.75rem", color: "#64748b", margin: 0, fontWeight: 600 }}>{dbMode.toUpperCase()} MODE</p>
+          <div className="kv-brand-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginBottom: "1rem" }}>
+            <div className="kv-brand" style={{ marginBottom: 0 }}>
+              <div className="kv-brand-icon"><ChefHat size={28} /></div>
+              <div>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#0f172a" }}>Kitchen Hub</h2>
+                <p style={{ fontSize: "0.75rem", color: "#64748b", margin: 0, fontWeight: 600 }}>{dbMode.toUpperCase()} MODE</p>
+              </div>
+            </div>
+            <div className="mobile-only" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <button onClick={loadData} disabled={loading} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+                <RefreshCw size={20} className={loading ? "spin-anim" : ""} />
+              </button>
+              <button onClick={onLogout} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px" }}>
+                <LogOut size={20} />
+              </button>
             </div>
           </div>
           
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "1rem" }}>
+          <div style={{ flex: 1, width: "100%" }}>
+            <p className="operations-label" style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "1rem" }}>
               Operations
             </p>
             <button className={`kv-nav-btn ${activeTab === "orders" ? "active" : ""}`} onClick={() => setActiveTab("orders")}>
@@ -326,18 +402,18 @@ export default function KitchenView({ onLogout, dbMode }) {
             </button>
           </div>
           
-          <button className="kv-nav-btn" onClick={onLogout} style={{ color: "#ef4444" }}>
+          <button className="kv-nav-btn desktop-only" onClick={onLogout} style={{ color: "#ef4444" }}>
             <LogOut size={20} /> Sign Out
           </button>
         </aside>
 
         <main className="kv-main">
-          <header className="kv-header">
+          <header className={`kv-header ${activeTab === "orders" ? "desktop-only" : ""}`}>
             <h1 className="kv-title">
               {activeTab === "orders" ? "Live Customer Orders" : "Restock Requests & Production"}
             </h1>
             <div style={{ display: "flex", gap: "1rem" }}>
-              <button className="kv-btn-icon" onClick={loadData} disabled={loading} title="Refresh">
+              <button className="kv-btn-icon desktop-only" onClick={loadData} disabled={loading} title="Refresh">
                 <RefreshCw size={20} className={loading ? "spin-anim" : ""} />
               </button>
               {activeTab === "restock" && (
