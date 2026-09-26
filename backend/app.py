@@ -1761,8 +1761,6 @@ The FoodPilot Team"""
                     logger.info(f"[NOTIFICATION] KITCHEN/ADMIN: Item '{menu_item.name}' is now SOLD OUT!")
 
             price = menu_item.price
-            if not customer_id and menu_item.original_price and menu_item.original_price > menu_item.price:
-                price = menu_item.original_price
             total += price * qty
             order_items.append(OrderItem(menu_item_id=mid, price=price, quantity=qty))
         
@@ -2168,7 +2166,7 @@ The FoodPilot Team"""
             .where(Order.customer_id == user_id)
             .where((Order.loyalty_points_earned > 0) | (Order.loyalty_points_redeemed > 0))
             .order_by(Order.created_at.desc())
-        ).all()
+        ).unique().all()
         
         history = []
         for tx in txs:
