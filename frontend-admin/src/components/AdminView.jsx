@@ -1667,7 +1667,7 @@ export default function AdminView({ onLogout, dbMode }) {
                   <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>Predicted order volume based on historical data, weather and upcoming holidays.</p>
                   <div style={{ width: '100%', height: 250, marginTop: "1rem" }}>
                     <ResponsiveContainer>
-                      <BarChart data={[
+                      <BarChart data={analytics?.forecast || [
                         { day: "Mon", val: 45 },
                         { day: "Tue", val: 52 },
                         { day: "Wed", val: 80 },
