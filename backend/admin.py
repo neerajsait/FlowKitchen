@@ -799,8 +799,7 @@ def admin_create_staff():
         if not password:
             password = "".join(secrets.choice(string.ascii_letters + string.digits) for i in range(16))
         outlet_id = data.get("outlet_id")
-        first_name = data.get("first_name")
-        last_name = data.get("last_name")
+        full_name = data.get("full_name")
         valid_phone, phone = validate_phone(data.get("phone"))
         if not valid_phone:
             return jsonify({"error": "Bad Request", "message": "Invalid Indian phone number. Must be exactly 10 digits starting with 6, 7, 8, or 9."}), 400
@@ -839,15 +838,15 @@ def admin_create_staff():
             dept = data.get("admin_department")
             if not dept or dept not in ["Finance", "Operations", "HR"]:
                 return jsonify({"error": "Bad Request", "message": "admin_department is required and must be Finance, Operations, or HR"}), 400
-            user = Admin(email=email, first_name=first_name, last_name=last_name, phone=phone)
+            user = Admin(email=email, full_name=full_name, phone=phone)
             user.admin_department = dept
         elif role == "staff":
-            user = Staff(email=email, first_name=first_name, last_name=last_name, phone=phone, outlet_id=outlet_id)
+            user = Staff(email=email, full_name=full_name, phone=phone, outlet_id=outlet_id)
         elif role == "outlet_owner":
             # pyrefly: ignore [unexpected-keyword]
-            user = OutletOwner(email=email, first_name=first_name, last_name=last_name, phone=phone, outlet_id=outlet_id)
+            user = OutletOwner(email=email, full_name=full_name, phone=phone, outlet_id=outlet_id)
         elif role == "kitchen":
-            user = KitchenStaff(email=email, first_name=first_name, last_name=last_name, phone=phone, outlet_id=outlet_id)
+            user = KitchenStaff(email=email, full_name=full_name, phone=phone, outlet_id=outlet_id)
         else:
             return jsonify({"error": "Bad Request", "message": "Invalid role"}), 400
 
@@ -907,7 +906,7 @@ def admin_edit_staff(user_id):
         if getattr(user, 'is_superadmin', False):
             return jsonify({"error": "Forbidden", "message": "Cannot modify a super-admin."}), 403
         data = (sanitize_input(request.get_json(silent=True)) or {})
-        for field in ("first_name", "last_name"):
+        for field in ("full_name",):
             if field in data:
                 setattr(user, field, data[field])
         if "phone" in data:

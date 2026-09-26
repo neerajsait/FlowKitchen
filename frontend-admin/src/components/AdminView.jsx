@@ -138,15 +138,14 @@ export default function AdminView({ onLogout, dbMode }) {
 
   // Profile Modal
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileForm, setProfileForm] = useState({ first_name: "", last_name: "", phone: "", address: "", old_password: "", password: "" });
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", address: "", old_password: "", password: "" });
   const [profileUpdating, setProfileUpdating] = useState(false);
 
   const openProfileModal = () => {
     const user = api.getCurrentUser();
     if (user) {
       setProfileForm({
-        first_name: user?.first_name || "",
-        last_name: user?.last_name || "",
+        full_name: user?.full_name || "",
         phone: user?.phone || "",
         address: user?.address || "",
         old_password: "",
@@ -254,8 +253,7 @@ export default function AdminView({ onLogout, dbMode }) {
   const [staffPassword, setStaffPassword] = useState("");
   const [staffPin, setStaffPin] = useState("");
   const [userLoyaltyPoints, setUserLoyaltyPoints] = useState(0);
-  const [staffFirstName, setStaffFirstName] = useState("");
-  const [staffLastName, setStaffLastName] = useState("");
+  const [staffFullName, setStaffFullName] = useState("");
   const [staffPhone, setStaffPhone] = useState("");
   const [staffOutletId, setStaffOutletId] = useState("");
   const [staffRole, setStaffRole] = useState("staff");
@@ -777,8 +775,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
       const payload = {
         email: finalEmail,
-        first_name: staffFirstName,
-        last_name: staffLastName,
+        full_name: staffFullName,
         phone: staffPhone,
         outlet_id: (staffRole === "staff" || staffRole === "outlet_owner" || staffRole === "kitchen") && staffOutletId ? parseInt(staffOutletId) : null,
         role: staffRole,
@@ -807,7 +804,7 @@ export default function AdminView({ onLogout, dbMode }) {
         }
       }
       setShowAddStaff(false); setEditingUserId(null);
-      setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFirstName(""); setStaffLastName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0);
+      setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFullName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0);
       loadData();
     } catch (err) { showToast("Failed: " + err.message, "error"); }
   };
@@ -816,8 +813,7 @@ export default function AdminView({ onLogout, dbMode }) {
     setEditingUserId(user.id);
     setStaffEmail(user.email);
     setStaffRole(user.role || "staff");
-    setStaffFirstName(user.first_name || "");
-    setStaffLastName(user.last_name || "");
+    setStaffFullName(user.full_name || "");
     setStaffPhone(user.phone || "");
     setStaffDepartment(user.admin_department || "");
     setUserLoyaltyPoints(user.loyalty_points || 0);
@@ -988,7 +984,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
-      const nameStr = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
+      const nameStr = (user.full_name || "").toLowerCase();
       const emailStr = (user.email || "").toLowerCase();
       const phoneStr = (user.phone || "").toLowerCase();
       const search = usersSearch.toLowerCase();
@@ -2222,12 +2218,12 @@ export default function AdminView({ onLogout, dbMode }) {
                     return (
                       <tr key={user.id}>
                         <td>
-                          <strong>{user.first_name || ""} {user.last_name || ""}</strong>
+                          <strong>{user.full_name || ""}</strong>
                           {user.is_first_login && (
                             <span className="badge-status status-pending" style={{ marginLeft: "0.5rem", fontSize: "0.62rem" }}>First Login</span>
                           )}
                         </td>
-                        <td>{user.email}</td>
+                        <td>{user.email?.endsWith('.local') ? "—" : user.email}</td>
                         <td style={{ color: "var(--text-secondary)" }}>{user.phone || "—"}</td>
                         <td>
                           {(user.role === "staff" || user.role === "kitchen") && user.staff_code ? (
@@ -2287,7 +2283,7 @@ export default function AdminView({ onLogout, dbMode }) {
                           <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end", flexWrap: "wrap" }}>
                             {(user.role === "staff" || user.role === "kitchen") && (
                               <button onClick={async () => {
-                                const newPin = window.prompt(`Enter new 4-digit PIN for ${user.first_name || user.email}:`);
+                                const newPin = window.prompt(`Enter new 4-digit PIN for ${user.full_name || user.email}:`);
                                 if (newPin && newPin.length === 4 && /^\d+$/.test(newPin)) {
                                   try {
                                     await api.adminUpdateUser(user.id, { pin: newPin });
@@ -2659,7 +2655,7 @@ export default function AdminView({ onLogout, dbMode }) {
                     <tbody>
                       {(segments?.frequent_buyers || []).map(c => (
                         <tr key={c.id}>
-                          <td>{c.first_name} {c.last_name}</td>
+                          <td>{c.full_name}</td>
                           <td>{c.email}</td>
                           <td>{c.order_count}</td>
                           <td>₹{c.total_spent}</td>
@@ -2680,7 +2676,7 @@ export default function AdminView({ onLogout, dbMode }) {
                     <tbody>
                       {(segments?.high_value || []).map(c => (
                         <tr key={c.id}>
-                          <td>{c.first_name} {c.last_name}</td>
+                          <td>{c.full_name}</td>
                           <td>{c.email}</td>
                           <td>{c.order_count}</td>
                           <td>₹{c.total_spent}</td>
@@ -3542,7 +3538,7 @@ export default function AdminView({ onLogout, dbMode }) {
               <select className="form-select" value={outletOwnerId} onChange={e => setOutletOwnerId(e.target.value)}>
                 <option value="">-- No Owner --</option>
                 {users.filter(u => u.role === 'outlet_owner').map(u => (
-                  <option key={u.id} value={u.id}>{u.first_name || u.email} {u.last_name || ""}</option>
+                  <option key={u.id} value={u.id}>{u.full_name || u.email}</option>
                 ))}
               </select>
             </div>
@@ -3555,7 +3551,7 @@ export default function AdminView({ onLogout, dbMode }) {
       </Modal>
 
       {/* Add/Edit Staff */}
-      <Modal open={showAddStaff} onClose={() => { setShowAddStaff(false); setEditingUserId(null); setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFirstName(""); setStaffLastName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0); }} title={editingUserId ? "Edit User Account" : "Create User Account"}>
+      <Modal open={showAddStaff} onClose={() => { setShowAddStaff(false); setEditingUserId(null); setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFullName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0); }} title={editingUserId ? "Edit User Account" : "Create User Account"}>
         <form onSubmit={handleAddStaff} autoComplete="off" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Role</label>
@@ -3597,15 +3593,9 @@ export default function AdminView({ onLogout, dbMode }) {
               </div>
             )}
           </div>
-          <div className="grid-responsive-2col" style={{ gap: "0.75rem" }}>
-            <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">First Name</label>
-              <input type="text" autoComplete="off" className="form-input" value={staffFirstName} onChange={e => setStaffFirstName(e.target.value)} />
-            </div>
-            <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Last Name</label>
-              <input type="text" autoComplete="off" className="form-input" value={staffLastName} onChange={e => setStaffLastName(e.target.value)} />
-            </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label">Full Name</label>
+            <input type="text" autoComplete="off" className="form-input" value={staffFullName} onChange={e => setStaffFullName(e.target.value)} />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Phone</label>
@@ -3630,7 +3620,7 @@ export default function AdminView({ onLogout, dbMode }) {
 
           <div style={{ display: "flex", gap: "0.75rem" }}>
             <button type="submit" className="btn btn-primary" style={{ flex: 1 }}><Users size={15} /> {editingUserId ? "Save Changes" : "Create Account"}</button>
-            <button type="button" onClick={() => { setShowAddStaff(false); setEditingUserId(null); setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFirstName(""); setStaffLastName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0); }} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
+            <button type="button" onClick={() => { setShowAddStaff(false); setEditingUserId(null); setStaffEmail(""); setStaffPassword(""); setStaffPin(""); setStaffFullName(""); setStaffPhone(""); setStaffRole("staff"); setStaffDepartment(""); setUserLoyaltyPoints(0); }} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
           </div>
         </form>
       </Modal>
@@ -3796,15 +3786,9 @@ export default function AdminView({ onLogout, dbMode }) {
 
       <Modal open={showProfileModal} onClose={() => setShowProfileModal(false)} title="My Profile">
         <form onSubmit={handleUpdateProfile} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div className="grid-responsive-2col" style={{ gap: "1rem" }}>
-            <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">First Name</label>
-              <input type="text" className="form-input" value={profileForm.first_name} onChange={e => setProfileForm({ ...profileForm, first_name: e.target.value })} />
-            </div>
-            <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Last Name</label>
-              <input type="text" className="form-input" value={profileForm.last_name} onChange={e => setProfileForm({ ...profileForm, last_name: e.target.value })} />
-            </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label">Full Name</label>
+            <input type="text" className="form-input" value={profileForm.full_name} onChange={e => setProfileForm({ ...profileForm, full_name: e.target.value })} />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Phone Number</label>
@@ -3826,7 +3810,7 @@ export default function AdminView({ onLogout, dbMode }) {
       </Modal>
 
       {/* Wallet Management */}
-      <Modal open={showWalletModal} onClose={() => setShowWalletModal(false)} title={`Manage Wallet: ${walletTargetUser?.first_name}`}>
+      <Modal open={showWalletModal} onClose={() => setShowWalletModal(false)} title={`Manage Wallet: ${walletTargetUser?.full_name}`}>
         <form onSubmit={handleWalletAction} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Action</label>

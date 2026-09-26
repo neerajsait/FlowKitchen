@@ -96,8 +96,7 @@ class User(db.Model):
         'polymorphic_identity': 'user'
     }
 
-    first_name = Column(String(50), nullable=True)
-    last_name = Column(String(50), nullable=True)
+    full_name = Column(String(100), nullable=True)
     phone = Column(String(20), nullable=True)
     is_active = Column(Boolean, default=True)
     password_reset_token = Column(String(255), nullable=True)
@@ -127,11 +126,10 @@ class User(db.Model):
 
     outlet = relationship('Outlet', foreign_keys=[outlet_id], backref='staff')
 
-    def __init__(self, email, role='customer', first_name=None, last_name=None, phone=None, address=None):
+    def __init__(self, email, role='customer', full_name=None, phone=None, address=None):
         self.email = email
         self.role = role
-        self.first_name = first_name
-        self.last_name = last_name
+        self.full_name = full_name
         self.phone = phone
         self.address = address
         self.is_first_login = False
@@ -169,8 +167,7 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,
             "role": self.role,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
+            "full_name": self.full_name,
             "phone": self.phone,
             "address": self.address,
             "is_active": self.is_active,
@@ -201,16 +198,16 @@ class User(db.Model):
 class Customer(User):
     __mapper_args__ = { 'polymorphic_identity': 'customer' }
     
-    def __init__(self, email, first_name=None, last_name=None, phone=None, address=None):
-        super().__init__(email=email, role='customer', first_name=first_name, last_name=last_name, phone=phone, address=address)
+    def __init__(self, email, full_name=None, phone=None, address=None):
+        super().__init__(email=email, role='customer', full_name=full_name, phone=phone, address=address)
         self.loyalty_points = 0
 
 
 class Staff(User):
     __mapper_args__ = { 'polymorphic_identity': 'staff' }
     
-    def __init__(self, email, first_name=None, last_name=None, phone=None, outlet_id=None, address=None):
-        super().__init__(email=email, role='staff', first_name=first_name, last_name=last_name, phone=phone, address=address)
+    def __init__(self, email, full_name=None, phone=None, outlet_id=None, address=None):
+        super().__init__(email=email, role='staff', full_name=full_name, phone=phone, address=address)
         self.outlet_id = outlet_id
     
     def set_pin(self, pin: str, bcrypt):
@@ -224,20 +221,20 @@ class Staff(User):
 
 class Admin(User):
     __mapper_args__ = { 'polymorphic_identity': 'admin' }
-    def __init__(self, email, first_name=None, last_name=None, phone=None, address=None):
-        super().__init__(email=email, role='admin', first_name=first_name, last_name=last_name, phone=phone, address=address)
+    def __init__(self, email, full_name=None, phone=None, address=None):
+        super().__init__(email=email, role='admin', full_name=full_name, phone=phone, address=address)
 
 
 class OutletOwner(User):
     __mapper_args__ = { 'polymorphic_identity': 'outlet_owner' }
-    def __init__(self, email, first_name=None, last_name=None, phone=None, outlet_id=None, address=None):
-        super().__init__(email=email, role='outlet_owner', first_name=first_name, last_name=last_name, phone=phone, address=address)
+    def __init__(self, email, full_name=None, phone=None, outlet_id=None, address=None):
+        super().__init__(email=email, role='outlet_owner', full_name=full_name, phone=phone, address=address)
         self.outlet_id = outlet_id
 
 class KitchenStaff(User):
     __mapper_args__ = { 'polymorphic_identity': 'kitchen' }
-    def __init__(self, email, first_name=None, last_name=None, phone=None, outlet_id=None, address=None):
-        super().__init__(email=email, role='kitchen', first_name=first_name, last_name=last_name, phone=phone, address=address)
+    def __init__(self, email, full_name=None, phone=None, outlet_id=None, address=None):
+        super().__init__(email=email, role='kitchen', full_name=full_name, phone=phone, address=address)
         self.outlet_id = outlet_id  # Can be None if central kitchen
         
     def set_pin(self, pin: str, bcrypt):
@@ -705,7 +702,7 @@ class Order(db.Model):
             "order_type": self.order_type,
             "customer_id": self.customer_id,
             "customer_email": self.customer.email if self.customer else self.guest_email,
-            "customer_name": f"{self.customer.first_name or ''} {self.customer.last_name or ''}".strip() if self.customer else self.guest_name,
+            "customer_name": self.customer.full_name if self.customer else self.guest_name,
             "customer_phone": self.customer.phone if self.customer else self.guest_phone,
             "outlet_id": self.outlet_id,
             "outlet_name": self.outlet.name if self.outlet else None,
@@ -833,7 +830,7 @@ class Refund(db.Model):
             "reason": self.reason,
             "status": self.status,
             "processed_by": self.processed_by,
-            "processor_name": f"{self.processor.first_name} {self.processor.last_name}" if self.processor else None,
+            "processor_name": self.processor.full_name if self.processor else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None
         }
@@ -910,7 +907,7 @@ class Review(db.Model):
         return {
             "id": self.id,
             "customer_id": self.customer_id,
-            "customer_name": f"{self.customer.first_name or ''} {self.customer.last_name or ''}".strip() or self.customer.email,
+            "customer_name": self.customer.full_name or self.customer.email,
             "order_id": self.order_id,
             "menu_item_id": self.menu_item_id,
             "menu_item_name": self.menu_item.name if self.menu_item else None,
@@ -1049,7 +1046,7 @@ class StaffShift(db.Model):
             "id": self.id,
             "staff_id": self.staff_id,
             "staff_email": self.staff.email if self.staff else None,
-            "staff_name": f"{self.staff.first_name or ''} {self.staff.last_name or ''}".strip() if self.staff else None,
+            "staff_name": self.staff.full_name if self.staff else None,
             "outlet_id": self.outlet_id,
             "outlet_name": self.outlet.name if self.outlet else None,
             "clock_in_time": self.clock_in_time.isoformat() if self.clock_in_time else None,
@@ -1360,7 +1357,7 @@ class SupportTicket(db.Model):
         return {
             "id": self.id,
             "customer_id": self.customer_id,
-            "customer_name": self.customer.first_name if self.customer else "Unknown",
+            "customer_name": self.customer.full_name if self.customer else "Unknown",
             "order_id": self.order_id,
             "issue_type": self.issue_type,
             "description": self.description,
@@ -1402,7 +1399,7 @@ class StockRequest(db.Model):
             "outlet_id": self.outlet_id,
             "outlet_name": self.outlet.name if self.outlet else "Unknown",
             "staff_id": self.staff_id,
-            "staff_name": self.staff.first_name if self.staff else "Admin",
+            "staff_name": self.staff.full_name if self.staff else "Admin",
             "menu_item_id": self.menu_item_id,
             "menu_item_name": self.menu_item.name if self.menu_item else "Unknown",
             "quantity": self.quantity,

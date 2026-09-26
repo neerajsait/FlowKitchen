@@ -931,8 +931,7 @@ def create_app(config_override=None):
         # Self-registration strictly yields customer accounts
         role = "customer"
             
-        first_name = (data.get("first_name") or "").strip()
-        last_name = (data.get("last_name") or "").strip()
+        full_name = (data.get("full_name") or "").strip()
         phone_raw = data.get("phone")
         if not phone_raw:
             return jsonify({"error": "Bad Request", "message": "Phone number is required"}), 400
@@ -945,10 +944,8 @@ def create_app(config_override=None):
             return jsonify({"error": "Bad Request", "message": "Delivery address is required"}), 400
         
         import re
-        if first_name and not re.match(r"^[a-zA-Z\s\-']+$", first_name):
-            return jsonify({"error": "Bad Request", "message": "First name contains invalid characters"}), 400
-        if last_name and not re.match(r"^[a-zA-Z\s\-']+$", last_name):
-            return jsonify({"error": "Bad Request", "message": "Last name contains invalid characters"}), 400
+        if full_name and not re.match(r"^[a-zA-Z\s\-']+$", full_name):
+            return jsonify({"error": "Bad Request", "message": "Name contains invalid characters"}), 400
 
         if not email or not password:
             return jsonify({"error": "Bad Request", "message": "Email and password are required"}), 400
@@ -960,11 +957,11 @@ def create_app(config_override=None):
             # Generic response to prevent email enumeration
             return jsonify({"message": "If the email is valid, a registration confirmation will be sent."}), 201
         if role == "customer":
-            user = Customer(email=email, first_name=first_name or None, last_name=last_name or None, phone=phone or None)
+            user = Customer(email=email, full_name=full_name or None, phone=phone or None)
         elif role == "outlet_owner":
-            user = OutletOwner(email=email, first_name=first_name or None, last_name=last_name or None, phone=phone or None)
+            user = OutletOwner(email=email, full_name=full_name or None, phone=phone or None)
         else:
-            user = Customer(email=email, first_name=first_name or None, last_name=last_name or None, phone=phone or None)
+            user = Customer(email=email, full_name=full_name or None, phone=phone or None)
             
         user.set_password(password, bcrypt)
         
@@ -1262,7 +1259,7 @@ def create_app(config_override=None):
                 sender=sender,
                 recipients=[email]
             )
-            msg.body = f"""Hi {user.first_name or 'User'},
+            msg.body = f"""Hi {user.full_name or 'User'},
 
 You have requested to reset your password for your FoodPilot account.
 Please use the following 6-digit code in the password reset form:
@@ -1350,7 +1347,7 @@ FoodPilot Team
             sender=sender,
             recipients=[user.email]
         )
-        msg.body = f"""Hi {user.first_name or 'User'},
+        msg.body = f"""Hi {user.full_name or 'User'},
 
 You have requested to change your password for your FoodPilot account.
 Please use the following 6-digit code in the password change form:
@@ -1408,8 +1405,7 @@ The FoodPilot Team"""
             return jsonify({"error": "Not Found", "message": "User not found"}), 404
             
         data = (sanitize_input(request.get_json(silent=True)) or {})
-        user.first_name = data.get("first_name", user.first_name)
-        user.last_name = data.get("last_name", user.last_name)
+        user.full_name = data.get("full_name", user.full_name)
         if "phone" in data:
             valid_phone, phone_clean = validate_phone(data["phone"])
             if not valid_phone:
@@ -1882,7 +1878,7 @@ The FoodPilot Team"""
             class MockCustomer:
                 def __init__(self, name, email):
                     self.name = name
-                    self.first_name = name.split()[0] if name else ""
+                    self.full_name = name.split()[0] if name else ""
                     self.email = email
             _send_order_placed_email(app, order, MockCustomer(guest_name, guest_email))
 
@@ -2922,7 +2918,7 @@ The FoodPilot Team"""
             "customer": {
                 "id": customer.id,
                 "email": customer.email,
-                "name": f"{customer.first_name or ''} {customer.last_name or ''}".strip() or customer.email,
+                "name": customer.full_name or customer.email,
                 "loyalty_points": customer.loyalty_points or 0,
             },
             "top_items": top_items
@@ -3400,7 +3396,7 @@ The FoodPilot Team"""
                                             # Find or create user
                                             customer = db.session.scalars(db.select(User).where(User.phone == phone_number)).first()
                                             if not customer:
-                                                customer = Customer(phone=phone_number, first_name="WhatsApp", last_name="Customer")
+                                                customer = Customer(phone=phone_number, full_name="WhatsApp Customer")
                                                 db.session.add(customer)
                                                 db.session.flush()
                                                 
@@ -3908,7 +3904,7 @@ def _seed_admin(app):
             seed_pwd = "admin123"
             
         if not admin:
-            admin = Admin(email="admin", first_name="System", last_name="Admin")
+            admin = Admin(email="admin", full_name="System Admin")
             admin.is_superadmin = True
             admin.set_password(seed_pwd, bcrypt)
             admin.is_first_login = True
@@ -4015,7 +4011,7 @@ def _seed_admin(app):
         # 4. Seed Staff & Customer Users if missing
         staff_user = db.session.scalars(select(User).where(User.email == "staff@brand.com")).first()
         if not staff_user:
-            staff_user = Staff(email="staff@brand.com", outlet_id=1, first_name="Alex", last_name="Staff", phone="9848022338")
+            staff_user = Staff(email="staff@brand.com", outlet_id=1, full_name="Alex Staff", phone="9848022338")
             staff_user.set_password("staff", bcrypt)
             db.session.add(staff_user)
             db.session.commit()
@@ -4023,7 +4019,7 @@ def _seed_admin(app):
 
         cust_user = db.session.scalars(select(User).where(User.email == "customer@gmail.com")).first()
         if not cust_user:
-            cust_user = Customer(email="customer@gmail.com", first_name="Sarah", last_name="Customer", phone="9999999999")
+            cust_user = Customer(email="customer@gmail.com", full_name="Sarah Customer", phone="9999999999")
             cust_user.set_password("customer", bcrypt)
             cust_user.referral_code = "SARAHCUST1"
             cust_user.loyalty_points = 1500
@@ -4040,7 +4036,7 @@ def _seed_admin(app):
 
         owner_user = db.session.scalars(select(User).where(User.email == "owner@brand.com")).first()
         if not owner_user:
-            owner_user = User(email="owner@brand.com", role="outlet_owner", first_name="Rajesh", last_name="Owner", phone="9848022339")
+            owner_user = User(email="owner@brand.com", role="outlet_owner", full_name="Rajesh Owner", phone="9848022339")
             owner_user.set_password("owner", bcrypt)
             db.session.add(owner_user)
             db.session.commit()
@@ -4223,7 +4219,7 @@ def _send_verification_email(app, user):
         verify_link = f"{frontend_url}/verify-email?token={token}"
         
         content = f"""
-        <h2 style="color: #f97316; margin-top: 0;">Verify your email address, {user.first_name or 'Friend'}! 👋</h2>
+        <h2 style="color: #f97316; margin-top: 0;">Verify your email address, {user.full_name or 'Friend'}! 👋</h2>
         <p>Thank you for signing up to <strong>FoodPilot</strong>! To activate your account and place your first order, please verify your email address.</p>
         <p>Click the button below to verify your email:</p>
         <div style="text-align: center; margin: 30px 0;">
@@ -4243,7 +4239,7 @@ def _send_welcome_email(app, user):
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
         msg = Message(subject="Welcome to FoodPilot! 🧡", sender=sender, recipients=[user.email])
         content = f"""
-        <h2 style="color: #f97316; margin-top: 0;">Welcome to the Family, {user.first_name or 'Friend'}! 👋</h2>
+        <h2 style="color: #f97316; margin-top: 0;">Welcome to the Family, {user.full_name or 'Friend'}! 👋</h2>
         <p>We are absolutely thrilled to welcome you to <strong>FoodPilot</strong>! Thank you for signing up and joining our community of food lovers.</p>
         <p>Our kitchen is always busy preparing the warmest, freshest, and most delicious home-cooked meals, ready to be delivered straight to your doorstep.</p>
         <p>Here are your account details:</p>
@@ -4280,7 +4276,7 @@ def _send_order_placed_email(app, order, customer):
         
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Thank you for your order! 🧡</h2>
-        <p>Hi {customer.first_name or 'there'}, we've received your order and our chefs are already prepping it with love.</p>
+        <p>Hi {customer.full_name or 'there'}, we've received your order and our chefs are already prepping it with love.</p>
         <p>Here is your order summary:</p>
         
         <div class="table-container">
@@ -4330,7 +4326,7 @@ def _send_order_shipped_email(app, order, customer, tracking_code):
         msg = Message(subject="Your FoodPilot Box is on its way! 📦", sender=sender, recipients=[customer.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Your food is on the way! 🛵</h2>
-        <p>Hi {customer.first_name or 'there'}, your order #{order.id} has been packed, handed over to our delivery partner, and is officially en route!</p>
+        <p>Hi {customer.full_name or 'there'}, your order #{order.id} has been packed, handed over to our delivery partner, and is officially en route!</p>
         <p>Get ready for a warm, delightful feast.</p>
         
         <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px; text-align: center;">
@@ -4359,7 +4355,7 @@ def _send_admin_created_email(app, admin):
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
         msg = Message(subject="Welcome to FoodPilot Admin Team! 🛡️", sender=sender, recipients=[admin.email])
         content = f"""
-        <h2 style="color: #f97316; margin-top: 0;">Welcome to the Admin Team, {admin.first_name or 'Admin'}! 🛡️</h2>
+        <h2 style="color: #f97316; margin-top: 0;">Welcome to the Admin Team, {admin.full_name or 'Admin'}! 🛡️</h2>
         <p>Your administrator profile has been successfully set up on the FoodPilot ERP platform.</p>
         <p>Please use the temporary credentials provided to you securely by the system administrator to log in.</p>
         
@@ -4385,7 +4381,7 @@ def _send_admin_password_changed_email(app, admin):
         msg = Message(subject="FoodPilot Admin Password Update 🔐", sender=sender, recipients=[admin.email])
         content = f"""
         <h2 style="color: #f97316; margin-top: 0;">Password Successfully Updated 🔐</h2>
-        <p>Hi {admin.first_name or 'Admin'}, the password for your FoodPilot administrator account has been changed.</p>
+        <p>Hi {admin.full_name or 'Admin'}, the password for your FoodPilot administrator account has been changed.</p>
         
         <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; line-height: 1.8;">
             <strong>Username/Email:</strong> {admin.email}<br>
@@ -4405,7 +4401,7 @@ def _send_staff_created_email(app, staff, outlet):
         sender = app.config.get("MAIL_DEFAULT_SENDER") or "noreply@fooderp.local"
         msg = Message(subject="Welcome to FoodPilot POS Team! 🏪", sender=sender, recipients=[staff.email])
         content = f"""
-        <h2 style="color: #f97316; margin-top: 0;">Welcome to the Team, {staff.first_name or 'Partner'}! 🏪</h2>
+        <h2 style="color: #f97316; margin-top: 0;">Welcome to the Team, {staff.full_name or 'Partner'}! 🏪</h2>
         <p>Your cashier profile has been successfully set up on the FoodPilot ERP platform.</p>
         <p>Please use the temporary credentials provided to you securely by the system administrator to log in.</p>
         

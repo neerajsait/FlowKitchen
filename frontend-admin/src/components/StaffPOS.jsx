@@ -22,15 +22,14 @@ export default function StaffPOS({ onLogout, _dbMode }) {
   const [alertMsg, setAlertMsg] = useState("");
 
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileForm, setProfileForm] = useState({ first_name: "", last_name: "", phone: "", address: "", password: "" });
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", address: "", password: "" });
   const [profileUpdating, setProfileUpdating] = useState(false);
 
   const openProfileModal = () => {
     const user = api.getCurrentUser();
     if (user) {
       setProfileForm({
-        first_name: user?.first_name || "",
-        last_name: user?.last_name || "",
+        full_name: user?.full_name || "",
         phone: user?.phone || "",
         address: user?.address || "",
         password: ""
@@ -1367,15 +1366,9 @@ export default function StaffPOS({ onLogout, _dbMode }) {
               <button className="modal-close" onClick={() => setShowProfileModal(false)}><X size={16} /></button>
             </div>
             <form onSubmit={handleUpdateProfile} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div className="grid-responsive-2col" style={{ gap: "1rem" }}>
-                <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">First Name</label>
-                  <input type="text" className="form-input" value={profileForm.first_name} onChange={e => setProfileForm({ ...profileForm, first_name: e.target.value })} />
-                </div>
-                <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Last Name</label>
-                  <input type="text" className="form-input" value={profileForm.last_name} onChange={e => setProfileForm({ ...profileForm, last_name: e.target.value })} />
-                </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Full Name</label>
+                <input type="text" className="form-input" value={profileForm.full_name} onChange={e => setProfileForm({ ...profileForm, full_name: e.target.value })} />
               </div>
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Phone Number</label>
