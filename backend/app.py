@@ -1722,7 +1722,6 @@ The FoodPilot Team"""
         delivery_address = data.get("delivery_address")
         payment_method = data.get("payment_method", "COD")
         coupon_code = data.get("coupon_code")
-        delivery_charge = Decimal(str(data.get("delivery_charge") or 0.00))
         
         guest_name = data.get("guest_name")
         guest_email = data.get("guest_email")
@@ -1764,6 +1763,16 @@ The FoodPilot Team"""
             total += price * qty
             order_items.append(OrderItem(menu_item_id=mid, price=price, quantity=qty))
         
+        # Calculate delivery charge server-side
+        delivery_fee_raw = _setting_value("delivery_fee")
+        try:
+            if delivery_fee_raw is not None and str(delivery_fee_raw).strip():
+                delivery_charge = Decimal(str(delivery_fee_raw).strip())
+            else:
+                delivery_charge = Decimal("0.00") if total >= Decimal("499.00") else Decimal("49.00")
+        except Exception:
+            delivery_charge = Decimal("0.00") if total >= Decimal("499.00") else Decimal("49.00")
+
         total += delivery_charge
 
         discount_pct = 0
