@@ -2139,7 +2139,16 @@ def admin_update_store_settings():
 
     @role_required("admin")
     def _inner():
-        data = sanitize_input(request.get_json(silent=True)) or {}
+        raw_data = request.get_json(silent=True) or {}
+        POLICY_KEYS = {
+            "policy_privacy", "policy_terms", "policy_cookie", 
+            "policy_refund", "policy_cookie_consent", 
+            "policy_data_collection", "policy_third_party_embeds"
+        }
+        data = sanitize_input({k: v for k, v in raw_data.items() if k not in POLICY_KEYS})
+        for k in POLICY_KEYS:
+            if k in raw_data:
+                data[k] = raw_data[k]
         for key, (lo, hi) in LOYALTY_SETTING_KEYS.items():
             if key in data:
                 try:

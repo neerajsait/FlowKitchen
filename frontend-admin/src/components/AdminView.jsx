@@ -2950,6 +2950,48 @@ export default function AdminView({ onLogout, dbMode }) {
             </div>
             </div>
 
+            <div style={{ marginTop: "2.5rem" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1rem", color: "var(--text-primary)" }}>Legal & Disclosures</h3>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>Update your public-facing policies here. HTML tags are supported.</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Privacy Policy</label>
+                  <textarea className="form-input" value={storeSettings.policy_privacy || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_privacy: e.target.value }))} placeholder="<p>Your privacy policy here...</p>" rows={6} />
+                </div>
+                
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Terms & Conditions</label>
+                  <textarea className="form-input" value={storeSettings.policy_terms || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_terms: e.target.value }))} placeholder="<p>Your terms and conditions here...</p>" rows={6} />
+                </div>
+                
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Cookie Policy</label>
+                  <textarea className="form-input" value={storeSettings.policy_cookie || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_cookie: e.target.value }))} placeholder="<p>Your cookie policy here...</p>" rows={4} />
+                </div>
+                
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Refund Policy</label>
+                  <textarea className="form-input" value={storeSettings.policy_refund || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_refund: e.target.value }))} placeholder="<p>Your refund policy here...</p>" rows={4} />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Cookie + Form Consent (Short Notice)</label>
+                  <textarea className="form-input" value={storeSettings.policy_cookie_consent || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_cookie_consent: e.target.value }))} placeholder="By using our site, you agree to our use of cookies..." rows={2} />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">What User Data We Collect</label>
+                  <textarea className="form-input" value={storeSettings.policy_data_collection || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_data_collection: e.target.value }))} placeholder="<p>We collect name, email...</p>" rows={4} />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Third-Party Embeds Notice</label>
+                  <textarea className="form-input" value={storeSettings.policy_third_party_embeds || ""} onChange={e => setStoreSettings(prev => ({ ...prev, policy_third_party_embeds: e.target.value }))} placeholder="<p>This site may use third party embeds...</p>" rows={3} />
+                </div>
+              </div>
+            </div>
+
             <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end" }}>
               <button type="submit" className="btn btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "0.95rem" }}>Save Configuration</button>
             </div>
