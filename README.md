@@ -1,155 +1,120 @@
 <div align="center">
   <h1>🍀 Food Ordering Platform & POS System</h1>
   <p><i>A robust, zero-trust full-stack ecosystem for modern food service management.</i></p>
-  
+
   <p>
-    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=flat-square&logo=react" alt="React"></a>
-    <a href="https://flasi.palletsprojects.com/"><img src="https://img.shields.io/badge/Backend-Flask-000000?style=flat-square&logo=flask" alt="Flask"></a>
-    <a href="https://www.mysql.com/"><img src="https://img.shields.io/badge/Database-MySQL%208-4479A1?style=flat-square&logo=mysql" alt="MySQL"></a>
-    <a href="https://redis.io/"><img src="https://img.shields.io/badge/Cache-Redis-DC382D?style=flat-square&logo=redis" alt="Redis"></a>
-    <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Deploy-Docker%20Compose-2496ED?style=flat-square&logo=docker" alt="Docker"></a>
+    <img src="https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=flat-square&logo=react" alt="React">
+    <img src="https://img.shields.io/badge/Backend-Flask-000000?style=flat-square&logo=flask" alt="Flask">
+    <img src="https://img.shields.io/badge/Database-MySQL%208-4479A1?style=flat-square&logo=mysql" alt="MySQL">
+    <img src="https://img.shields.io/badge/Cache-Redis-DC382D?style=flat-square&logo=redis" alt="Redis">
+    <img src="https://img.shields.io/badge/Deploy-Docker%20Compose-2496ED?style=flat-square&logo=docker" alt="Docker">
+    <img src="https://img.shields.io/badge/License-Proprietary-lightgrey?style=flat-square" alt="License">
   </p>
 </div>
 
 ---
 
-A comprehensive full-stack application providing a complete ecosystem for food service management. It includes a **Customer Storefront (B2C/B2B)**, a **Point of Sale (POS)** system, a **Kitchen Display System (KDS)**, and a full **Admin Dashboard**.
+A complete ecosystem for food service management — a **Customer Storefront** (B2C/B2B), a **Point of Sale (POS)** system, a **Kitchen Display System (KDS)**, and a full **Admin Dashboard**, all backed by a single hardened Flask API.
 
 ## ✨ Key Features
 
-### 👍 Customer Storefront
-- **Dynamic Menus:** Browse menus with rich product detail pages.
-- **Seamless Checkout:** Guest checkout, secure cart management, and online payment integrations (Razorpay).
-- **Loyalty & Wallet:** Integrated digital wallet, loyalty points, and a comprehensive coupon catalog.
-- **Order Tracking:** Real-time order status tracking from kitchen to delivery.
+### 🛒 Customer Storefront
+- Dynamic menus with rich product detail pages
+- Guest checkout, secure cart management, and online payments via Razorpay
+- Digital wallet, loyalty points, and coupon catalog
+- Real-time order tracking from kitchen to delivery
 
-### 🊬 Point of Sale (POS) & Kitchen
-- **Fast Order Entry:** Touch-friendly interface with QR code generation for walk-ins.
-- **Staff Management:** Clock-in/out tracking, shift management, and secure POS lock screens via staff PINs.
-- **Kitchen Display System (KDS):** Real-time order synchronization for the kitchen, status toggling, and ticket management.
-- **Stock Tracking:** Multi-outlet stock depletion and raw material batch tracking.
+### 🧾 Point of Sale (POS) & Kitchen
+- Touch-friendly order entry with QR code generation for walk-ins
+- Staff clock-in/out tracking, shift management, and PIN-secured POS lock screens
+- Kitchen Display System (KDS) with real-time order sync and ticket management
+- Multi-outlet stock depletion and raw material batch tracking
 
-### 🛡 Enterprise-Grade Security
-- **Zero-Trust Architecture:** Strict JWT token validation, token versioning (instant global revocation on password change), and Redis-backed JWT blocklisting.
-- **Brute-Force & Rate Limiting:** Dynamic endpoint rate-limiting (e.g., 5 login attempts/min) with Redis storage, protecting against credential stuffing and OTP spam.
-- **Input Sanitization:** Multi-layered defense against SQLi and XSS via strict payload validation, parameterized ORM queries, and HTML escaping.
-- **Secure File Uploads:** Robust multipart sanitization using `python-magic` for MIME-type validation, preventing malicious file executions.
+### 🛡️ Enterprise-Grade Security
+- Zero-trust JWT auth with token versioning (instant global revocation on password change) and Redis-backed blocklisting
+- Rate limiting on sensitive endpoints (e.g. 5 login attempts/min) backed by Redis
+- Multi-layered input sanitization — parameterized ORM queries, HTML escaping, and strict payload validation
+- Secure file uploads validated by MIME type (`python-magic`), not just file extension
+- HMAC-verified, timing-safe Razorpay webhook signatures
+- Role-based access control (admin / staff / customer) enforced at the route level
 
----
+## 🏗️ Architecture & Tech Stack
 
-## 🏗 Architecture & Tech Stack
+| Component | Technology |
+|---|---|
+| **Backend API** | Python, Flask, SQLAlchemy, Alembic (migrations), Flask-JWT-Extended, APScheduler |
+| **Frontend (Customer)** | React (Vite), Tailwind CSS, Context API |
+| **Frontend (Admin)** | React (Vite), Tailwind CSS, Chart.js |
+| **Database & Cache** | MySQL 8.0, Redis (token blocklist & rate limits) |
+| **Infrastructure** | Docker, Docker Compose, Gunicorn, Nginx (reverse proxy / TLS) |
 
-|Component|Technology|
-|--------|-----------|
-|**Backend API**|Python, Flask, SQLAlchemy, Alembic (Migrations), JWT, APScheduler|
-|**Frontend (Customer)**|React (Vite), Tailwind CSS, Context API|
-|**Frontend (Admin)**|React (Vite), Tailwind CSS, Chart.js (Analytics)|
-|**Database & Cache**|MySQL 8.0, Redis (Token blocklist & Rate limits)|
-|**Infrastructure**|Docker, Docker Compose, Gunicorn|
+## 🌐 Production Deployment
 
----
+| Layer | Provider | Notes |
+|---|---|---|
+| Backend API | Oracle Cloud Infrastructure (A1 Ampere / Compute VM) | Runs behind Gunicorn + Nginx reverse proxy with TLS |
+| Customer Frontend | Netlify | Static Vite build, own subdomain |
+| Admin Frontend | Netlify | Static Vite build, separate site/subdomain from customer frontend |
+| Database | MySQL 8 (self-hosted on the same VM or a managed instance) | Automated backups via `backup.py` |
+| Cache / Rate Limiting | Redis (containerized) | Co-located with backend |
 
-## 🚀 Getting Started (Docker - Recommended)
+**Required environment configuration for this split:**
+- Set `VITE_API_URL` on both Netlify sites to the backend's public HTTPS URL (build-time variable — must be set in Netlify's site settings, not just a local `.env`)
+- Add both Netlify domains to `CORS_ORIGINS` on the backend
+- Terminate TLS at Nginx/Caddy in front of Gunicorn — never expose the Flask/Gunicorn port directly to the internet
+- Restrict the Oracle Cloud Security List/NSG to only the ports actually needed (443, and 22 restricted to your own IP)
 
-The easiest way to run the entire stack (Backend, Frontend, MySQL, and Redis) is using Docker Compose.
+## 🚀 Getting Started (Docker — Recommended)
 
-1. Clone & Configure
+The easiest way to run the entire stack (backend, frontends, MySQL, Redis) locally is Docker Compose.
+
+**1. Clone & configure**
 ```bash
 git clone <your-repository-url>
-cd skf
-
-# Ensure your .env file is populated with production secrets
+cd food
 cp .env.example .env
+# edit .env with your own secrets — never commit this file
 ```
 
-2. Start the Stack
+**2. Launch the stack**
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
 ```
-* **Customer Storefront:** http://localhost:3000
-* **Admin Dashboard:** http://localhost:3001
-* **Backend API:** http://localhost:5000
 
----
-
-## 👹 Local Development (Manual Setup)
-
-If you prefer to run the services bare-metal for development:
-
-1. Backend Setup
+**3. Apply migrations & (optionally) seed data**
 ```bash
-cd backend
-python -m venv venv
+docker compose exec backend flask db upgrade
+```
+> Seeding of default admin/staff accounts is automatically disabled when `FLASK_ENV=production` and `ALLOW_SEED=0`.
 
-# Windows:
-venv\Scripts\activate
-# Mac/Linux:
-source venv/bin/activate
+**4. Access the services**
+| Service | URL |
+|---|---|
+| Backend API | `http://localhost:5000` |
+| Customer Frontend | `http://localhost:5173` (or your configured port) |
+| Admin Frontend | `http://localhost:5174` (or your configured port) |
 
-pip install -r requirements.txt
+## 📁 Project Structure
+
+```
+food/
+├── backend/              # Flask API (models, auth, orders, payments, admin)
+├── frontend-customer/    # Customer-facing React app (Vite)
+├── frontend-admin/       # Admin/POS/KDS React app (Vite)
+├── docker-compose.yml
+└── .env.example
 ```
 
-Ensure a local Redis instance is running (required for rate limiting):
-```bash
-docker run --name my-redis -p 6379:6379 -d redis:alpine
-```
+## 🔐 Before You Deploy — Security Checklist
 
-Start the backend (this will default to a local SQLite database for development; for production, provide MYSQL_* environment variables or DATABASE_URL):
-```bash
-flask db upgrade
-flask run
-```
+- [ ] Rotate `SECRET_KEY`, `JWT_SECRET_KEY`, and mail credentials — never reuse values that were ever committed or shared outside the team
+- [ ] Confirm `backend/.env` is git-ignored and was **never** committed to version control history
+- [ ] Confirm `FLASK_ENV=production` disables debug mode and default account seeding
+- [ ] Confirm `CORS_ORIGINS` is set to your exact production domains, not a wildcard
+- [ ] Set up automated database backups (`backend/backup.py`) on a schedule, pointed at durable storage
+- [ ] Remove one-off developer/maintenance scripts (`fix_*.py`, `reset*.py`, `migrate_mysql.py`, `test_*.py`) from any production deployment image
+- [ ] Set up uptime monitoring for the backend (e.g. UptimeRobot) since it's a single VM with no auto-failover
 
-2. Frontend Setup
-Run the customer storefront and admin dashboards in separate terminals:
-```bash
-cd frontend-admin && npm install && npm run dev
-cd frontend-customer && npm install && npm run dev
-```
+## 📄 License
 
----
-
-## ⚹ Production Deployment Guidelines
-
-When deploying to a production server, the application strictly enforces a fail-closed secure state.
-
-### Required Environment Variables
-If `FLASK_ENV=production` is set, the application **will refuse to start** unless all of the following are configured and reachable:
-* `SECRET_KEY` & `JWT_SECRET_KEY`: Cryptographically secure random strings.
-* `REDIS_URL`: Must be reachable for token blocklisting and rate limiting.
-* `DATABASE_URL`: Must point to a highly available MySQL instance.
-* `FRONTEND_URL`: Used for CORS and email callbacks (e.g. `https://store.example.com,https://admin.example.com`).
-
-### Docker Compose Hardening
-The provided `docker-compose.yml` is pre-tuned for production with:
-* Resource constraints (`cpus`, `memory` limits) to prevent runaway processes.
-* Docker `healthcheck` attributes for MySQL, Redis, and the Backend API to ensure safe startup ordering.
-* Log rotation (10MB max, 3 files) via the `json-file` driver.
-* Cross-process locking via `fcntl` ensuring APScheduler (daily reports, ticket cleanups) executes exactly once across Gunicorn workers.
-
----
-
-## 🃱 Online Payments (Razorpay)
-
-The backend ships a complete, self-hosting Razorpay integration. Credentials live in `StoreSetting` (Fernet-encrypted with `PAYMENT_ENCRYPTION_KEY`) and are managed from **Admin → Payment Gateway**.
-
-| Endpoint | Auth | Purpose |
-|---|---|---|
-| `POST /api/payments/razorpay/order` | JWT | Creates a Razorpay order, returns keys for `checkout.js` |
-| `POST /api/payments/razorpay/verify` | JWT | Verifies HMAC signature, marks order `paid`. Idempotent. |
-| `POST /api/payments/razorpay/webhook` | Signature | Server-to-server fallback. Marks orders paid even if the browser closes. |
-
-Every payment event is written to the `payment_transactions` table for automated financial reconciliation.
-
----
-
-## 🚕 Testing
-
-The backend includes a comprehensive test suite covering authentication flows, RBAC authorization, business logic, rate limiting, and input sanitization (SQLi/XSS).
-
-To run the test suite:
-```bash
-cd backend
-REDIS_URL=memory:// python -m unittest discover tests/ -v
-```
-*(Note: `REDIS_URL=memory://` is used during testing to prevent polluting the production Redis cache).*
+Proprietary — all rights reserved. Not licensed for redistribution without written permission.
