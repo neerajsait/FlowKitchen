@@ -1,120 +1,184 @@
 <div align="center">
   <h1>🍀 Food Ordering Platform & POS System</h1>
-  <p><i>A robust, zero-trust full-stack ecosystem for modern food service management.</i></p>
+  <p><i>A full-stack ecosystem for food service management — storefront, POS, kitchen display, and admin dashboard.</i></p>
 
   <p>
-    <img src="https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=flat-square&logo=react" alt="React">
+    <img src="https://img.shields.io/badge/Frontend-React%2019-61DAFB?style=flat-square&logo=react" alt="React">
     <img src="https://img.shields.io/badge/Backend-Flask-000000?style=flat-square&logo=flask" alt="Flask">
     <img src="https://img.shields.io/badge/Database-MySQL%208-4479A1?style=flat-square&logo=mysql" alt="MySQL">
     <img src="https://img.shields.io/badge/Cache-Redis-DC382D?style=flat-square&logo=redis" alt="Redis">
     <img src="https://img.shields.io/badge/Deploy-Docker%20Compose-2496ED?style=flat-square&logo=docker" alt="Docker">
-    <img src="https://img.shields.io/badge/License-Proprietary-lightgrey?style=flat-square" alt="License">
   </p>
 </div>
 
 ---
 
-A complete ecosystem for food service management — a **Customer Storefront** (B2C/B2B), a **Point of Sale (POS)** system, a **Kitchen Display System (KDS)**, and a full **Admin Dashboard**, all backed by a single hardened Flask API.
+A comprehensive full-stack application for food service businesses: a **Customer Storefront**, a **Point of Sale (POS)** system, a **Kitchen Display System (KDS)**, and a full **Admin Dashboard**.
+
+## Table of Contents
+
+- [Key Features](#-key-features)
+- [Architecture & Tech Stack](#-architecture--tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started (Docker)](#-getting-started-docker---recommended)
+- [Local Development](#-local-development-manual-setup)
+- [Environment Variables](#-environment-variables)
+- [Production Deployment](#-production-deployment)
+- [Online Payments (Razorpay)](#-online-payments-razorpay)
+- [Testing](#-testing)
+- [Security Notes](#-security-notes)
+- [License](#-license)
 
 ## ✨ Key Features
 
-### 🛒 Customer Storefront
+### Customer Storefront
 - Dynamic menus with rich product detail pages
 - Guest checkout, secure cart management, and online payments via Razorpay
-- Digital wallet, loyalty points, and coupon catalog
-- Real-time order tracking from kitchen to delivery
+- Digital wallet, loyalty points, and a coupon catalog
+- Real-time order status tracking from kitchen to delivery
 
-### 🧾 Point of Sale (POS) & Kitchen
+### Point of Sale (POS) & Kitchen
 - Touch-friendly order entry with QR code generation for walk-ins
-- Staff clock-in/out tracking, shift management, and PIN-secured POS lock screens
+- Staff clock-in/out, shift management, and PIN-secured POS lock screens
 - Kitchen Display System (KDS) with real-time order sync and ticket management
 - Multi-outlet stock depletion and raw material batch tracking
 
-### 🛡️ Enterprise-Grade Security
-- Zero-trust JWT auth with token versioning (instant global revocation on password change) and Redis-backed blocklisting
-- Rate limiting on sensitive endpoints (e.g. 5 login attempts/min) backed by Redis
-- Multi-layered input sanitization — parameterized ORM queries, HTML escaping, and strict payload validation
-- Secure file uploads validated by MIME type (`python-magic`), not just file extension
-- HMAC-verified, timing-safe Razorpay webhook signatures
-- Role-based access control (admin / staff / customer) enforced at the route level
+### Security
+- JWT auth with token versioning (instant global revocation on password change) and Redis-backed blocklisting
+- Rate limiting on sensitive endpoints (login, OTP) backed by Redis
+- ORM-parameterized queries, input sanitization, and HTML escaping against SQLi/XSS
+- MIME-validated file uploads via `python-magic`
+- Fernet-encrypted payment credentials, HMAC-verified payment webhooks
 
-## 🏗️ Architecture & Tech Stack
+## 🏗 Architecture & Tech Stack
 
 | Component | Technology |
 |---|---|
-| **Backend API** | Python, Flask, SQLAlchemy, Alembic (migrations), Flask-JWT-Extended, APScheduler |
-| **Frontend (Customer)** | React (Vite), Tailwind CSS, Context API |
-| **Frontend (Admin)** | React (Vite), Tailwind CSS, Chart.js |
-| **Database & Cache** | MySQL 8.0, Redis (token blocklist & rate limits) |
-| **Infrastructure** | Docker, Docker Compose, Gunicorn, Nginx (reverse proxy / TLS) |
-
-## 🌐 Production Deployment
-
-| Layer | Provider | Notes |
-|---|---|---|
-| Backend API | Oracle Cloud Infrastructure (A1 Ampere / Compute VM) | Runs behind Gunicorn + Nginx reverse proxy with TLS |
-| Customer Frontend | Netlify | Static Vite build, own subdomain |
-| Admin Frontend | Netlify | Static Vite build, separate site/subdomain from customer frontend |
-| Database | MySQL 8 (self-hosted on the same VM or a managed instance) | Automated backups via `backup.py` |
-| Cache / Rate Limiting | Redis (containerized) | Co-located with backend |
-
-**Required environment configuration for this split:**
-- Set `VITE_API_URL` on both Netlify sites to the backend's public HTTPS URL (build-time variable — must be set in Netlify's site settings, not just a local `.env`)
-- Add both Netlify domains to `CORS_ORIGINS` on the backend
-- Terminate TLS at Nginx/Caddy in front of Gunicorn — never expose the Flask/Gunicorn port directly to the internet
-- Restrict the Oracle Cloud Security List/NSG to only the ports actually needed (443, and 22 restricted to your own IP)
-
-## 🚀 Getting Started (Docker — Recommended)
-
-The easiest way to run the entire stack (backend, frontends, MySQL, Redis) locally is Docker Compose.
-
-**1. Clone & configure**
-```bash
-git clone <your-repository-url>
-cd food
-cp .env.example .env
-# edit .env with your own secrets — never commit this file
-```
-
-**2. Launch the stack**
-```bash
-docker compose up --build -d
-```
-
-**3. Apply migrations & (optionally) seed data**
-```bash
-docker compose exec backend flask db upgrade
-```
-> Seeding of default admin/staff accounts is automatically disabled when `FLASK_ENV=production` and `ALLOW_SEED=0`.
-
-**4. Access the services**
-| Service | URL |
-|---|---|
-| Backend API | `http://localhost:5000` |
-| Customer Frontend | `http://localhost:5173` (or your configured port) |
-| Admin Frontend | `http://localhost:5174` (or your configured port) |
+| Backend API | Python, Flask, SQLAlchemy, Alembic, Flask-JWT-Extended, APScheduler |
+| Frontend (Customer) | React 19 (Vite), Tailwind CSS |
+| Frontend (Admin) | React 19 (Vite), Tailwind CSS, Recharts |
+| Database & Cache | MySQL 8.0, Redis |
+| Infrastructure | Docker, Docker Compose, Gunicorn |
 
 ## 📁 Project Structure
 
 ```
-food/
-├── backend/              # Flask API (models, auth, orders, payments, admin)
-├── frontend-customer/    # Customer-facing React app (Vite)
-├── frontend-admin/       # Admin/POS/KDS React app (Vite)
-├── docker-compose.yml
-└── .env.example
+.
+├── backend/              # Flask API (app.py, models.py, migrations, tests)
+├── frontend-customer/    # Customer storefront (React + Vite)
+├── frontend-admin/       # Admin dashboard + POS + KDS (React + Vite)
+├── docker-compose.yml    # Full stack: backend, MySQL, Redis, both frontends
+├── .env.example          # Environment variable template
+└── BACKEND_AUTH.md       # Auth flow reference
 ```
 
-## 🔐 Before You Deploy — Security Checklist
+> **Note:** one-off maintenance scripts (`fix_*.py`, `migrate_mysql.py`, `refactor*.py`, `remove_whatsapp.py`, `test_create_staff.py`) live at the repo root for historical reference. They are **not** part of the running application and should not be deployed — see [Security Notes](#-security-notes).
 
-- [ ] Rotate `SECRET_KEY`, `JWT_SECRET_KEY`, and mail credentials — never reuse values that were ever committed or shared outside the team
-- [ ] Confirm `backend/.env` is git-ignored and was **never** committed to version control history
-- [ ] Confirm `FLASK_ENV=production` disables debug mode and default account seeding
-- [ ] Confirm `CORS_ORIGINS` is set to your exact production domains, not a wildcard
-- [ ] Set up automated database backups (`backend/backup.py`) on a schedule, pointed at durable storage
-- [ ] Remove one-off developer/maintenance scripts (`fix_*.py`, `reset*.py`, `migrate_mysql.py`, `test_*.py`) from any production deployment image
-- [ ] Set up uptime monitoring for the backend (e.g. UptimeRobot) since it's a single VM with no auto-failover
+## 🚀 Getting Started (Docker — Recommended)
+
+The fastest way to run the full stack (backend, both frontends, MySQL, Redis):
+
+```bash
+git clone <your-repository-url>
+cd food
+
+cp .env.example .env
+# Edit .env with real secrets before starting
+
+docker-compose up --build -d
+```
+
+| Service | URL |
+|---|---|
+| Customer Storefront | http://localhost:3000 |
+| Admin Dashboard | http://localhost:3001 |
+| Backend API | http://localhost:5000 |
+
+## 🛠 Local Development (Manual Setup)
+
+**Backend**
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+
+pip install -r requirements.txt
+
+# Redis is required even in dev (rate limiting, token blocklist)
+docker run --name my-redis -p 6379:6379 -d redis:alpine
+
+# Defaults to local SQLite unless MYSQL_* / DATABASE_URL is set
+flask db upgrade
+flask run
+```
+
+**Frontends** (separate terminals)
+```bash
+cd frontend-admin && npm install && npm run dev
+cd frontend-customer && npm install && npm run dev
+```
+
+## 🔑 Environment Variables
+
+Copy `.env.example` to `.env` and fill in real values. Key variables:
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `FLASK_ENV` | Yes | `production` enforces strict startup checks (fails closed if secrets are missing) |
+| `SECRET_KEY` / `JWT_SECRET_KEY` | Yes | Cryptographically random strings — generate fresh per deployment, never reuse dev values |
+| `PAYMENT_ENCRYPTION_KEY` | Yes (if using payments) | Fernet key encrypting stored payment credentials |
+| `DATABASE_URL` or `MYSQL_*` | Yes | Production database connection |
+| `REDIS_URL` | Yes | Token blocklist + rate limiting store |
+| `FRONTEND_URL` / `CORS_ORIGINS` | Yes | Comma-separated list of allowed frontend origins |
+| `VITE_API_URL` | Yes (frontend build-time) | Backend URL baked into the frontend build — must be set **before** `npm run build` |
+| `MAIL_*`, `ADMIN_EMAIL` | Recommended | Transactional email (password resets, order notifications) |
+
+⚠️ **Never commit or share a populated `.env` file.** If one has ever been shared (e.g. zipped and sent elsewhere), rotate every secret in it immediately.
+
+## ⚙️ Production Deployment
+
+This project targets a split deployment: **Flask backend on a VM** (e.g. Oracle Cloud), **both frontends on a static host** (e.g. Netlify).
+
+### Backend (Oracle Cloud / any VM)
+1. Provision an instance (e.g. `VM.Standard.A1.Flex`), open port 443 only (plus restricted SSH).
+2. Run the backend behind **Gunicorn**, reverse-proxied through **Nginx or Caddy** for TLS termination — never expose Flask's dev server directly.
+3. Set all required env vars (`FLASK_ENV=production` and everything in the table above). The app **refuses to start** in production mode if `SECRET_KEY`, `JWT_SECRET_KEY`, `REDIS_URL`, or `DATABASE_URL` are missing.
+4. Point `CORS_ORIGINS` / `FRONTEND_URL` at your actual Netlify domains.
+5. Schedule regular database backups to object storage.
+
+### Frontends (Netlify)
+1. Deploy `frontend-customer` and `frontend-admin` as **two separate Netlify sites**.
+2. Set `VITE_API_URL` as a Netlify **build environment variable** pointing to your backend's public HTTPS URL — Vite bakes this in at build time, so a local `.env` value won't carry over.
+3. Use distinct subdomains (e.g. `app.yourdomain.com`, `admin.yourdomain.com`).
+
+### Docker Compose Hardening (if self-hosting the whole stack)
+- Resource limits (`cpus`, `memory`) prevent runaway processes
+- Healthchecks on MySQL, Redis, and backend ensure safe startup ordering
+- Log rotation (10MB × 3 files) via the `json-file` driver
+- Cross-process file locking so APScheduler jobs (daily reports, ticket cleanup) run exactly once across Gunicorn workers
+
+## 💳 Online Payments (Razorpay)
+
+Credentials are stored encrypted (Fernet, via `PAYMENT_ENCRYPTION_KEY`) in `StoreSetting` and managed from **Admin → Payment Gateway**.
+
+| Endpoint | Auth | Purpose |
+|---|---|---|
+| `POST /api/payments/razorpay/order` | JWT | Creates a Razorpay order, returns keys for checkout |
+| `POST /api/payments/razorpay/verify` | JWT | Verifies HMAC signature, marks order paid (idempotent) |
+| `POST /api/payments/razorpay/webhook` | Signature | Server-to-server fallback, marks orders paid even if the browser closes |
+
+Every payment event is logged to `payment_transactions` for reconciliation.
+
+## 🧪 Testing
+
+```bash
+cd backend
+REDIS_URL=memory:// python -m unittest discover tests/ -v
+```
+
+`REDIS_URL=memory://` avoids polluting the real Redis cache during test runs.
+
 
 ## 📄 License
 
-Proprietary — all rights reserved. Not licensed for redistribution without written permission.
+Add your license here (e.g. MIT, proprietary/all rights reserved) before distributing this project.
