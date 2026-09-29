@@ -1208,6 +1208,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
             </div>
 
             {/* Discount Coupon */}
+            {storeSettings.pos_coupons_enabled !== "false" && (
             <div style={{ marginBottom: "1.5rem" }}>
               <span className="pos-section-label">Discount Coupon</span>
               <div className="pos-input-group">
@@ -1260,6 +1261,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                 </div>
               )}
             </div>
+            )}
             
             {/* Order Total summary */}
             <div style={{ background: "var(--bg-elevated)", padding: "1rem", borderRadius: "var(--r-md)", marginBottom: "1.5rem" }}>

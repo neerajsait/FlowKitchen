@@ -943,6 +943,8 @@ export default function AdminView({ onLogout, dbMode }) {
   const b2cRevenue = analytics?.summary?.b2c_revenue || 0;
   const posRevenue = analytics?.summary?.pos_revenue || 0;
   const pendingOrders = orders.filter(o => o.status === "pending" || o.status === "processing").length;
+  const pendingCustomerOrders = orders.filter(o => (o.status === "pending" || o.status === "processing") && o.order_type === "online").length;
+  const pendingOutletOrders = orders.filter(o => (o.status === "pending" || o.status === "processing") && o.order_type === "pos").length;
   const pendingRestocks = stockRequests.filter(r => r.status === "Pending").length;
   const lowStockOutlets = outlets.filter(o => (o.items || []).some(i => i.needs_restock)).length;
 
@@ -1125,11 +1127,12 @@ export default function AdminView({ onLogout, dbMode }) {
               {sidebarOpen && <span style={{ whiteSpace: "nowrap" }}>{t.label}</span>}
               
               {/* Badges */}
-              {sidebarOpen && (t.id === "customer_orders" || t.id === "outlet_orders") && pendingOrders > 0 && <span style={{ background: "var(--brand)", color: "#fff", padding: "2px 6px", borderRadius: "99px", fontSize: "0.7rem", marginLeft: "auto" }}>{pendingOrders}</span>}
+              {sidebarOpen && t.id === "customer_orders" && pendingCustomerOrders > 0 && <span style={{ background: "var(--brand)", color: "#fff", padding: "2px 6px", borderRadius: "99px", fontSize: "0.7rem", marginLeft: "auto" }}>{pendingCustomerOrders}</span>}
+              {sidebarOpen && t.id === "outlet_orders" && pendingOutletOrders > 0 && <span style={{ background: "var(--brand)", color: "#fff", padding: "2px 6px", borderRadius: "99px", fontSize: "0.7rem", marginLeft: "auto" }}>{pendingOutletOrders}</span>}
               {sidebarOpen && t.id === "outlet_stations" && lowStockOutlets > 0 && <span style={{ background: "var(--error)", color: "#fff", padding: "2px 6px", borderRadius: "99px", fontSize: "0.7rem", marginLeft: "auto" }}>{lowStockOutlets}</span>}
               {sidebarOpen && t.id === "stock_requests" && pendingRestocks > 0 && <span style={{ background: "var(--brand)", color: "#fff", padding: "2px 6px", borderRadius: "99px", fontSize: "0.7rem", marginLeft: "auto" }}>{pendingRestocks}</span>}
               {!sidebarOpen && (
-                ((t.id === "customer_orders" || t.id === "outlet_orders") && pendingOrders > 0) || (t.id === "outlet_stations" && lowStockOutlets > 0) || (t.id === "stock_requests" && pendingRestocks > 0)
+                ((t.id === "customer_orders" && pendingCustomerOrders > 0) || (t.id === "outlet_orders" && pendingOutletOrders > 0)) || (t.id === "outlet_stations" && lowStockOutlets > 0) || (t.id === "stock_requests" && pendingRestocks > 0)
               ) && <div style={{ width: 8, height: 8, background: (t.id === "outlet_stations") ? "var(--error)" : "var(--brand)", borderRadius: "50%", position: "absolute", right: "0.5rem", top: "0.5rem" }} />}
             </button>
           ))}
@@ -2876,6 +2879,17 @@ export default function AdminView({ onLogout, dbMode }) {
                 <div>
                   <strong style={{ display: "block", color: "var(--text-primary)" }}>Share Revenue Stats with Outlets</strong>
                   <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>If enabled, Outlet Managers (Operations) can see the Revenue Share tab.</span>
+                </div>
+              </label>
+
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", background: "var(--bg-elevated)", padding: "1rem", borderRadius: "var(--r-md)", border: "1px solid var(--border-subtle)" }}>
+                <input type="checkbox" checked={storeSettings.pos_coupons_enabled !== "false"} onChange={e => {
+                  const val = e.target.checked ? "true" : "false";
+                  setStoreSettings(prev => ({ ...prev, pos_coupons_enabled: val }));
+                }} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--brand)" }} />
+                <div>
+                  <strong style={{ display: "block", color: "var(--text-primary)" }}>Enable POS Coupons</strong>
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Allow cashiers to apply discount coupons during checkout at the POS.</span>
                 </div>
               </label>
             </div>
