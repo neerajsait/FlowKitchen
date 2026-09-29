@@ -401,13 +401,13 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   // Cart helpers
   // ────────────────────────────────────────────────────────────
   const addToCart = (itemId) => {
-    if (storeSettings.is_store_online === "false") { showToast("Store is currently offline.", "success"); return; }
-    if (storeSettings.is_holiday === "true")       { showToast("We're on a holiday break.", "success"); return; }
+    if (storeSettings.is_store_online === "false") { showAlert("Store is currently offline.", "success"); return; }
+    if (storeSettings.is_holiday === "true")       { showAlert("We're on a holiday break.", "success"); return; }
     const item = menu.find(m => m.id === itemId);
     if (!item) return;
     const currentQty = cart[itemId] || 0;
     if (item.global_stock != null && currentQty >= item.global_stock) {
-      showToast(`Only ${item.global_stock} available in stock.`, "success");
+      showAlert(`Only ${item.global_stock} available in stock.`, "success");
       return;
     }
     setCart(prev => ({ ...prev, [itemId]: currentQty + 1 }));
@@ -463,7 +463,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   const toggleFavorite = async (itemId, e) => {
     e?.stopPropagation?.();
     if (!currentUser) {
-      showToast("Please login to save your favorite items!", "success");
+      showAlert("Please login to save your favorite items!", "success");
       return;
     }
     const isFav = favorites.includes(itemId);
@@ -473,7 +473,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       else       await api.addFavorite(itemId);
     } catch {
       setFavorites(prev => !isFav ? prev.filter(id => id !== itemId) : [...prev, itemId]);
-      showToast("Failed to update wishlist", "error");
+      showAlert("Failed to update wishlist", "error");
     }
   };
 
@@ -484,27 +484,23 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   };
 
   const handlePlaceOrder = async () => {
-    if (storeSettings.is_store_online === "false") { showToast("Store is currently offline.", "success"); return; }
-    if (storeSettings.is_holiday === "true")       { showToast("We're on a holiday break.", "success"); return; }
+    if (storeSettings.is_store_online === "false") { showAlert("Store is currently offline.", "success"); return; }
+    if (storeSettings.is_holiday === "true")       { showAlert("We're on a holiday break.", "success"); return; }
 
     const minOrder = parseFloat(storeSettings.min_order_value || "0");
-    if (getCartTotal() < minOrder) { showToast(`Minimum order value is ₹${minOrder.toFixed(0)}.`, "warning"); return; }
+    if (getCartTotal() < minOrder) { showAlert(`Minimum order value is ₹${minOrder.toFixed(0)}.`, "warning"); return; }
 
     const items = Object.entries(cart).map(([id, qty]) => ({ menu_item_id: parseInt(id), quantity: qty }));
     if (!items.length) return;
-    if (!checkoutAddress.trim()) { showToast("Please select or add a delivery address.", "success"); return; }
+    if (!checkoutAddress.trim()) { showAlert("Please select or add a delivery address.", "success"); return; }
 
     if (!currentUser) {
       if (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim()) {
-        showToast("Please provide your contact details (Name, Email, Phone) to place a guest order.", "warning");
+        showAlert("Please provide your contact details (Name, Email, Phone) to place a guest order.", "warning");
         return;
       }
     }
 
-    if (paymentMethod === "ONLINE" && !currentUser) {
-      showToast("Online payment requires an account. Please login, or choose Cash on Delivery.", "success");
-      return;
-    }
 
     setPaymentProcessing(true);
     try {
@@ -548,7 +544,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         ? "Order placed and payment received. It is being prepared now."
         : "Order placed successfully. Your order is being prepared.");
     } catch (err) {
-      showToast("Order failed: " + err.message, "error");
+      showAlert("Order failed: " + err.message, "error");
     } finally {
       setPaymentProcessing(false);
     }
@@ -592,17 +588,17 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
 
   // "Pay Now" from My Orders for orders left pending/unpaid.
   const handlePayNow = async (orderId) => {
-    if (!currentUser) { showToast("Please login to pay online.", "success"); return; }
+    if (!currentUser) { showAlert("Please login to pay online.", "success"); return; }
     setPaymentProcessing(true);
     try {
       await openRazorpayCheckout(orderId);
       loadData();
-      showToast(`Payment received. Order #${orderId} is confirmed.`, "success");
+      showAlert(`Payment received. Order #${orderId} is confirmed.`, "success");
     } catch (err) {
       if (/closed|cancel/i.test(err?.message || "")) {
-        showToast("Payment wasn't completed — you can pay anytime from My Orders.", "success");
+        showAlert("Payment wasn't completed — you can pay anytime from My Orders.", "success");
       } else {
-        showToast("Payment failed: " + (err?.message || "Unknown error"), "error");
+        showAlert("Payment failed: " + (err?.message || "Unknown error"), "error");
       }
     } finally {
       setPaymentProcessing(false);
@@ -657,8 +653,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       setSelectedAddressId(newAddr.id);
       setCheckoutAddress(newAddr.address_line);
       setNewAddrVal(""); setNewAddrLabel("Home"); setShowAddressManager(false);
-      showToast("Address saved!", "success");
-    } catch { showToast("Failed to add address", "error"); }
+      showAlert("Address saved!", "success");
+    } catch { showAlert("Failed to add address", "error"); }
   };
 
   const handleDeleteAddress = async (id, e) => {
@@ -670,18 +666,18 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         const remaining = addresses.filter(a => a.id !== id);
         setSelectedAddressId(remaining[0]?.id || null);
       }
-    } catch { showToast("Failed to delete address", "error"); }
+    } catch { showAlert("Failed to delete address", "error"); }
   };
 
   const handleConfirmReceipt = async (orderId) => {
     const code = trackingCodes[orderId];
-    if (!code?.trim()) { showToast("Please enter the tracking code", "success"); return; }
+    if (!code?.trim()) { showAlert("Please enter the tracking code", "success"); return; }
     try {
       await api.confirmReceipt(orderId, code);
       setTrackingCodes(prev => ({ ...prev, [orderId]: "" }));
       loadData();
-      showToast("Receipt confirmed!", "success");
-    } catch (err) { showToast("Error: " + err.message, "error"); }
+      showAlert("Receipt confirmed!", "success");
+    } catch (err) { showAlert("Error: " + err.message, "error"); }
   };
 
   const handleCancelOrder = async (orderId) => {
@@ -691,8 +687,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         loadData();
         const u = await api.refreshUser();
         if (u) setLiveUser(u);
-        showToast("Order cancelled successfully.", "success");
-      } catch (err) { showToast("Error: " + err.message, "error"); }
+        showAlert("Order cancelled successfully.", "success");
+      } catch (err) { showAlert("Error: " + err.message, "error"); }
     });
   };
 
@@ -753,8 +749,8 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
       y += 20; doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.setTextColor(150, 150, 150);
       doc.text("Thank you for choosing FoodPilot!", 105, y, { align: "center" });
       doc.save(`Invoice_Order_${order.id}.pdf`);
-      showToast("Invoice downloaded!", "success");
-    } catch (err) { showToast("Failed: " + err.message, "error"); }
+      showAlert("Invoice downloaded!", "success");
+    } catch (err) { showAlert("Failed: " + err.message, "error"); }
   };
 
   const handleSubmitFeedback = async (orderId) => {
@@ -762,59 +758,59 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
     const comment = feedbackComments[orderId] || "";
     try {
       await api.submitFeedback(orderId, rating, comment);
-      loadData(); showToast("Thank you for your feedback.", "success");
-    } catch (err) { showToast("Feedback failed: " + err.message, "error"); }
+      loadData(); showAlert("Thank you for your feedback.", "success");
+    } catch (err) { showAlert("Feedback failed: " + err.message, "error"); }
   };
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); setProfileUpdating(true);
     try {
       await api.updateProfile(profileForm);
-      showToast("Profile updated successfully!", "success");
+      showAlert("Profile updated successfully!", "success");
       setIsEditingProfile(false);
-    } catch (err) { showToast("Failed: " + err.message, "error"); } finally { setProfileUpdating(false); }
+    } catch (err) { showAlert("Failed: " + err.message, "error"); } finally { setProfileUpdating(false); }
   };
 
   const handleRequestOtp = async (e) => {
     e.preventDefault(); setPasswordUpdating(true);
     try {
       await api.requestPasswordChangeOtp(passwordForm.old_password);
-      setOtpRequested(true); showToast("OTP sent to your email.", "success");
-    } catch (err) { showToast("Failed: " + err.message, "error"); } finally { setPasswordUpdating(false); }
+      setOtpRequested(true); showAlert("OTP sent to your email.", "success");
+    } catch (err) { showAlert("Failed: " + err.message, "error"); } finally { setPasswordUpdating(false); }
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault(); setPasswordUpdating(true);
     try {
       await api.changePassword(passwordForm.old_password, passwordForm.otp, passwordForm.new_password);
-      showToast("Password changed successfully!", "success");
+      showAlert("Password changed successfully!", "success");
       setOtpRequested(false); setPasswordForm({ old_password: "", otp: "", new_password: "" }); setIsEditingPassword(false);
-    } catch (err) { showToast("Failed: " + err.message, "error"); } finally { setPasswordUpdating(false); }
+    } catch (err) { showAlert("Failed: " + err.message, "error"); } finally { setPasswordUpdating(false); }
   };
 
   const handleDeleteAccount = async () => {
     if (!window.confirm("Are you sure? This is irreversible.")) return;
-    try { await api.deleteAccount(); showToast("Account deleted.", "success"); window.location.reload(); }
-    catch (err) { showToast("Failed: " + err.message, "error"); }
+    try { await api.deleteAccount(); showAlert("Account deleted.", "success"); window.location.reload(); }
+    catch (err) { showAlert("Failed: " + err.message, "error"); }
   };
 
   const handleDeleteMyReview = (id) => {
     confirm("Delete this review?", async () => {
-      try { await api.deleteCustomerReview(id); setMyReviews(prev => prev.filter(r => r.id !== id)); showToast("Review deleted.", "success"); }
-      catch (err) { showToast("Failed: " + err.message, "error"); }
+      try { await api.deleteCustomerReview(id); setMyReviews(prev => prev.filter(r => r.id !== id)); showAlert("Review deleted.", "success"); }
+      catch (err) { showAlert("Failed: " + err.message, "error"); }
     });
   };
 
   const handleCreateTicket = async (formData) => {
     await api.createTicket(formData);
-    showToast("Support ticket submitted! We'll get back to you soon.", "success");
+    showAlert("Support ticket submitted! We'll get back to you soon.", "success");
     api.getCustomerTickets().then(setTickets).catch(() => {});
   };
 
   const handleDeleteTicket = (id) => {
     confirm("Delete this ticket?", async () => {
-      try { await api.deleteTicket(id); setTickets(prev => prev.filter(t => t.id !== id)); showToast("Ticket deleted.", "success"); }
-      catch (err) { showToast("Failed: " + err.message, "error"); }
+      try { await api.deleteTicket(id); setTickets(prev => prev.filter(t => t.id !== id)); showAlert("Ticket deleted.", "success"); }
+      catch (err) { showAlert("Failed: " + err.message, "error"); }
     });
   };
 

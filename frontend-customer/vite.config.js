@@ -5,11 +5,12 @@ import react from '@vitejs/plugin-react'
 
 const DEV_CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://images.unsplash.com http://localhost:5000",
-  "connect-src 'self' ws://localhost:5174 http://localhost:5000",
+  "connect-src 'self' ws://localhost:5174 http://localhost:5000 https://api.razorpay.com https://checkout.razorpay.com",
   "font-src 'self' https://fonts.gstatic.com",
+  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

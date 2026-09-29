@@ -1257,7 +1257,7 @@ export const api = {
   },
 
   async createRazorpayOrder(orderId) {
-    const res = await fetch(`${API_BASE_URL}/payments/razorpay/order`, {
+    const res = await fetch(`${API_BASE_URL}/payments/gateway/order`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
       body: JSON.stringify({ order_id: orderId })
@@ -1268,7 +1268,7 @@ export const api = {
   },
 
   async verifyRazorpayPayment({ orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature }) {
-    const res = await fetch(`${API_BASE_URL}/payments/razorpay/verify`, {
+    const res = await fetch(`${API_BASE_URL}/payments/gateway/verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
       body: JSON.stringify({
