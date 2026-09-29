@@ -175,7 +175,9 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   }, [confirmModal]);
 
   // ── Core navigation state ────────────────────────────────
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("customerActiveTab") || "home";
+  });
   const [selectedItem, setSelectedItem] = useState(null); // product detail view
 
   const seoData = useMemo(() => {
@@ -309,6 +311,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   }, [menu]);
 
   useEffect(() => {
+    localStorage.setItem("customerActiveTab", activeTab);
     const currentState = { activeTab, selectedItemId: selectedItem?.id || null };
     // Prevent pushing duplicate state if it already matches
     if (window.history.state) {
