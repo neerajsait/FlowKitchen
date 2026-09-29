@@ -1,0 +1,13 @@
+tests/
+.pytest_cache/
+__pycache__/
+venv/
+.git/
+scripts/
+backend/instance/
+.env
+backend/.env
+frontend-admin/.env
+frontend-customer/.env
+categories_grep.txt
+node_modules/
