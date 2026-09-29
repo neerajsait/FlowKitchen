@@ -11,6 +11,13 @@ from constants import (
 
 db = SQLAlchemy()
 
+def format_image_url(url):
+    if url and url.startswith("/"):
+        from flask import request, has_request_context
+        if has_request_context():
+            return request.host_url.rstrip("/") + url
+    return url
+
 # ===========================================================================
 # IMPORTANT: REDIS ARCHITECTURE NOTE
 # ===========================================================================
@@ -351,7 +358,7 @@ class MenuItem(db.Model):
             "business_type": self.business_type,
             "category_id": self.category_id,
             "category": self.category_rel.name if self.category_rel else "Uncategorized",
-            "image_url": self.image_url,
+            "image_url": format_image_url(self.image_url),
             "global_stock": self.global_stock,
             "is_active": self.is_active,
             "is_veg": self.is_veg,
@@ -1280,7 +1287,7 @@ class Banner(db.Model):
             "description": self.description,
             "eyebrow_text": self.eyebrow_text,
             "button_text": self.button_text,
-            "image_url": self.image_url,
+            "image_url": format_image_url(self.image_url),
             "target_url": self.target_url,
             "is_active": self.is_active,
             "display_order": self.display_order,

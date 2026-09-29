@@ -620,8 +620,16 @@ def admin_get_orders():
 
     @department_required("Finance", "Operations")
     def _inner():
+        from sqlalchemy import or_
         orders = db.session.scalars(
-            select(Order).order_by(Order.created_at.desc()).limit(200)
+            select(Order)
+            .where(
+                or_(
+                    Order.payment_status == 'paid',
+                    Order.payment_method == 'COD'
+                )
+            )
+            .order_by(Order.created_at.desc()).limit(200)
         ).unique().all()
         return jsonify([o.to_dict() for o in orders]), 200
     return _inner()

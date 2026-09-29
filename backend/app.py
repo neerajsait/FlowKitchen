@@ -1706,16 +1706,17 @@ The FoodPilot Team"""
         customer_id = get_jwt_identity()
         customer = None
         if customer_id is not None:
-            customer_id = int(customer_id)
             claims = get_jwt()
             if claims.get("role") not in ["customer", "outlet_owner"]:
-                return jsonify({"error": "Forbidden", "message": "Insufficient permissions"}), 403
-            
-            customer = db.session.scalars(
-                select(User).where(User.id == customer_id).with_for_update()
-            ).first()
-            if customer and not getattr(customer, 'is_email_verified', False):
-                return jsonify({"error": "Forbidden", "message": "Please verify your email before placing an order."}), 403
+                # If an admin is using the customer portal, treat them as a guest
+                customer_id = None
+            else:
+                customer_id = int(customer_id)
+                customer = db.session.scalars(
+                    select(User).where(User.id == customer_id).with_for_update()
+                ).first()
+                if customer and not getattr(customer, 'is_email_verified', False):
+                    return jsonify({"error": "Forbidden", "message": "Please verify your email before placing an order."}), 403
 
         data = (sanitize_input(request.get_json(silent=True)) or {})
         items_data = data.get("items", [])
@@ -2350,9 +2351,14 @@ The FoodPilot Team"""
     @role_required("kitchen", "admin")
     def kitchen_get_orders():
         # Get all online orders that need preparation
+        from sqlalchemy import or_
         orders = db.session.scalars(
             select(Order)
-            .where(Order.order_type == "online", Order.status.in_(["pending", "processing"]))
+            .where(
+                Order.order_type == "online", 
+                Order.status.in_(["pending", "processing"]),
+                or_(Order.payment_status == 'paid', Order.payment_method == 'COD')
+            )
             .order_by(Order.created_at.asc())
         ).unique().all()
         return jsonify([o.to_dict() for o in orders]), 200
@@ -2533,7 +2539,7 @@ The FoodPilot Team"""
     # ============================================================
 
     @app.route("/api/pos/outlet", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_get_outlet():
         claims = get_jwt()
         oid = claims.get("outlet_id")
@@ -2546,7 +2552,7 @@ The FoodPilot Team"""
 
     # FIX: Added /api/pos/menu route — returns items assigned to the staff's outlet
     @app.route("/api/pos/menu", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_get_menu():
         """Returns the outlet stock items (with price & current_stock) for the POS register."""
         claims = get_jwt()
@@ -2574,13 +2580,13 @@ The FoodPilot Team"""
 
     # FIX: Added /api/pos/sell alias that frontend uses
     @app.route("/api/pos/sell", methods=["POST"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_sell():
         """Alias endpoint for pos_complete_sale — frontend calls /api/pos/sell."""
         return pos_complete_sale()
 
     @app.route("/api/pos/sale", methods=["POST"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_complete_sale():
         # TRANSACTION BOUNDARY: single transaction — outlet stock decrements,
         # coupon usage and loyalty updates commit together at the end.
@@ -2759,7 +2765,7 @@ The FoodPilot Team"""
 
     # --- POS: Staff Shift (Clock-In / Clock-Out) ---
     @app.route("/api/pos/shift/clock-in", methods=["POST"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_clock_in():
         """Verify staff email + PIN and open a new shift. Reject if shift already active."""
         claims = get_jwt()
@@ -2795,7 +2801,7 @@ The FoodPilot Team"""
         return jsonify({"message": "Clocked in successfully", "shift": shift.to_dict()}), 201
 
     @app.route("/api/pos/shift/active", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_get_active_shift():
         """Returns the currently active shift for this staff, or null."""
         staff_id = int(get_jwt_identity())
@@ -2808,7 +2814,7 @@ The FoodPilot Team"""
         return jsonify({"shift": shift.to_dict() if shift else None}), 200
 
     @app.route("/api/pos/sales/history", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_sales_history():
         """Returns sales for the currently active shift to compute shift totals."""
         staff_id = int(get_jwt_identity())
@@ -2841,7 +2847,7 @@ The FoodPilot Team"""
         return jsonify(result), 200
 
     @app.route("/api/pos/shift/clock-out", methods=["POST"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_clock_out():
         """Close the active shift; record cash drawer count and compute discrepancy."""
         staff_id = int(get_jwt_identity())
@@ -2894,7 +2900,7 @@ The FoodPilot Team"""
 
     # --- POS: Customer CRM Lookup ---
     @app.route("/api/pos/customer/lookup", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_customer_lookup():
         """Look up a customer by email: returns profile, loyalty balance, and top items."""
         email = (request.args.get("email") or "").strip().lower()
@@ -2935,7 +2941,7 @@ The FoodPilot Team"""
         }), 200
 
     @app.route("/api/pos/my-shifts", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_my_shifts():
         """Returns the staff member's own shifts and sales summary."""
         staff_id = int(get_jwt_identity())
@@ -2982,7 +2988,7 @@ The FoodPilot Team"""
 
 
     @app.route("/api/pos/scan-arrival", methods=["POST"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_scan_arrival():
         claims = get_jwt()
         staff_id = int(get_jwt_identity())
@@ -3075,7 +3081,7 @@ The FoodPilot Team"""
         }), 200
 
     @app.route("/api/pos/batches", methods=["GET"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_get_batches():
         claims = get_jwt()
         oid = claims.get("outlet_id")
@@ -3088,7 +3094,7 @@ The FoodPilot Team"""
         return jsonify([b.to_dict() for b in batches]), 200
 
     @app.route("/api/pos/disposal", methods=["POST"])
-    @role_required("staff")
+    @role_required("staff", "admin", "outlet_owner")
     def pos_log_disposal():
         claims = get_jwt()
         oid = claims.get("outlet_id")
@@ -3477,18 +3483,22 @@ The FoodPilot Team"""
     # ---------------------------------------------------------------------------
 
 
-    @app.route("/api/payments/razorpay/order", methods=["POST"])
-    @jwt_required()
+    @app.route("/api/payments/gateway/order", methods=["POST"])
+    @jwt_required(optional=True)
     def create_razorpay_order():
         """Create a Razorpay order for one of this customer's pending orders."""
-        uid = int(get_jwt_identity())
+        uid_str = get_jwt_identity()
+        uid = int(uid_str) if uid_str else None
+        
         data = request.get_json(silent=True) or {}
         order_id = data.get("order_id")
         if not order_id:
             return jsonify({"error": "Bad Request", "message": "order_id is required"}), 400
 
         order = db.session.get(Order, int(order_id))
-        if not order or order.customer_id != uid:
+        if not order:
+            return jsonify({"error": "Not Found", "message": "Order not found"}), 404
+        if order.customer_id is not None and order.customer_id != uid:
             return jsonify({"error": "Not Found", "message": "Order not found"}), 404
         if order.status != "pending":
             return jsonify({"error": "Bad Request", "message": "Order is not awaiting payment"}), 400
@@ -3549,13 +3559,15 @@ The FoodPilot Team"""
             "mode": creds["mode"],
         }), 201
 
-    @app.route("/api/payments/razorpay/verify", methods=["POST"])
-    @jwt_required()
+    @app.route("/api/payments/gateway/verify", methods=["POST"])
+    @jwt_required(optional=True)
     @limiter.limit("20 per minute")
     def verify_razorpay_payment():
         """Verify the checkout.js signature (HMAC of order_id|payment_id with the key secret)
         and mark the order as paid. Idempotent."""
-        uid = int(get_jwt_identity())
+        uid_str = get_jwt_identity()
+        uid = int(uid_str) if uid_str else None
+        
         data = request.get_json(silent=True) or {}
         try:
             order_id = int(data.get("order_id"))
@@ -3570,7 +3582,9 @@ The FoodPilot Team"""
                             "message": "razorpay_order_id, razorpay_payment_id and razorpay_signature are required"}), 400
 
         order = db.session.get(Order, order_id)
-        if not order or order.customer_id != uid:
+        if not order:
+            return jsonify({"error": "Not Found", "message": "Order not found"}), 404
+        if order.customer_id is not None and order.customer_id != uid:
             return jsonify({"error": "Not Found", "message": "Order not found"}), 404
 
         # Idempotency: a webhook may have beaten the client to it.
