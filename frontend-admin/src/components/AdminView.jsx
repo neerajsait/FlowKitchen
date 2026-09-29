@@ -73,11 +73,14 @@ export default function AdminView({ onLogout, dbMode }) {
     }
   }, [toast]);
 
-  const [activeTabState, setActiveTabState] = useState("overview");
+  const [activeTabState, setActiveTabState] = useState(() => {
+    return localStorage.getItem("adminActiveTab") || "overview";
+  });
   const activeTab = activeTabState;
 
   const setActiveTab = (tab, replace = false) => {
     setActiveTabState(tab);
+    localStorage.setItem("adminActiveTab", tab);
     window.scrollTo(0, 0);
     if (replace) {
       window.history.replaceState({ tab }, "", window.location.pathname);
@@ -88,11 +91,12 @@ export default function AdminView({ onLogout, dbMode }) {
 
   useEffect(() => {
     // Initial load: keep URL clean but set initial state
-    window.history.replaceState({ tab: "overview" }, "", window.location.pathname);
+    window.history.replaceState({ tab: activeTabState }, "", window.location.pathname);
 
     const handlePopState = (event) => {
       if (event.state && event.state.tab) {
         setActiveTabState(event.state.tab);
+        localStorage.setItem("adminActiveTab", event.state.tab);
       }
     };
     window.addEventListener("popstate", handlePopState);
