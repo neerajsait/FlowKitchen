@@ -3638,7 +3638,7 @@ The FoodPilot Team"""
         logger.info(f"[PAYMENT] Order #{order.id} marked PAID via checkout verify ({rp_payment_id})")
         return jsonify({"message": "Payment verified", "already_paid": False, "order": order.to_dict()}), 200
 
-    @app.route("/api/payments/razorpay/webhook", methods=["POST"])
+    @app.route("/api/payments/gateway/webhook", methods=["POST"])
     @limiter.limit("120 per minute")
     def razorpay_webhook():
         """Razorpay server-to-server events. Public route — authenticated by the

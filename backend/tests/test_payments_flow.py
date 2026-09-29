@@ -83,13 +83,13 @@ class PaymentsFlowTestCase(unittest.TestCase):
         return db.session.scalars(_s(stmt)).unique().all()
 
     # ------------------------------------------------------------------
-    # POST /api/payments/razorpay/order
+    # POST /api/payments/gateway/order
     # ------------------------------------------------------------------
     def test_create_razorpay_order_persists_rp_order_id(self):
         fake_resp = mock.Mock(status_code=201)
         fake_resp.json.return_value = {"id": "order_RP123", "amount": 25000, "currency": "INR"}
         with mock.patch("requests.post", return_value=fake_resp) as mp:
-            r = self.client.post("/api/payments/razorpay/order",
+            r = self.client.post("/api/payments/gateway/order",
                                  headers=self.headers, json={"order_id": self.order.id})
         self.assertEqual(r.status_code, 201, r.get_data(as_text=True))
         self.assertEqual(r.json["razorpay_order_id"], "order_RP123")
@@ -103,30 +103,30 @@ class PaymentsFlowTestCase(unittest.TestCase):
         self.assertTrue(any(t.event == "order_created" and t.status == "created" for t in txns))
 
     def test_create_order_requires_auth(self):
-        r = self.client.post("/api/payments/razorpay/order", json={"order_id": self.order.id})
+        r = self.client.post("/api/payments/gateway/order", json={"order_id": self.order.id})
         self.assertEqual(r.status_code, 401)
 
     def test_create_order_rejects_foreign_order(self):
-        r = self.client.post("/api/payments/razorpay/order",
+        r = self.client.post("/api/payments/gateway/order",
                              headers=self.other_headers, json={"order_id": self.order.id})
         self.assertEqual(r.status_code, 404)
     # ------------------------------------------------------------------
-    # POST /api/payments/razorpay/verify
+    # POST /api/payments/gateway/verify
     # ------------------------------------------------------------------
     def test_verify_missing_fields(self):
-        r = self.client.post("/api/payments/razorpay/verify", headers=self.headers, json={})
+        r = self.client.post("/api/payments/gateway/verify", headers=self.headers, json={})
         self.assertEqual(r.status_code, 400)
 
     def test_verify_wrong_owner_404(self):
         sig = self._checkout_signature("order_X1", "pay_X1")
-        r = self.client.post("/api/payments/razorpay/verify", headers=self.other_headers,
+        r = self.client.post("/api/payments/gateway/verify", headers=self.other_headers,
                              json={"order_id": self.order.id, "razorpay_order_id": "order_X1",
                                    "razorpay_payment_id": "pay_X1", "razorpay_signature": sig})
         self.assertEqual(r.status_code, 404)
 
     def test_verify_valid_signature_marks_paid(self):
         sig = self._checkout_signature("order_OK1", "pay_OK1")
-        r = self.client.post("/api/payments/razorpay/verify", headers=self.headers,
+        r = self.client.post("/api/payments/gateway/verify", headers=self.headers,
                              json={"order_id": self.order.id, "razorpay_order_id": "order_OK1",
                                    "razorpay_payment_id": "pay_OK1", "razorpay_signature": sig})
         self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
@@ -140,7 +140,7 @@ class PaymentsFlowTestCase(unittest.TestCase):
         self.assertTrue(checkouts and checkouts[0].signature_valid)
 
     def test_verify_invalid_signature_rejected(self):
-        r = self.client.post("/api/payments/razorpay/verify", headers=self.headers,
+        r = self.client.post("/api/payments/gateway/verify", headers=self.headers,
                              json={"order_id": self.order.id, "razorpay_order_id": "order_BAD",
                                    "razorpay_payment_id": "pay_BAD", "razorpay_signature": "deadbeef"})
         self.assertEqual(r.status_code, 400)
@@ -152,9 +152,9 @@ class PaymentsFlowTestCase(unittest.TestCase):
         sig = self._checkout_signature("order_OK1", "pay_OK1")
         body = {"order_id": self.order.id, "razorpay_order_id": "order_OK1",
                 "razorpay_payment_id": "pay_OK1", "razorpay_signature": sig}
-        r1 = self.client.post("/api/payments/razorpay/verify", headers=self.headers, json=body)
+        r1 = self.client.post("/api/payments/gateway/verify", headers=self.headers, json=body)
         self.assertEqual(r1.status_code, 200)
-        r2 = self.client.post("/api/payments/razorpay/verify", headers=self.headers, json=body)
+        r2 = self.client.post("/api/payments/gateway/verify", headers=self.headers, json=body)
         self.assertEqual(r2.status_code, 200)
         self.assertTrue(r2.json["already_paid"])
 
@@ -162,13 +162,13 @@ class PaymentsFlowTestCase(unittest.TestCase):
         self.order.razorpay_order_id = "order_REAL"
         db.session.commit()
         sig = self._checkout_signature("order_FAKE", "pay_FAKE")
-        r = self.client.post("/api/payments/razorpay/verify", headers=self.headers,
+        r = self.client.post("/api/payments/gateway/verify", headers=self.headers,
                              json={"order_id": self.order.id, "razorpay_order_id": "order_FAKE",
                                    "razorpay_payment_id": "pay_FAKE", "razorpay_signature": sig})
         self.assertEqual(r.status_code, 400)
 
     # ------------------------------------------------------------------
-    # POST /api/payments/razorpay/webhook
+    # POST /api/payments/gateway/webhook
     # ------------------------------------------------------------------
     def _webhook_payload(self, event="payment.captured"):
         return {
@@ -188,12 +188,12 @@ class PaymentsFlowTestCase(unittest.TestCase):
 
     def _post_webhook(self, payload):
         body = json.dumps(payload).encode()
-        return self.client.post("/api/payments/razorpay/webhook", data=body,
+        return self.client.post("/api/payments/gateway/webhook", data=body,
                                 content_type="application/json",
                                 headers={"X-Razorpay-Signature": self._webhook_signature(body)})
     def test_webhook_invalid_signature_rejected(self):
         body = json.dumps(self._webhook_payload()).encode()
-        r = self.client.post("/api/payments/razorpay/webhook", data=body,
+        r = self.client.post("/api/payments/gateway/webhook", data=body,
                              content_type="application/json",
                              headers={"X-Razorpay-Signature": "tampered"})
         self.assertEqual(r.status_code, 400)
