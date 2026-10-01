@@ -32,23 +32,26 @@ def log_audit(action, resource_type=None):
             elif hasattr(response, 'status_code'):
                 status_code = response.status_code
 
-            if 200 <= status_code < 400:
-                audit = AuditLog(
-                    actor_id=user_id,
-                    actor_role=actor_role,
-                    action=action,
-                    resource_type=resource_type,
-                    resource_id=resource_id,
-                    ip_address=ip_address,
-                    user_agent=user_agent
-                )
-                try:
-                    db.session.add(audit)
-                    db.session.commit()
-                except Exception as e:
-                    db.session.rollback()
-                    import logging
-                    logging.getLogger(__name__).error(f"Audit log failed: {e}")
+            final_action = action
+            if status_code >= 400:
+                final_action = f"{action}_FAILED"
+
+            audit = AuditLog(
+                actor_id=user_id,
+                actor_role=actor_role,
+                action=final_action,
+                resource_type=resource_type,
+                resource_id=resource_id,
+                ip_address=ip_address,
+                user_agent=user_agent
+            )
+            try:
+                db.session.add(audit)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                import logging
+                logging.getLogger(__name__).error(f"Audit log failed: {e}")
 
             return response
         return wrapped

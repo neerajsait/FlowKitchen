@@ -59,7 +59,6 @@ def backup_mysql():
         "mysqldump",
         f"--host={MYSQL_HOST}",
         f"--user={MYSQL_USER}",
-        f"--password={MYSQL_PASSWORD}",
         "--single-transaction",
         "--routines",
         "--triggers",
@@ -67,8 +66,13 @@ def backup_mysql():
     ]
 
     logger.info(f"Starting MySQL backup → {backup_file}")
+    
+    # Pass password via environment variable instead of CLI argument
+    env = os.environ.copy()
+    env["MYSQL_PWD"] = MYSQL_PASSWORD
+
     with gzip.open(backup_file, "wb") as gz_out:
-        result = subprocess.run(cmd, stdout=gz_out, stderr=subprocess.PIPE)
+        result = subprocess.run(cmd, stdout=gz_out, stderr=subprocess.PIPE, env=env)
 
     if result.returncode != 0:
         err = result.stderr.decode("utf-8", errors="replace")
