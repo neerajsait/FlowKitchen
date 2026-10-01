@@ -61,6 +61,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
             "password": "ValidPass123",
             "full_name": "<script>alert('XSS')</script>",
             "last_name": "Hacker",
+            "age_confirmed": True,
             "phone": "9876543210", "address": "123 Test Street"
         }
         resp = self.client.post("/api/auth/register", json=payload)
@@ -82,6 +83,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
                 "password": "ValidPass123",
                 "full_name": "John",
                 "last_name": "Doe",
+                "age_confirmed": True,
                 "phone": phone
             }
             resp = self.client.post("/api/auth/register", json=payload)
@@ -99,6 +101,7 @@ class TestInputValidationAndSQLi(unittest.TestCase):
             "password": "ValidPass123",
             "full_name": "Spammer",
             "last_name": "Bot",
+            "age_confirmed": True,
             "phone": "9998887776"
         }
         resp = self.client.post("/api/auth/register", json=payload)

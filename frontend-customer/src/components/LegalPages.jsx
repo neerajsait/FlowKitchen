@@ -132,4 +132,34 @@ export function PrivacyPage({ setActiveTab }) {
   );
 }
 
-export default { TermsPage, PrivacyPage };
+export function DMCAPage({ setActiveTab }) {
+  return (
+    <LegalShell title="DMCA Policy" setActiveTab={setActiveTab}>
+      <Sec h="Reporting Claims of Copyright Infringement">
+        <p>
+          We take claims of copyright infringement seriously and will respond to notices of alleged
+          copyright infringement that comply with applicable law. If you believe any materials
+          accessible on or from this site infringe your copyright, you may request removal of those
+          materials (or access to them) from the site by submitting written notification to our
+          copyright agent designated below.
+        </p>
+      </Sec>
+      <Sec h="Designated Copyright Agent">
+        <p>
+          FoodPilot DMCA Agent<br />
+          123 Culinary Drive, Suite 400<br />
+          Food City, FC 90210<br />
+          Email: dmca@fooderp.local<br />
+          Phone: +1 (555) 123-4567
+        </p>
+        <p>
+          Please note that under Section 512(f) of the Copyright Act, any person who knowingly
+          materially misrepresents that material or activity is infringing may be subject to
+          liability for damages.
+        </p>
+      </Sec>
+    </LegalShell>
+  );
+}
+
+export default { TermsPage, PrivacyPage, DMCAPage };

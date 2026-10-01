@@ -129,12 +129,12 @@ export const api = {
     }
   },
 
-  async register(email, password, role, full_name = "", phone = "", address = "", outlet_id = null) {
+  async register(email, password, role, full_name = "", phone = "", address = "", outlet_id = null, age_confirmed = false) {
     
     const res = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, role, full_name, phone, address, outlet_id: outlet_id ? parseInt(outlet_id) : null })
+      body: JSON.stringify({ email, password, role, full_name, phone, address, outlet_id: outlet_id ? parseInt(outlet_id) : null, age_confirmed })
     });
     const data = await safeJson(res);
     if (!res.ok) throw new Error(data.message || data.error || "Registration failed");

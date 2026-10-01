@@ -50,6 +50,7 @@ class AuthTestCase(unittest.TestCase):
             "full_name": "New",
             "last_name": "User",
             "role": "customer",
+            "age_confirmed": True,
             "phone": "9876543210", "address": "123 Test Street"
         })
         self.assertEqual(resp.status_code, 201)
@@ -61,6 +62,7 @@ class AuthTestCase(unittest.TestCase):
         resp = self.client.post("/api/auth/register", json={
             "email": "customer@test.com", # already exists
             "password": "newpass123",
+            "age_confirmed": True,
             "phone": "9876543210", "address": "123 Test Street"
         })
         self.assertEqual(resp.status_code, 201)
@@ -70,6 +72,7 @@ class AuthTestCase(unittest.TestCase):
         resp = self.client.post("/api/auth/register", json={
             "email": "not-an-email",
             "password": "newpass123",
+            "age_confirmed": True,
             "phone": "9876543210", "address": "123 Test Street"
         })
         # Could be 400 or 422 depending on how they validate
@@ -81,6 +84,7 @@ class AuthTestCase(unittest.TestCase):
             "email": "hacker@test.com",
             "password": "hack1234",
             "role": "admin",
+            "age_confirmed": True,
             "phone": "9876543210", "address": "123 Test Street"
         })
         self.assertEqual(resp.status_code, 201)

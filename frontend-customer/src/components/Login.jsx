@@ -28,6 +28,7 @@ export default function Login({ onLoginSuccess }) {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,7 +50,7 @@ export default function Login({ onLoginSuccess }) {
     setError(""); setMessage(""); setLoading(true);
     try {
       if (isRegistering) {
-        await api.register(email, password, "customer", firstName, lastName, phone, address);
+        await api.register(email, password, "customer", `${firstName} ${lastName}`.trim(), phone, address, null, ageConfirmed);
         setMessage("Account created! Please sign in.");
         setIsRegistering(false);
         setPassword("");
@@ -281,6 +282,20 @@ export default function Login({ onLoginSuccess }) {
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+              </div>
+
+              <div style={{ marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <input 
+                  type="checkbox" 
+                  id="ageConfirm"
+                  required
+                  checked={ageConfirmed}
+                  onChange={(e) => setAgeConfirmed(e.target.checked)}
+                  style={{ cursor: "pointer", width: "18px", height: "18px", accentColor: "var(--green)" }}
+                />
+                <label htmlFor="ageConfirm" style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.8)", cursor: "pointer" }}>
+                  I confirm that I am 16 years or older.
+                </label>
               </div>
 
               <button type="submit" className="glass-btn" disabled={loading} style={{ marginTop: "0.5rem" }}>

@@ -213,6 +213,7 @@ class BackendTestCase(unittest.TestCase):
             "password": "somepassword1",
             "role": "staff",
             "outlet_id": self.outlet.id,
+            "age_confirmed": True,
             "phone": "9876543210",
             "address": "123 Test Street"
         }

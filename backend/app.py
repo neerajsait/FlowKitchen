@@ -934,6 +934,10 @@ def create_app(config_override=None):
         if domain in TEMP_DOMAINS:
             return jsonify({"error": "Bad Request", "message": "This was caused due to temp mail use personal mail"}), 400
             
+        age_confirmed = data.get("age_confirmed")
+        if not age_confirmed:
+            return jsonify({"error": "Bad Request", "message": "You must confirm you are 16 years or older."}), 400
+            
         # Self-registration strictly yields customer accounts
         role = "customer"
             
@@ -4063,7 +4067,11 @@ def _get_email_html_wrapper(title, content):
             </div>
             <div class="footer">
                 &copy; {datetime.now().year} FoodPilot ERP. All rights reserved.<br>
-                This is an automated operational email.
+                This is an automated operational email.<br><br>
+                FoodPilot Headquarters<br>
+                123 Culinary Drive, Suite 400<br>
+                Food City, FC 90210<br><br>
+                <a href="#" style="color: #64748b; text-decoration: underline;">Unsubscribe from these emails</a>
             </div>
         </div>
     </body>
