@@ -185,6 +185,16 @@ export default function Login({ onLoginSuccess }) {
                 </div>
               </div>
 
+              {!isRegistering && (
+                <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "rgba(255,255,255,0.05)", borderRadius: "12px", border: "1px dashed rgba(255,255,255,0.2)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 600, textTransform: "uppercase" }}>Demo Account</div>
+                  <button type="button" onClick={() => { setEmail("customer@example.com"); setPassword("password123"); }} style={{ display: "flex", justifyContent: "space-between", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.2)", color: "#fff", cursor: "pointer", fontSize: "0.85rem" }}>
+                    <span><b>Customer:</b> customer@example.com</span>
+                    <span style={{ color: "var(--green)" }}>password123</span>
+                  </button>
+                </div>
+              )}
+
               <button type="submit" className="glass-btn" disabled={loading}>
                 {loading ? "Signing in..." : <>Sign In <LogIn size={18} /></>}
               </button>
