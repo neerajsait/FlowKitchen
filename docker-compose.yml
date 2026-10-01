@@ -16,7 +16,7 @@ services:
       - ALLOW_SEED=0
     command: >
       sh -c "flask db upgrade &&
-             gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 'app:create_app()'"
+             gunicorn --bind 0.0.0.0:5000 --workers 1 --threads 4 --timeout 120 'app:create_app()'"
     depends_on:
       db:
         condition: service_healthy
@@ -35,7 +35,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 768M
+          memory: 400M
     logging:
       driver: "json-file"
       options:
@@ -46,7 +46,7 @@ services:
     image: redis:alpine
     container_name: food_redis
     restart: always
-    command: redis-server --save 60 1 --loglevel warning
+    command: redis-server --save 60 1 --loglevel warning --maxmemory 48mb
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 20s
@@ -56,7 +56,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 64M
 
   db:
     image: mysql:8.0
@@ -73,7 +73,9 @@ services:
       --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
-      --innodb-buffer-pool-size=512M
+      --innodb-buffer-pool-size=128M
+      --performance-schema=OFF
+      --max-connections=40
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
       interval: 20s
@@ -84,7 +86,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1.5G
+          memory: 450M
 
 volumes:
   backend_data:

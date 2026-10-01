@@ -1,0 +1,120 @@
+env:
+  contexts:
+    - name: "FoodPilot-Customer"
+      urls:
+        - "http://host.docker.internal:5000"
+      excludePaths:
+        - ".*/api/admin/reset/.*"
+        - ".*/reset/customers.*"
+        - ".*/reset/menu.*"
+        - ".*/revenue/reset.*"
+        - ".*/wallet/credit.*"
+        - ".*/wallet/debit.*"
+        - ".*/api/payments/razorpay/.*"
+      authentication:
+        method: "script"
+        parameters:
+          script: "/zap/wrk/scripts/login-customer.js"
+          scriptEngine: "ECMAScript : Graal.js"
+      sessionManagement:
+        method: "cookie"
+      users:
+        - name: "customer1"
+          credentials:
+            username: "customer@example.com"
+            password: "password123"
+    - name: "FoodPilot-Staff"
+      urls:
+        - "http://host.docker.internal:5000"
+      excludePaths:
+        - ".*/api/admin/reset/.*"
+        - ".*/reset/customers.*"
+        - ".*/reset/menu.*"
+        - ".*/revenue/reset.*"
+        - ".*/wallet/credit.*"
+        - ".*/wallet/debit.*"
+        - ".*/api/payments/razorpay/.*"
+      authentication:
+        method: "script"
+        parameters:
+          script: "/zap/wrk/scripts/login-staff.js"
+          scriptEngine: "ECMAScript : Graal.js"
+      sessionManagement:
+        method: "cookie"
+      users:
+        - name: "staff1"
+          credentials:
+            username: "2522"
+            password: "1234"
+    - name: "FoodPilot-Admin"
+      urls:
+        - "http://host.docker.internal:5000"
+      excludePaths:
+        - ".*/api/admin/reset/.*"
+        - ".*/reset/customers.*"
+        - ".*/reset/menu.*"
+        - ".*/revenue/reset.*"
+        - ".*/wallet/credit.*"
+        - ".*/wallet/debit.*"
+        - ".*/api/payments/razorpay/.*"
+      authentication:
+        method: "script"
+        parameters:
+          script: "/zap/wrk/scripts/login-admin.js"
+          scriptEngine: "ECMAScript : Graal.js"
+      sessionManagement:
+        method: "cookie"
+      users:
+        - name: "admin1"
+          credentials:
+            username: "admin@example.com"
+            password: "adminpassword"
+  parameters:
+    failOnError: true
+    progressToStdout: true
+
+jobs:
+  - type: "script"
+    parameters:
+      action: "add"
+      type: "httpsender"
+      engine: "ECMAScript : Graal.js"
+      name: "csrf-header.js"
+      file: "/zap/wrk/scripts/csrf-header.js"
+
+  - type: "openapi"
+    parameters:
+      apiFile: "/zap/wrk/openapi-fixed.json"
+      targetUrl: "http://host.docker.internal:5000"
+      context: "FoodPilot-Customer"
+
+  - type: "activeScan"
+    parameters:
+      context: "FoodPilot-Customer"
+      user: "customer1"
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: 60
+    policyDefinition:
+      defaultStrength: "medium"
+      defaultThreshold: "medium"
+
+  - type: "activeScan"
+    parameters:
+      context: "FoodPilot-Staff"
+      user: "staff1"
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: 60
+
+  - type: "activeScan"
+    parameters:
+      context: "FoodPilot-Admin"
+      user: "admin1"
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: 60
+
+  - type: "report"
+    parameters:
+      template: "traditional-html"
+      reportDir: "/zap/wrk"
+      reportFile: "foodpilot-authenticated-report"
+      reportTitle: "FoodPilot Authenticated Scan"
