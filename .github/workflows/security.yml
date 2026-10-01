@@ -39,7 +39,7 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm ci --prefix frontend-admin
+        run: npm install --prefix frontend-admin
 
       - name: Audit (fail on high/critical)
         run: npm audit --audit-level=high --prefix frontend-admin
@@ -55,7 +55,7 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm ci --prefix frontend-customer
+        run: npm install --prefix frontend-customer
 
       - name: Audit (fail on high/critical)
         run: npm audit --audit-level=high --prefix frontend-customer
