@@ -16,9 +16,9 @@ export default function PriceDisplay({ price, originalPrice, size = "md", showBa
 
   return (
     <div className="flex items-center gap-sm flex-wrap">
-      <span className="price-current" style={{ fontSize: s.price }}>₹{price}</span>
+      <span className="price-current" style={{ fontSize: s.price }}>₹ {price}</span>
       {originalPrice && originalPrice > price && (
-        <span className="price-original" style={{ fontSize: s.orig }}>₹{originalPrice}</span>
+        <span className="price-original" style={{ fontSize: s.orig }}>₹ {originalPrice}</span>
       )}
       {discount > 0 && showBadge && (
         <span className="price-badge">{discount}% off</span>

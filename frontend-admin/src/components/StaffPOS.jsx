@@ -643,7 +643,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
             </div>
             {(clockOutResult.cash_discrepancy ?? 0) < 0 && (
               <div className="alert alert-error" style={{ marginBottom: "1rem" }}>
-                Cash is short by ₹{Math.abs(clockOutResult.cash_discrepancy).toFixed(2)}. Please investigate.
+                Cash is short by ₹ {Math.abs(clockOutResult.cash_discrepancy).toFixed(2)}. Please investigate.
               </div>
             )}
             
@@ -656,15 +656,15 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.85rem" }}>
                   <span>Cash Sales:</span>
-                  <strong>₹{clockOutResult.stats.cash.toFixed(2)}</strong>
+                  <strong>₹ {clockOutResult.stats.cash.toFixed(2)}</strong>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", fontSize: "0.85rem" }}>
                   <span>UPI/Card Sales:</span>
-                  <strong>₹{clockOutResult.stats.upi.toFixed(2)}</strong>
+                  <strong>₹ {clockOutResult.stats.upi.toFixed(2)}</strong>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "0.75rem", borderTop: "1px dashed var(--border-subtle)", fontSize: "1rem", fontWeight: "800", color: "var(--brand)" }}>
                   <span>Total Sales:</span>
-                  <span>₹{clockOutResult.stats.total.toFixed(2)}</span>
+                  <span>₹ {clockOutResult.stats.total.toFixed(2)}</span>
                 </div>
               </div>
             )}
@@ -902,7 +902,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                           )}
                           <h4 style={{ fontSize: "0.85rem", fontWeight: 700, margin: "0.5rem 0", color: "var(--text-primary)", lineHeight: 1.3 }}>{item.name}</h4>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: "auto" }}>
-                            <span style={{ fontFamily: "var(--font-heading)", fontSize: "1.1rem", fontWeight: 800, color: "var(--brand)" }}>₹{item.price.toFixed(0)}</span>
+                            <span style={{ fontFamily: "var(--font-heading)", fontSize: "1.1rem", fontWeight: 800, color: "var(--brand)" }}>₹ {item.price.toFixed(0)}</span>
                             <span style={{ fontSize: "0.7rem", fontWeight: 800, color: isLow ? "var(--error)" : "var(--success)", background: isLow ? "var(--error-bg)" : "var(--success-bg)", padding: "2px 6px", borderRadius: "var(--r-full)" }}>
                               {item.current_stock} left
                             </span>
@@ -979,7 +979,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                                   <span>{qty}</span>
                                   <button onClick={() => handleIncrement(item.id)}><Plus size={11} /></button>
                                 </div>
-                                <span style={{ fontFamily: "var(--font-heading)", fontSize: "0.95rem", fontWeight: 800, color: "var(--brand)", width: 44, textAlign: "right" }}>₹{(item.price * qty).toFixed(0)}</span>
+                                <span style={{ fontFamily: "var(--font-heading)", fontSize: "0.95rem", fontWeight: 800, color: "var(--brand)", width: 44, textAlign: "right" }}>₹ {(item.price * qty).toFixed(0)}</span>
                               </div>
                             </div>
                           );
@@ -991,16 +991,16 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                       {/* Totals */}
                       <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "0.875rem", marginBottom: "1rem" }}>
                         <div className="pos-summary-row">
-                          <span>Items</span><span style={{ fontWeight: 600 }}>{getSaleTotalQty()} units</span>
+                          <span>Items</span><span style={{ fontWeight: 600 }}>{getSaleTotalQty()}{" "} units</span>
                         </div>
                         {appliedCoupon && (
                           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", color: "var(--success)", marginBottom: "0.35rem", fontWeight: "600" }}>
-                            <span>Discount ({appliedCoupon.code})</span><span>-₹{discountAmount.toFixed(0)}</span>
+                            <span>Discount ({appliedCoupon.code})</span><span>-₹ {discountAmount.toFixed(0)}</span>
                           </div>
                         )}
                         <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "var(--font-heading)", fontSize: "1.4rem", fontWeight: 800, marginTop: "0.5rem" }}>
                           <span>Total</span>
-                          <span style={{ color: "var(--brand)" }}>₹{finalTotalAmount.toFixed(0)}</span>
+                          <span style={{ color: "var(--brand)" }}>₹ {finalTotalAmount.toFixed(0)}</span>
                         </div>
                       </div>
 
@@ -1056,7 +1056,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1.1rem", fontWeight: 800, padding: "0.75rem 0.875rem", background: "var(--brand-dim)", borderRadius: "var(--r-md)", border: "1px solid var(--border-brand)" }}>
                 <span style={{ color: "var(--brand)" }}>Total Drawer</span>
-                <span style={{ color: "var(--brand)" }}>₹{shiftTotals.total.toFixed(0)}</span>
+                <span style={{ color: "var(--brand)" }}>₹ {shiftTotals.total.toFixed(0)}</span>
               </div>
             </div>
             <button onClick={() => { setShowShiftReport(false); showToast("Shift summary printed!", "success"); }} className="btn btn-primary" style={{ width: "100%", padding: "0.875rem" }}>
@@ -1100,7 +1100,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
                         <strong style={{ color: "var(--text-primary)" }}>Sales Summary:</strong>
                         <ul style={{ paddingLeft: "1.2rem", margin: "0.3rem 0 0", color: "var(--text-secondary)" }}>
                           {s.sales_summary.map((ss, idx) => (
-                            <li key={idx}>{ss.total_qty}x {ss.item_name} (₹{ss.total_revenue})</li>
+                            <li key={idx}>{ss.total_qty}x {ss.item_name} (₹ {ss.total_revenue})</li>
                           ))}
                         </ul>
                       </div>
@@ -1266,18 +1266,18 @@ export default function StaffPOS({ onLogout, _dbMode }) {
             {/* Order Total summary */}
             <div style={{ background: "var(--bg-elevated)", padding: "1rem", borderRadius: "var(--r-md)", marginBottom: "1.5rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-                <span>Subtotal ({getSaleTotalQty()} items)</span>
-                <span>₹{getSaleTotalAmount().toFixed(0)}</span>
+                <span>Subtotal ({getSaleTotalQty()}{" "} items)</span>
+                <span>₹ {getSaleTotalAmount().toFixed(0)}</span>
               </div>
               {appliedCoupon && (
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--success)", fontWeight: 700 }}>
                   <span>Discount</span>
-                  <span>-₹{discountAmount.toFixed(0)}</span>
+                  <span>-₹ {discountAmount.toFixed(0)}</span>
                 </div>
               )}
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.5rem", paddingTop: "0.5rem", borderTop: "1px dashed var(--border-subtle)", fontSize: "1.2rem", fontWeight: 800 }}>
                 <span>Final Total</span>
-                <span style={{ color: "var(--brand)" }}>₹{finalTotalAmount.toFixed(0)}</span>
+                <span style={{ color: "var(--brand)" }}>₹ {finalTotalAmount.toFixed(0)}</span>
               </div>
             </div>
 
@@ -1331,7 +1331,7 @@ export default function StaffPOS({ onLogout, _dbMode }) {
               fontSize: "1.4rem", fontWeight: 800, color: "var(--brand)",
               marginBottom: "1.5rem", fontFamily: "var(--font-heading)"
             }}>
-              ₹{getSaleTotalAmount().toFixed(2)}
+              ₹ {getSaleTotalAmount().toFixed(2)}
             </div>
 
             <div className="pos-header-actions">

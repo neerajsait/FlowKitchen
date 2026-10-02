@@ -33,7 +33,7 @@ export function checkCouponEligibility(coupon, { cartTotal, cartItemIds, user, o
     const needed = (coupon.min_order_value - cartTotal).toFixed(0);
     return {
       eligible: false,
-      reason: `Add ₹${needed} more to unlock this coupon (min. ₹${coupon.min_order_value})`,
+      reason: `Add ₹${needed}{" "} more to unlock this coupon (min. ₹${coupon.min_order_value})`,
       nearlyEligible: true,
       savings: 0
     };
@@ -146,7 +146,7 @@ function CouponCard({ coupon, eligibility, appliedCoupon, onApply, onRemove }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
         {coupon.min_order_value && (
           <span style={{ fontSize: "0.72rem", color: "var(--text-2)", background: "var(--bg)", padding: "0.15rem 0.5rem", borderRadius: "var(--radius-pill)", border: "1px solid var(--border)" }}>
-            Min. ₹{coupon.min_order_value}
+            Min. ₹ {coupon.min_order_value}
           </span>
         )}
         {coupon.is_first_order_only && (
@@ -182,7 +182,7 @@ function CouponCard({ coupon, eligibility, appliedCoupon, onApply, onRemove }) {
 
         {eligible && savings > 0 && !isApplied && (
           <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--green)", whiteSpace: "nowrap" }}>
-            Save ₹{savings.toFixed(0)}
+            Save ₹ {savings.toFixed(0)}
           </span>
         )}
       </div>

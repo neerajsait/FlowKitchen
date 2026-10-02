@@ -140,7 +140,7 @@ function SiteFooter({ setActiveTab, currentUser, onLoginRequest }) {
         </div>
       </div>
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: "2rem", paddingTop: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <span style={{ fontSize: "0.75rem" }}>© {new Date().getFullYear()} FoodPilot. All rights reserved.</span>
+        <span style={{ fontSize: "0.75rem" }}>© {" "}{new Date().getFullYear()}{" "} FoodPilot. All rights reserved.</span>
         <span style={{ display: "flex", gap: "1.5rem", fontSize: "0.75rem", alignItems: "center" }}>
           <button onClick={() => setActiveTab("terms")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Terms of Service</button>
           <button onClick={() => setActiveTab("privacy")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Privacy Policy</button>
@@ -444,7 +444,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
   // ────────────────────────────────────────────────────────────
   const user = liveUser || api.getCurrentUser();
   const isLoyaltyEnabled  = storeSettings.enable_loyalty_program !== "false";
-  const loyaltyPoints     = isLoyaltyEnabled ? (user?.loyalty_points || 0) : 0;
+  const loyaltyPoints     = isLoyaltyEnabled ? Math.round(user?.loyalty_points || 0) : 0;
   const redeemRate        = parseFloat(storeSettings.loyalty_redeem_rate || "0.01");
   
   let discountAmount = 0;
@@ -632,7 +632,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
         const cartItemIds = Object.keys(cart).map(id => parseInt(id));
         if (localCoupon.min_order_value && cartTotal < localCoupon.min_order_value) {
           const needed = (localCoupon.min_order_value - cartTotal).toFixed(0);
-          setCouponError(`Add ₹${needed} more to your cart to use this coupon (min. ₹${localCoupon.min_order_value})`);
+          setCouponError(`Add ₹${needed}{" "} more to your cart to use this coupon (min. ₹${localCoupon.min_order_value})`);
           return;
         }
         if (localCoupon.applicable_customer_id && currentUser?.id !== localCoupon.applicable_customer_id) {
@@ -855,8 +855,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
     if (selectedItem) {
       return (
         <ProductDetailPage
-          {...commonProductProps}
-          item={selectedItem}
+          {...commonProductProps}{" "} item={selectedItem}
           cartQty={cart[selectedItem.id] || 0}
           isFav={favorites.includes(selectedItem.id)}
           onBack={() => setSelectedItem(null)}

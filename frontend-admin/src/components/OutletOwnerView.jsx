@@ -598,8 +598,8 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
                       return (
                         <tr key={item.menu_item_id} style={{ borderBottom: "1px solid var(--border-light)", background: idx % 2 === 0 ? "transparent" : "rgba(249,249,249,0.3)" }}>
                           <td style={{ padding: "0.85rem 1rem" }}><strong>{item.menu_item_name}</strong></td>
-                          <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)" }}>₹{item.menu_item_price}</td>
-                          <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)" }}>{item.restock_limit} units</td>
+                          <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)" }}>₹ {item.menu_item_price}</td>
+                          <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)" }}>{item.restock_limit}{" "} units</td>
                           <td style={{ padding: "0.85rem 1rem" }}><strong style={{ color: isLow ? "var(--error)" : "var(--text-primary)" }}>{item.current_stock}</strong></td>
                           <td style={{ padding: "0.85rem 1rem" }}>
                             {isLow ? (

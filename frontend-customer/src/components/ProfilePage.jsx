@@ -15,6 +15,7 @@ export default function ProfilePage({
   if (!user) return null;
 
   const redeemRate = parseFloat(storeSettings?.loyalty_redeem_rate || "0.01");
+  const roundedLoyaltyPoints = Math.round(loyaltyPoints || 0);
   const displayName = user.full_name || user.email?.split("@")[0] || "You";
   const initials = displayName.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
 
@@ -36,11 +37,11 @@ export default function ProfilePage({
           </div>
           <div style={{ display: "flex", gap: "2rem" }}>
             <div>
-              <div className="loyalty-points-big">{loyaltyPoints || 0}</div>
+              <div className="loyalty-points-big">{roundedLoyaltyPoints}</div>
               <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: "0.25rem" }}>Loyalty Points</div>
             </div>
             <div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent)" }}>₹{((loyaltyPoints || 0) * redeemRate).toFixed(2)}</div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent)" }}>₹ {(roundedLoyaltyPoints * redeemRate).toFixed(2)}</div>
               <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", marginTop: "0.25rem" }}>Redeemable Value</div>
             </div>
           </div>

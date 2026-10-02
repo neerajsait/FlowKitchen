@@ -815,7 +815,7 @@ export default function AdminView({ onLogout, dbMode }) {
     setStaffFullName(user.full_name || "");
     setStaffPhone(user.phone || "");
     setStaffDepartment(user.admin_department || "");
-    setUserLoyaltyPoints(user.loyalty_points || 0);
+    setUserLoyaltyPoints(Math.round(user.loyalty_points || 0));
     setStaffOutletId(user.outlet_id || "");
     setStaffPassword("");
     setStaffPin("");
@@ -1199,7 +1199,7 @@ export default function AdminView({ onLogout, dbMode }) {
                 <span className="stat-card-label">Total Revenue</span>
                 <div style={{ width: 36, height: 36, borderRadius: "var(--r-md)", background: "var(--brand-glow)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--brand)" }}><TrendingUp size={18} /></div>
               </div>
-              <div className="stat-card-value" style={{ color: "var(--brand)" }}>₹{totalRevenue.toFixed(0)}</div>
+              <div className="stat-card-value" style={{ color: "var(--brand)" }}>₹ {totalRevenue.toFixed(0)}</div>
               <div className="stat-card-sub">B2C + POS combined</div>
             </div>
             <div className="stat-card">
@@ -1255,7 +1255,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{o.customer_email}</div>
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        <div style={{ fontWeight: 700, color: "var(--brand)" }}>₹{o.total_price.toFixed(0)}</div>
+                        <div style={{ fontWeight: 700, color: "var(--brand)" }}>₹ {o.total_price.toFixed(0)}</div>
                         <span className={`badge-status status-${o.status}`}>{o.status}</span>
                         {o.payment_method !== "COD" && (
                           <div style={{ fontSize: "0.62rem", marginTop: "0.15rem", fontWeight: 700, color: o.payment_status === "paid" ? "var(--success)" : "var(--error)" }}>
@@ -1347,7 +1347,7 @@ export default function AdminView({ onLogout, dbMode }) {
                   <tr key={item.id}>
                     <td><strong>{item.name}</strong></td>
                     <td>{item.category}</td>
-                    <td>₹{item.price}</td>
+                    <td>₹ {item.price}</td>
                     <td><span className={`badge-status status-${item.business_type === 'snack_supply' ? 'delivered' : 'pending'}`}>{item.business_type}</span></td>
                     <td>
                       <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -1498,7 +1498,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         {o.customer_email || "Guest"}
                       </button>
                     </td>
-                    <td><strong>₹{o.total_price.toFixed(0)}</strong></td>
+                    <td><strong>₹ {o.total_price.toFixed(0)}</strong></td>
                     <td><span className={`badge-status status-${o.status}`}>{o.status}</span></td>
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
@@ -1607,9 +1607,9 @@ export default function AdminView({ onLogout, dbMode }) {
                     revenueShare.map(r => (
                       <tr key={r.outlet_id}>
                         <td style={{ fontWeight: 600 }}>{r.outlet_name}</td>
-                        <td>₹{r.total_sales.toFixed(2)}</td>
+                        <td>₹ {r.total_sales.toFixed(2)}</td>
                         <td>{r.revenue_share_percentage}%</td>
-                        <td style={{ color: "var(--success)" }}>₹{r.brand_cut.toFixed(2)}</td>
+                        <td style={{ color: "var(--success)" }}>₹ {r.brand_cut.toFixed(2)}</td>
                       </tr>
                     ))
                   )}
@@ -1671,7 +1671,7 @@ export default function AdminView({ onLogout, dbMode }) {
                       <div key={idx} style={{ marginBottom: "0.75rem" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: "0.3rem" }}>
                           <span style={{ color: "var(--text-secondary)" }}>{item.name}</span>
-                          <span style={{ fontWeight: 700, color: "var(--brand)" }}>{item.qty} units</span>
+                          <span style={{ fontWeight: 700, color: "var(--brand)" }}>{item.qty}{" "} units</span>
                         </div>
                         <div className="stock-bar-container">
                           <div className="stock-bar-fill" style={{ width: `${Math.min((item.qty / (analytics.top_b2c_items[0]?.qty || 1)) * 100, 100)}%`, background: "var(--brand)" }} />
@@ -1690,7 +1690,7 @@ export default function AdminView({ onLogout, dbMode }) {
                       <div key={idx} style={{ marginBottom: "0.75rem" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: "0.3rem" }}>
                           <span style={{ color: "var(--text-secondary)" }}>{item.name}</span>
-                          <span style={{ fontWeight: 700, color: "var(--info)" }}>{item.qty} units</span>
+                          <span style={{ fontWeight: 700, color: "var(--info)" }}>{item.qty}{" "} units</span>
                         </div>
                         <div className="stock-bar-container">
                           <div className="stock-bar-fill" style={{ width: `${Math.min((item.qty / (analytics.top_pos_items[0]?.qty || 1)) * 100, 100)}%`, background: "var(--info)" }} />
@@ -1856,7 +1856,7 @@ export default function AdminView({ onLogout, dbMode }) {
                     </div>
                     <div style={{ fontWeight: 700, fontSize: "0.875rem" }}>{log.menu_item_name}</div>
                     <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.35rem" }}>
-                      <span style={{ color: "var(--error)", fontWeight: 700, fontSize: "0.78rem" }}>−{log.change_qty} units</span>
+                      <span style={{ color: "var(--error)", fontWeight: 700, fontSize: "0.78rem" }}>−{log.change_qty}{" "} units</span>
                       <span style={{ color: "var(--text-secondary)", fontSize: "0.75rem", fontStyle: "italic" }}>{log.notes}</span>
                     </div>
                   </div>
@@ -1963,7 +1963,7 @@ export default function AdminView({ onLogout, dbMode }) {
         <div className="animate-fade-in">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
             <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem" }}>System Audit Logs</h3>
-            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{systemLogs.length} entries</span>
+            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{systemLogs.length}{" "} entries</span>
           </div>
           <div className="table-container">
             <table className="custom-table">
@@ -1992,7 +1992,7 @@ export default function AdminView({ onLogout, dbMode }) {
         <div className="animate-fade-in">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
             <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem" }}>Stock Audit Logs</h3>
-            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{auditLogs.length} entries</span>
+            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{auditLogs.length}{" "} entries</span>
           </div>
           <div className="table-container">
             <table className="custom-table">
@@ -2453,7 +2453,7 @@ export default function AdminView({ onLogout, dbMode }) {
                         </td>
                         <td>
                           <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                            {coupon.min_order_value > 0 && <div>Min: ₹{coupon.min_order_value}</div>}
+                            {coupon.min_order_value > 0 && <div>Min: ₹ {coupon.min_order_value}</div>}
                             {coupon.is_first_order_only && <div>First Order Only</div>}
                             {(!coupon.min_order_value && !coupon.is_first_order_only) && <div>None</div>}
                           </div>
@@ -2628,7 +2628,7 @@ export default function AdminView({ onLogout, dbMode }) {
                           <td>{c.full_name}</td>
                           <td>{c.email}</td>
                           <td>{c.order_count}</td>
-                          <td>₹{c.total_spent}</td>
+                          <td>₹ {c.total_spent}</td>
                           <td>
                             <button className="btn btn-secondary" onClick={() => { setWalletTargetUser(c); setShowWalletModal(true); }} style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem" }}>Manage Wallet</button>
                           </td>
@@ -2649,7 +2649,7 @@ export default function AdminView({ onLogout, dbMode }) {
                           <td>{c.full_name}</td>
                           <td>{c.email}</td>
                           <td>{c.order_count}</td>
-                          <td>₹{c.total_spent}</td>
+                          <td>₹ {c.total_spent}</td>
                           <td>
                             <button className="btn btn-secondary" onClick={() => { setWalletTargetUser(c); setShowWalletModal(true); }} style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem" }}>Manage Wallet</button>
                           </td>
@@ -4176,18 +4176,18 @@ export default function AdminView({ onLogout, dbMode }) {
                     <tr key={idx} style={{ borderBottom: "1px solid #eee" }}>
                       <td style={{ padding: "0.5rem 0" }}>{it.menu_item_name}</td>
                       <td style={{ textAlign: "center", padding: "0.5rem 0" }}>{it.quantity}</td>
-                      <td style={{ textAlign: "right", padding: "0.5rem 0" }}>₹{(it.price * it.quantity).toFixed(2)}</td>
+                      <td style={{ textAlign: "right", padding: "0.5rem 0" }}>₹ {(it.price * it.quantity).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr>
                     <td colSpan={2} style={{ textAlign: "right", padding: "0.5rem 0", fontWeight: "bold" }}>Delivery Charge:</td>
-                    <td style={{ textAlign: "right", padding: "0.5rem 0", fontWeight: "bold" }}>₹{printOrder.delivery_charge || 0}</td>
+                    <td style={{ textAlign: "right", padding: "0.5rem 0", fontWeight: "bold" }}>₹ {printOrder.delivery_charge || 0}</td>
                   </tr>
                   <tr>
                     <td colSpan={2} style={{ textAlign: "right", padding: "0.5rem 0", fontWeight: "bold", fontSize: "1.1rem" }}>Total:</td>
-                    <td style={{ textAlign: "right", padding: "0.5rem 0", fontWeight: "bold", fontSize: "1.1rem" }}>₹{printOrder.total_price.toFixed(2)}</td>
+                    <td style={{ textAlign: "right", padding: "0.5rem 0", fontWeight: "bold", fontSize: "1.1rem" }}>₹ {printOrder.total_price.toFixed(2)}</td>
                   </tr>
                 </tfoot>
               </table>

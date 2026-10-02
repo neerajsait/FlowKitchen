@@ -1755,9 +1755,15 @@ The FoodPilot Team"""
         guest_name = data.get("guest_name")
         guest_email = data.get("guest_email")
         guest_phone = data.get("guest_phone")
-
-        if not customer_id and not (guest_name and guest_email and guest_phone):
-            return jsonify({"error": "Bad Request", "message": "Guest details (name, email, phone) are required for guest checkout."}), 400
+        
+        if not customer_id:
+            if not (guest_name and guest_email and guest_phone):
+                return jsonify({"error": "Bad Request", "message": "Guest details (name, email, phone) are required for guest checkout."}), 400
+            
+            valid_phone, phone_clean = validate_phone(guest_phone)
+            if not valid_phone:
+                return jsonify({"error": "Bad Request", "message": "Invalid guest phone number format. Must contain 10-15 digits."}), 400
+            guest_phone = phone_clean
 
         if not items_data:
             return jsonify({"error": "Bad Request", "message": "No items in order"}), 400

@@ -251,8 +251,7 @@ export default function ShopPage({ menu, cart, favorites, loading, activeCategor
           <div className="product-grid">
             {filtered.map(item => (
               <ProductCard
-                key={item.id}
-                item={item}
+                key={item.id}{" "} item={item}
                 cartQty={cart[item.id] || 0}
                 isFav={favorites.includes(item.id)}
                 onAdd={onAdd}

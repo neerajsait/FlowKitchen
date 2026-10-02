@@ -64,7 +64,7 @@ export default function Header({ activeTab, setActiveTab, cartCount, searchQuery
           className={`header-nav-link${activeTab === "checkout" || activeTab === "cart" ? " active" : ""}`}
           onClick={onOpenCart}
           title="Cart"
-          aria-label={`Cart – ${cartCount} items`}
+          aria-label={`Cart – ${cartCount}{" "} items`}
           style={{ position: "relative" }}
         >
           Cart
@@ -97,7 +97,7 @@ export function MobileHeader({ searchQuery, setSearchQuery, cartCount, setActive
           <button
             className="header-action-btn"
             onClick={onOpenCart}
-            aria-label={`Cart – ${cartCount} items`}
+            aria-label={`Cart – ${cartCount}{" "} items`}
           >
             <ShoppingCart size={20} />
             {cartCount > 0 && <span className="action-badge">{cartCount > 9 ? "9+" : cartCount}</span>}

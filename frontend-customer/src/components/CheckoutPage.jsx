@@ -242,7 +242,7 @@ export default function CheckoutPage({
                       <div style={{ fontWeight: 600, fontSize: "0.875rem" }}>{item.name}</div>
                       <div style={{ fontSize: "0.75rem", color: "var(--text-2)" }}>×{item.qty}</div>
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: "0.9rem" }}>₹{(item.price * item.qty).toFixed(2)}</div>
+                    <div style={{ fontWeight: 700, fontSize: "0.9rem" }}>₹ {(item.price * item.qty).toFixed(2)}</div>
                   </div>
                 ))}
               </div>
@@ -273,7 +273,7 @@ export default function CheckoutPage({
                 >
                   {paymentProcessing
                     ? <><span className="spinner" /> Processing…</>
-                    : <>{paymentMethod === "COD" ? "Place Order" : "Pay & Order"} • ₹{finalTotal.toFixed(2)}</>}
+                    : <>{paymentMethod === "COD" ? "Place Order" : "Pay & Order"} • ₹ {finalTotal.toFixed(2)}</>}
                 </button>
               </div>
             </div>
@@ -283,11 +283,11 @@ export default function CheckoutPage({
         {/* Order Summary sidebar */}
         <div className="order-summary-card">
           <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "1rem" }}>Summary</h2>
-          <div className="summary-row"><span style={{ color: "var(--text-2)" }}>Items ({cartItems.reduce((s, i) => s + i.qty, 0)})</span><span>₹{cartTotal.toFixed(2)}</span></div>
-          {currentUser && discountAmount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Coupon</span><span style={{ color: "var(--green)" }}>−₹{discountAmount.toFixed(2)}</span></div>}
-          {currentUser && actualLoyaltyDiscount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Points</span><span style={{ color: "var(--green)" }}>−₹{actualLoyaltyDiscount.toFixed(2)}</span></div>}
+          <div className="summary-row"><span style={{ color: "var(--text-2)" }}>Items ({cartItems.reduce((s, i) => s + i.qty, 0)})</span><span>₹ {cartTotal.toFixed(2)}</span></div>
+          {currentUser && discountAmount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Coupon</span><span style={{ color: "var(--green)" }}>−₹ {discountAmount.toFixed(2)}</span></div>}
+          {currentUser && actualLoyaltyDiscount > 0 && <div className="summary-row"><span style={{ color: "var(--green)" }}>Points</span><span style={{ color: "var(--green)" }}>−₹ {actualLoyaltyDiscount.toFixed(2)}</span></div>}
           <div className="summary-row"><span style={{ color: "var(--text-2)" }}>Delivery</span><span style={{ color: deliveryCharge === 0 ? "var(--green)" : "inherit" }}>{deliveryCharge === 0 ? "FREE" : `₹${deliveryCharge.toFixed(2)}`}</span></div>
-          <div className="summary-row total"><span>Total</span><span>₹{finalTotal.toFixed(2)}</span></div>
+          <div className="summary-row total"><span>Total</span><span>₹ {finalTotal.toFixed(2)}</span></div>
           <p style={{ fontSize: "0.7rem", color: "var(--text-3)", marginTop: "0.75rem", textAlign: "center" }}> Secure checkout powered by your trust</p>
         </div>
       </div>

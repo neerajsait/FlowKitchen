@@ -259,9 +259,9 @@ export default function ProductDetailPage({ item, cartQty, isFav, onAdd, onRemov
       {/* Mobile sticky bottom bar */}
       <div className="mobile-only" style={{ position: "fixed", bottom: "var(--bottom-nav-h)", left: 0, right: 0, background: "var(--bg-card)", borderTop: "1px solid var(--border)", padding: "0.875rem 1rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", zIndex: 150 }}>
         <div>
-          <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--text)" }}>₹{item.price}</div>
+          <div style={{ fontSize: "1.25rem", fontWeight: 900, color: "var(--text)" }}>₹ {item.price}</div>
           {item.original_price && item.original_price > item.price && (
-            <div style={{ fontSize: "0.75rem", color: "var(--text-3)", textDecoration: "line-through" }}>₹{item.original_price}</div>
+            <div style={{ fontSize: "0.75rem", color: "var(--text-3)", textDecoration: "line-through" }}>₹ {item.original_price}</div>
           )}
         </div>
         {cartQty > 0 ? (

@@ -23,15 +23,14 @@ export default function WishlistPage({ menu, favorites, cart, onAdd, onRemove, o
       <div className="section-header" style={{ marginBottom: "1.5rem" }}>
         <div>
           <h1 style={{ fontSize: "1.5rem", fontWeight: 900 }}>My Wishlist</h1>
-          <p className="section-subtitle">{wishlistItems.length} item{wishlistItems.length !== 1 ? "s" : ""} saved</p>
+          <p className="section-subtitle">{wishlistItems.length}{" "} item{wishlistItems.length !== 1 ? "s" : ""} saved</p>
         </div>
       </div>
 
       <div className="product-grid">
         {wishlistItems.map(item => (
           <ProductCard
-            key={item.id}
-            item={item}
+            key={item.id}{" "} item={item}
             cartQty={cart[item.id] || 0}
             isFav
             onAdd={onAdd}

@@ -78,13 +78,13 @@ function OrderCard({ order, trackingCode, setTrackingCode, onConfirmReceipt, onC
         ))}
         {(order.items?.length > 4) && (
           <span style={{ fontSize: "0.8rem", background: "var(--bg)", borderRadius: "var(--radius-pill)", padding: "0.2rem 0.625rem", color: "var(--text-2)" }}>
-            +{order.items.length - 4} more
+            +{order.items.length - 4}{" "} more
           </span>
         )}
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-        <span style={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--text)" }}>₹{parseFloat(order.total_price).toFixed(2)}</span>
+        <span style={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--text)" }}>₹ {parseFloat(order.total_price).toFixed(2)}</span>
         <span style={{ fontSize: "0.8rem", color: "var(--text-3)" }}>
           {order.payment_method || "COD"}
           {order.payment_status === "paid" && (
@@ -101,18 +101,18 @@ function OrderCard({ order, trackingCode, setTrackingCode, onConfirmReceipt, onC
             {order.items?.map(i => (
               <div key={i.menu_item_id} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
                 <span>{i.menu_item_name} ×{i.quantity}</span>
-                <span style={{ fontWeight: 600 }}>₹{(i.price * i.quantity).toFixed(2)}</span>
+                <span style={{ fontWeight: 600 }}>₹ {(i.price * i.quantity).toFixed(2)}</span>
               </div>
             ))}
             {order.delivery_charge > 0 && (
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem", color: "var(--text-2)" }}>
                 <span>Delivery charge</span>
-                <span>₹{parseFloat(order.delivery_charge).toFixed(2)}</span>
+                <span>₹ {parseFloat(order.delivery_charge).toFixed(2)}</span>
               </div>
             )}
             <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, borderTop: "1px solid var(--border)", paddingTop: "0.5rem" }}>
               <span>Total</span>
-              <span>₹{parseFloat(order.total_price).toFixed(2)}</span>
+              <span>₹ {parseFloat(order.total_price).toFixed(2)}</span>
             </div>
           </div>
 

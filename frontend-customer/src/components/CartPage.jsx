@@ -23,10 +23,10 @@ function DeliveryBar({ cartTotal, freeDeliveryThreshold }) {
         <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
           <Truck size={14} color={done ? "var(--green)" : "var(--text-2)"} />
           <span style={{ fontSize: "0.8rem", color: done ? "var(--green)" : "var(--text-2)", fontWeight: done ? 700 : 500 }}>
-            {done ? "Free delivery unlocked!" : <>Add <strong style={{ color: "var(--text)" }}>₹{left.toFixed(0)}</strong> for free delivery</>}
+            {done ? "Free delivery unlocked!" : <>Add <strong style={{ color: "var(--text)" }}>₹ {left.toFixed(0)}</strong> for free delivery</>}
           </span>
         </div>
-        <span style={{ fontSize: "0.75rem", color: "var(--text-3)" }}>₹{FREE_AT}</span>
+        <span style={{ fontSize: "0.75rem", color: "var(--text-3)" }}>₹ {FREE_AT}</span>
       </div>
       <div style={{ height: 6, background: "var(--bg)", borderRadius: 999, overflow: "hidden" }}>
         <div style={{
@@ -86,7 +86,7 @@ function InlineCouponRow({ coupon, eligibility, appliedCoupon, onApply, onRemove
             {isApplied ? "Applied" : reason}
           </span>
           {eligible && savings > 0 && !isApplied && (
-            <span style={{ marginLeft: "auto", fontSize: "0.72rem", fontWeight: 800, color: "var(--green)" }}>Save ₹{savings.toFixed(0)}</span>
+            <span style={{ marginLeft: "auto", fontSize: "0.72rem", fontWeight: 800, color: "var(--green)" }}>Save ₹ {savings.toFixed(0)}</span>
           )}
         </div>
       </div>
@@ -168,7 +168,7 @@ function ComboRecommender({ cartTotal, menu, cart, coupons, onAddItem }) {
       <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "0.75rem" }}>
         <Zap size={14} color="var(--green)" />
         <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--green)" }}>
-          Add ₹{needed.toFixed(0)}{" "}more →{" "}{nearest.label}
+          Add{" "}₹ {needed.toFixed(0)}{" "} more →{" "}{nearest.label}
         </span>
       </div>
       <div className="combo-scroll" style={{ display: "flex", gap: "0.5rem", paddingBottom: 4 }}>
@@ -196,7 +196,7 @@ function ComboRecommender({ cartTotal, menu, cart, coupons, onAddItem }) {
             <span style={{ fontSize: "0.65rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.25, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", width: "100%" }}>
               {item.name}
             </span>
-            <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--green)" }}>₹{item.price}</span>
+            <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--green)" }}>₹ {item.price}</span>
             <span style={{ fontSize: "0.65rem", color: "var(--green)", fontWeight: 700, display: "flex", alignItems: "center", gap: 2 }}>
               <Plus size={9} /> Add
             </span>
@@ -265,7 +265,7 @@ export default function CartPage({
       <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", marginBottom: "1.75rem" }}>
         <h1 style={{ fontSize: "1.625rem", fontWeight: 900, color: "var(--text)" }}>Your Cart</h1>
         <span style={{ fontSize: "0.825rem", color: "var(--text-3)", fontWeight: 500 }}>
-          {itemCount} item{itemCount !== 1 ? "s" : ""}
+          {itemCount}{" "} item{itemCount !== 1 ? "s" : ""}
         </span>
       </div>
 
@@ -332,7 +332,7 @@ export default function CartPage({
 
                   {/* Unit price */}
                   {item.qty > 1 && (
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-3)" }}>₹{item.price} each</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-3)" }}>₹ {item.price}{" "} each</span>
                   )}
                 </div>
               </div>
@@ -340,7 +340,7 @@ export default function CartPage({
               {/* Right: price + remove */}
               <div style={{ textAlign: "right", flexShrink: 0 }}>
                 <div style={{ fontSize: "1.0625rem", fontWeight: 900, color: "var(--text)", marginBottom: "0.5rem" }}>
-                  ₹{(item.price * item.qty).toFixed(0)}
+                  ₹ {(item.price * item.qty).toFixed(0)}
                 </div>
                 <button
                   onClick={() => onClearItem(item.id)}
@@ -491,7 +491,7 @@ export default function CartPage({
                       style={{ accentColor: "var(--green)", width: 16, height: 16 }} />
                     <div>
                       <div style={{ fontWeight: 700, color: "var(--text)" }}>Use {loyaltyPoints} loyalty points</div>
-                      <div style={{ fontSize: "0.72rem", color: "var(--text-3)" }}>Saves ₹{maxLoyaltyDiscount.toFixed(2)}</div>
+                      <div style={{ fontSize: "0.72rem", color: "var(--text-3)" }}>Saves ₹ {maxLoyaltyDiscount.toFixed(2)}</div>
                     </div>
                   </label>
                 </div>
@@ -500,19 +500,19 @@ export default function CartPage({
               {/* Totals */}
               <div style={{ borderTop: "1px solid var(--border)", paddingTop: "0.875rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
-                  <span style={{ color: "var(--text-2)" }}>Subtotal ({itemCount} item{itemCount !== 1 ? "s" : ""})</span>
-                  <span style={{ fontWeight: 600 }}>₹{cartTotal.toFixed(2)}</span>
+                  <span style={{ color: "var(--text-2)" }}>Subtotal ({itemCount}{" "} item{itemCount !== 1 ? "s" : ""})</span>
+                  <span style={{ fontWeight: 600 }}>₹ {cartTotal.toFixed(2)}</span>
                 </div>
                 {currentUser && discountAmount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
                     <span style={{ color: "var(--green)" }}>Coupon discount</span>
-                    <span style={{ color: "var(--green)", fontWeight: 700 }}>−₹{discountAmount.toFixed(2)}</span>
+                    <span style={{ color: "var(--green)", fontWeight: 700 }}>−₹ {discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 {currentUser && actualLoyaltyDiscount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
                     <span style={{ color: "var(--green)" }}>Loyalty points</span>
-                    <span style={{ color: "var(--green)", fontWeight: 700 }}>−₹{actualLoyaltyDiscount.toFixed(2)}</span>
+                    <span style={{ color: "var(--green)", fontWeight: 700 }}>−₹ {actualLoyaltyDiscount.toFixed(2)}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
@@ -523,7 +523,7 @@ export default function CartPage({
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1.0625rem", fontWeight: 900, color: "var(--text)", paddingTop: "0.5rem", borderTop: "1.5px solid var(--border)", marginTop: "0.25rem" }}>
                   <span>Total</span>
-                  <span>₹{finalTotal.toFixed(2)}</span>
+                  <span>₹ {finalTotal.toFixed(2)}</span>
                 </div>
                 {(discountAmount > 0 || actualLoyaltyDiscount > 0 || deliveryCharge === 0) && (
                   <div style={{ textAlign: "center", fontSize: "0.775rem", color: "var(--green)", fontWeight: 700, background: "var(--green-dim)", padding: "0.4rem 0.75rem", borderRadius: "var(--radius-md)" }}>

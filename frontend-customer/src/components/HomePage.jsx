@@ -157,9 +157,9 @@ function BestSellerHighlight({ item, cartQty, isFav, onAdd, onRemove, onToggleFa
             {item.description?.length > 120 ? "…" : ""}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <span style={{ fontSize: "1.75rem", fontWeight: 900, color: "var(--text)" }}>₹{item.price}</span>
+            <span style={{ fontSize: "1.75rem", fontWeight: 900, color: "var(--text)" }}>₹ {item.price}</span>
             {item.original_price && item.original_price > item.price && (
-              <span style={{ fontSize: "1rem", color: "var(--text-3)", textDecoration: "line-through" }}>₹{item.original_price}</span>
+              <span style={{ fontSize: "1rem", color: "var(--text-3)", textDecoration: "line-through" }}>₹ {item.original_price}</span>
             )}
           </div>
 

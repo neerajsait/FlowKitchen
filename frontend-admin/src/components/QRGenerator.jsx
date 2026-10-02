@@ -53,7 +53,7 @@ export default function QRGenerator({ outlets, menuItems }) {
     </style></head><body onload="window.print()"><div class="box">
       <h2> Dispatch Label</h2>
       <p><strong>Item:</strong> ${p.item}</p>
-      <p><strong>Qty:</strong> ${p.qty} units</p>
+      <p><strong>Qty:</strong> ${p.qty}{" "} units</p>
       <p><strong>Destination:</strong> ${p.destination || "—"}</p>
       ${p.order_id ? `<p><strong>Order:</strong> #${p.order_id}</p>` : ""}
       ${p.batch_number ? `<p><strong>Batch:</strong> ${p.batch_number}</p>` : ""}
@@ -141,7 +141,7 @@ export default function QRGenerator({ outlets, menuItems }) {
             )}
             <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "1rem", textAlign: "left", width: "100%", lineHeight: "1.6" }}>
               <div><strong>Item:</strong> {qrResult.payload.item}</div>
-              <div><strong>Qty:</strong> {qrResult.payload.qty} units</div>
+              <div><strong>Qty:</strong> {qrResult.payload.qty}{" "} units</div>
               <div><strong>Outlet:</strong> {qrResult.payload.destination}</div>
               {qrResult.payload.order_id && <div><strong>Order:</strong> #{qrResult.payload.order_id}</div>}
               {qrResult.payload.batch_number && <div><strong>Batch:</strong> {qrResult.payload.batch_number}</div>}
