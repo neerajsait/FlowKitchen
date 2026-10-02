@@ -2192,10 +2192,13 @@ def admin_update_store_settings():
             "policy_refund", "policy_cookie_consent", 
             "policy_data_collection", "policy_third_party_embeds"
         }
+        import bleach
+        ALLOWED_TAGS = {'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'span', 'div', 'b', 'i'}
+        ALLOWED_ATTRS = {'*': ['class', 'style'], 'a': ['href', 'target', 'rel']}
         data = sanitize_input({k: v for k, v in raw_data.items() if k not in POLICY_KEYS})
         for k in POLICY_KEYS:
             if k in raw_data:
-                data[k] = raw_data[k]
+                data[k] = bleach.clean(raw_data[k], tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, strip=True) if isinstance(raw_data[k], str) else raw_data[k]
         for key, (lo, hi) in LOYALTY_SETTING_KEYS.items():
             if key in data:
                 try:

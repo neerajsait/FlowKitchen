@@ -147,7 +147,6 @@ function ComboRecommender({ cartTotal, menu, cart, coupons, onAddItem }) {
     .map(c => ({ amount: c.min_order_value, label: `Unlock ${c.code}` }));
 
   const allTargets = [
-    { amount: 499, label: "Get Free Delivery" },
     { amount: 1000, label: "₹1000 Big Saver!" },
     ...couponMins,
   ].filter(t => t.amount > cartTotal).sort((a, b) => a.amount - b.amount);
@@ -525,7 +524,7 @@ export default function CartPage({
                 </div>
                 {(discountAmount > 0 || actualLoyaltyDiscount > 0 || deliveryCharge === 0) && (
                   <div style={{ textAlign: "center", fontSize: "0.775rem", color: "var(--green)", fontWeight: 700, background: "var(--green-dim)", padding: "0.4rem 0.75rem", borderRadius: "var(--radius-md)" }}>
-                    {`You are saving ₹${(discountAmount + actualLoyaltyDiscount + (deliveryCharge === 0 ? 49 : 0)).toFixed(0)} on this order!`}
+                    {`You are saving ₹${(discountAmount + actualLoyaltyDiscount).toFixed(0)} on this order!`}
                   </div>
                 )}
               </div>

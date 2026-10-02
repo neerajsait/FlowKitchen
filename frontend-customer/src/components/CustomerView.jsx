@@ -461,7 +461,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
 
   const finalSubtotal     = getCartTotal() - discountAmount;
   const deliveryFeeRaw    = storeSettings.delivery_fee;
-  const deliveryCharge    = deliveryFeeRaw !== undefined ? parseFloat(deliveryFeeRaw) : (getCartTotal() >= 499 ? 0 : 49);
+  const deliveryCharge    = deliveryFeeRaw !== undefined && deliveryFeeRaw !== null && !isNaN(parseFloat(deliveryFeeRaw)) ? parseFloat(deliveryFeeRaw) : 0;
   const maxLoyaltyDiscount = loyaltyPoints * redeemRate;
   const actualLoyaltyDiscount = (useLoyaltyPoints && isLoyaltyEnabled) ? Math.min(maxLoyaltyDiscount, finalSubtotal + deliveryCharge) : 0;
   const finalTotal        = finalSubtotal + deliveryCharge - actualLoyaltyDiscount;

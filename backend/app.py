@@ -510,7 +510,7 @@ def sanitize_input(data, skip_keys=None, max_len=5000):
     elif isinstance(data, list):
         return [sanitize_input(i, skip_keys, max_len=max_len) for i in data]
     elif isinstance(data, str):
-        cleaned = bleach.clean(data)
+        cleaned = bleach.clean(data, strip=True)
         if len(cleaned) > max_len:
             from werkzeug.exceptions import BadRequest
             raise BadRequest(f"Input exceeds maximum allowed length of {max_len} characters")
@@ -1566,9 +1566,12 @@ The FoodPilot Team"""
         address_line = data.get("address_line", "").strip()
         is_default = data.get("is_default", False)
         
+        import re
         if not title or not address_line:
             return jsonify({"error": "Bad Request", "message": "Title and address line are required"}), 400
             
+        if not re.match(r'^[\w\s,.-]+$', title) or not re.match(r'^[\w\s,.-]+$', address_line):
+            return jsonify({"error": "Bad Request", "message": "Invalid characters in title or address"}), 400
         if is_default:
             # Remove default from old addresses
             db.session.execute(
@@ -1795,9 +1798,9 @@ The FoodPilot Team"""
             if delivery_fee_raw is not None and str(delivery_fee_raw).strip():
                 delivery_charge = Decimal(str(delivery_fee_raw).strip())
             else:
-                delivery_charge = Decimal("0.00") if total >= Decimal("499.00") else Decimal("49.00")
+                delivery_charge = Decimal("0.00")
         except Exception:
-            delivery_charge = Decimal("0.00") if total >= Decimal("499.00") else Decimal("49.00")
+            delivery_charge = Decimal("0.00")
 
         total += delivery_charge
 

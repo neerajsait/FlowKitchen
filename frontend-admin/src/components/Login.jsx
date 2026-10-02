@@ -372,25 +372,25 @@ export default function Login({ onLoginSuccess }) {
               <div style={{ marginTop: "0.5rem", padding: "0.75rem", background: "var(--bg-card)", borderRadius: "var(--r-md)", border: "1px dashed var(--brand)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: 600 }}>Try our Demo Accounts:</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                  <button type="button" onClick={() => { setLoginMode("admin"); setEmail("admin@example.com"); setPassword("adminpassword"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
+                  <button type="button" onClick={() => { setLoginMode("admin"); setEmail("admin@example.com"); setPassword("Admin12345"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
                     <span><b>Admin</b></span>
                     <span style={{ color: "var(--text-muted)" }}>admin@example.com</span>
-                    <span style={{ color: "var(--brand)", fontSize: "0.7rem", marginTop: "2px" }}>adminpassword</span>
+                    <span style={{ color: "var(--brand)", fontSize: "0.7rem", marginTop: "2px" }}>Admin12345</span>
                   </button>
                   <button type="button" onClick={() => { setLoginMode("admin"); setEmail("owner@example.com"); setPassword("ownerpassword"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
                     <span><b>Owner</b></span>
                     <span style={{ color: "var(--text-muted)" }}>owner@example.com</span>
                     <span style={{ color: "var(--brand)", fontSize: "0.7rem", marginTop: "2px" }}>ownerpassword</span>
                   </button>
-                  <button type="button" onClick={() => { setLoginMode("staff"); setStaffCode("2522"); setPin("1234"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
+                  <button type="button" onClick={() => { setLoginMode("staff"); setStaffCode("4130"); setPin("1234"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
                     <span><b>Staff</b></span>
-                    <span style={{ color: "var(--text-muted)" }}>Code: 2522</span>
+                    <span style={{ color: "var(--text-muted)" }}>Code: 4130</span>
                     <span style={{ color: "var(--brand)", fontSize: "0.7rem", marginTop: "2px" }}>PIN: 1234</span>
                   </button>
-                  <button type="button" onClick={() => { setLoginMode("staff"); setStaffCode("3344"); setPin("4321"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
+                  <button type="button" onClick={() => { setLoginMode("staff"); setStaffCode("4127"); setPin("1234"); }} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-body)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}>
                     <span><b>Kitchen</b></span>
-                    <span style={{ color: "var(--text-muted)" }}>Code: 3344</span>
-                    <span style={{ color: "var(--brand)", fontSize: "0.7rem", marginTop: "2px" }}>PIN: 4321</span>
+                    <span style={{ color: "var(--text-muted)" }}>Code: 4127</span>
+                    <span style={{ color: "var(--brand)", fontSize: "0.7rem", marginTop: "2px" }}>PIN: 1234</span>
                   </button>
                 </div>
               </div>

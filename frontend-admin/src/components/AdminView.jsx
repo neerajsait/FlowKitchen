@@ -578,7 +578,7 @@ export default function AdminView({ onLogout, dbMode }) {
     setMenuCode(item.code || "");
     setMenuPrice(item.price || "");
     setMenuOriginalPrice(item.original_price || "");
-    setMenuCategory(item.category_id || (categories.length > 0 ? categories[0].id : ""));
+    setMenuCategory(item.category_id != null ? String(item.category_id) : "");
     setMenuType(item.business_type || "home_foods");
     setMenuDesc(item.description || "");
     setMenuIngredients(item.ingredients || "");
