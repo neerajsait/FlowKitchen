@@ -3759,27 +3759,27 @@ The FoodPilot Team"""
 
 def _seed_admin(app):
     with app.app_context():
-        if os.environ.get("FLASK_ENV") == "production":
+        if os.environ.get("FLASK_ENV") == "production" and os.environ.get("ALLOW_SEED") != "1":
             logger.info("Skipping _seed_admin in production mode")
             return
 
         # 1. Seed Admin
-        admin = db.session.scalars(select(User).where(User.email == "admin")).first()
+        admin = db.session.scalars(select(User).where(User.email == "admin@example.com")).first()
         
         seed_pwd = os.environ.get("ADMIN_SEED_PASSWORD")
         if not seed_pwd:
             seed_pwd = "admin123"
             
         if not admin:
-            admin = Admin(email="admin", full_name="System Admin")
+            admin = Admin(email="admin@example.com", full_name="System Admin")
             admin.is_superadmin = True
-            admin.set_password(seed_pwd, bcrypt)
+            admin.set_password(seed_pwd if os.environ.get("ADMIN_SEED_PASSWORD") else "adminpassword", bcrypt)
             admin.is_first_login = True
             db.session.add(admin)
             db.session.commit()
-            logger.info(f"Admin account seeded: admin / {seed_pwd} (first login reset forced)")
+            logger.info(f"Admin account seeded: admin@example.com (first login reset forced)")
         else:
-            if admin.check_password("admin", bcrypt) and not admin.is_first_login:
+            if admin.check_password("adminpassword", bcrypt) and not admin.is_first_login:
                 admin.is_first_login = True
                 db.session.commit()
                 logger.info("Forced is_first_login = True on admin because default password is still active")
@@ -3884,11 +3884,11 @@ def _seed_admin(app):
             db.session.commit()
             logger.info("Default staff seeded: staff@brand.com / staff")
 
-        cust_user = db.session.scalars(select(User).where(User.email == "customer@gmail.com")).first()
+        cust_user = db.session.scalars(select(User).where(User.email == "customer@example.com")).first()
         if not cust_user:
-            cust_user = Customer(email="customer@gmail.com", full_name="Sarah Customer", phone="9999999999")
-            cust_user.set_password("customer", bcrypt)
-            cust_user.referral_code = "SARAHCUST1"
+            cust_user = Customer(email="customer@example.com", full_name="Demo Customer", phone="9999999999")
+            cust_user.set_password("password123", bcrypt)
+            cust_user.referral_code = "DEMOCUST1"
             cust_user.loyalty_points = 1500
             db.session.add(cust_user)
             db.session.commit()
@@ -3899,15 +3899,15 @@ def _seed_admin(app):
             db.session.add(tx1)
             db.session.add(tx2)
             db.session.commit()
-            logger.info("Default customer seeded: customer@gmail.com / customer")
+            logger.info("Default customer seeded: customer@example.com / password123")
 
-        owner_user = db.session.scalars(select(User).where(User.email == "owner@brand.com")).first()
+        owner_user = db.session.scalars(select(User).where(User.email == "owner@example.com")).first()
         if not owner_user:
-            owner_user = User(email="owner@brand.com", role="outlet_owner", full_name="Rajesh Owner", phone="9848022339")
-            owner_user.set_password("owner", bcrypt)
+            owner_user = User(email="owner@example.com", role="outlet_owner", full_name="Demo Owner", phone="9848022339")
+            owner_user.set_password("ownerpassword", bcrypt)
             db.session.add(owner_user)
             db.session.commit()
-            logger.info("Default owner seeded: owner@brand.com / owner")
+            logger.info("Default owner seeded: owner@example.com / ownerpassword")
 
         # Associate existing outlets to this owner if they aren't owned yet
         if owner_user:
