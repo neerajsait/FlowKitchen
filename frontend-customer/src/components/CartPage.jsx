@@ -9,41 +9,6 @@ import { checkCouponEligibility } from "./CouponCatalog";
 const FALLBACK = "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&q=70";
 
 // ─────────────────────────────────────────────────────────────
-// Delivery progress bar
-// ─────────────────────────────────────────────────────────────
-function DeliveryBar({ cartTotal }) {
-  const FREE_AT = 499;
-  const pct = Math.min(100, (cartTotal / FREE_AT) * 100);
-  const left = Math.max(0, FREE_AT - cartTotal);
-  const done = cartTotal >= FREE_AT;
-
-  return (
-    <div style={{ marginBottom: "1.25rem" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
-          <Truck size={14} color={done ? "var(--green)" : "var(--text-2)"} />
-          <span style={{ fontSize: "0.8rem", color: done ? "var(--green)" : "var(--text-2)", fontWeight: done ? 700 : 500 }}>
-            {done ? "Free delivery unlocked!" : <>Add <strong style={{ color: "var(--text)" }}>₹{left.toFixed(0)}</strong> for free delivery</>}
-          </span>
-        </div>
-        <span style={{ fontSize: "0.75rem", color: "var(--text-3)" }}>₹{FREE_AT}</span>
-      </div>
-      <div style={{ height: 6, background: "var(--bg)", borderRadius: 999, overflow: "hidden" }}>
-        <div style={{
-          height: "100%",
-          width: `${pct}%`,
-          background: done
-            ? "var(--green)"
-            : "linear-gradient(90deg, var(--green) 0%, #95f5b4 100%)",
-          borderRadius: 999,
-          transition: "width 0.5s var(--ease)"
-        }} />
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
 // Single inline coupon row
 // ─────────────────────────────────────────────────────────────
 function InlineCouponRow({ coupon, eligibility, appliedCoupon, onApply, onRemove }) {
@@ -351,9 +316,8 @@ export default function CartPage({
             </div>
           ))}
 
-          {/* Delivery & Combos (Moved from Right Side) */}
+          {/* Combos (Moved from Right Side) */}
           <div style={{ marginTop: "2rem" }}>
-            <DeliveryBar cartTotal={cartTotal} />
             <ComboRecommender
               cartTotal={cartTotal}
               menu={menu}
