@@ -1521,6 +1521,24 @@ The FoodPilot Team"""
         db.session.commit()
         return jsonify({"message": "Admin profile updated successfully", "user": user.to_dict()}), 200
 
+    @app.route("/api/auth/unsubscribe", methods=["GET"])
+    def unsubscribe():
+        token = request.args.get("token")
+        if not token:
+            return "Missing token", 400
+        try:
+            from itsdangerous import URLSafeTimedSerializer
+            serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+            email = serializer.loads(token, salt="email-unsubscribe-salt", max_age=315360000)
+            user = db.session.scalars(select(User).where(User.email == email)).first()
+            if user:
+                user.is_subscribed = False
+                db.session.commit()
+                return "<html><body style='text-align:center; padding: 50px; font-family: sans-serif;'><h2>Unsubscribed successfully!</h2><p>You will no longer receive these emails.</p></body></html>", 200
+        except:
+            pass
+        return "Invalid or expired token", 400
+
     @app.route("/api/auth/verify-email", methods=["POST"])
     @limiter.limit("5 per minute")
     def verify_email():
@@ -4005,7 +4023,19 @@ def get_frontend_url(user_role):
         # admin, staff, outlet_owner, kitchen
         return os.getenv('ADMIN_FRONTEND_URL', 'http://localhost:5173')
 
-def _get_email_html_wrapper(title, content):
+def _get_email_html_wrapper(app, title, content, email=None):
+    from flask import request
+    from itsdangerous import URLSafeTimedSerializer
+    unsub_link = "#"
+    if email:
+        try:
+            serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+            token = serializer.dumps(email, salt="email-unsubscribe-salt")
+            base_url = request.url_root.rstrip('/') if request else ''
+            unsub_link = f"{base_url}/api/auth/unsubscribe?token={token}"
+        except:
+            pass
+
     return f"""
     <!DOCTYPE html>
     <html>
@@ -4106,7 +4136,7 @@ def _get_email_html_wrapper(title, content):
                 FoodPilot Headquarters<br>
                 123 Culinary Drive, Suite 400<br>
                 Food City, FC 90210<br><br>
-                <a href="#" style="color: #64748b; text-decoration: underline;">Unsubscribe from these emails</a>
+                <a href="{unsub_link}" style="color: #64748b; text-decoration: underline;">Unsubscribe from these emails</a>
             </div>
         </div>
     </body>
@@ -4136,7 +4166,7 @@ def _send_verification_email(app, user):
         <p>If you did not sign up for this account, please ignore this email.</p>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Email Verification", content)
+        msg.html = _get_email_html_wrapper(app, "Email Verification", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send verification email: {e}")
@@ -4161,7 +4191,7 @@ def _send_welcome_email(app, user):
         </div>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Welcome", content)
+        msg.html = _get_email_html_wrapper(app, "Welcome", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send welcome email: {e}")
@@ -4214,7 +4244,7 @@ def _send_order_placed_email(app, order, customer):
         <p>We'll notify you as soon as your delicious box is dispatched and on its way!</p>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Order Confirmed", content)
+        msg.html = _get_email_html_wrapper(app, "Order Confirmed", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         
         import threading
         def send_async():
@@ -4252,7 +4282,7 @@ def _send_order_shipped_email(app, order, customer, tracking_code):
         <p>If you have any questions or need to make last-minute changes, please contact our support team immediately.</p>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Order Shipped", content)
+        msg.html = _get_email_html_wrapper(app, "Order Shipped", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send order shipped email: {e}")
@@ -4277,7 +4307,7 @@ def _send_admin_created_email(app, admin):
         </div>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Admin Onboarding", content)
+        msg.html = _get_email_html_wrapper(app, "Admin Onboarding", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send admin onboarding email: {e}")
@@ -4298,7 +4328,7 @@ def _send_admin_password_changed_email(app, admin):
         <p>If you did not request this change, please contact support immediately.</p>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Password Changed", content)
+        msg.html = _get_email_html_wrapper(app, "Password Changed", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send password changed email: {e}")
@@ -4325,7 +4355,7 @@ def _send_staff_created_email(app, staff, outlet):
         </div>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Staff Onboarding", content)
+        msg.html = _get_email_html_wrapper(app, "Staff Onboarding", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send staff onboarding email: {e}")
@@ -4383,7 +4413,7 @@ def _send_daily_digest_email(app, report, email_address):
         <p style="margin-top: 25px;">Please check the central admin console for specific inventory and auditing reports.</p>
         """
         msg.body = 'Please view this email in an HTML-compatible client.\n\nThanks, FoodPilot'
-        msg.html = _get_email_html_wrapper("Daily Digest", content)
+        msg.html = _get_email_html_wrapper(app, "Daily Digest", content, msg.recipients[0] if getattr(msg, "recipients", None) else None)
         mail.send(msg)
     except Exception as e:
         logger.warning(f"Failed to send daily digest email: {e}")

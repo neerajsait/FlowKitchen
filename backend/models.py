@@ -112,6 +112,7 @@ class User(db.Model):
     address = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    is_subscribed = Column(Boolean, default=True, nullable=False)
 
     # --- New Security & Admin Fields ---
     is_banned = Column(Boolean, default=False, nullable=False)
