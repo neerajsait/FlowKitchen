@@ -565,7 +565,7 @@ export default function AdminView({ onLogout, dbMode }) {
   const handleAddMenuItem = async (e) => {
     e.preventDefault();
     try {
-      await api.adminAddMenuItem({ name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category_id: menuCategory, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, is_veg: menuIsVeg, is_gluten_free: menuIsGlutenFree, spice_level: menuSpiceLevel, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
+      await api.adminAddMenuItem({ name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category_id: menuCategory ? parseInt(menuCategory, 10) : null, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, is_veg: menuIsVeg, is_gluten_free: menuIsGlutenFree, spice_level: menuSpiceLevel, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
       showToast("Product created successfully!", "success"); setShowAddMenu(false);
       setMenuName(""); setMenuCode(""); setMenuPrice(""); setMenuOriginalPrice(""); setMenuCategory(categories.length > 0 ? categories[0].id : ""); setMenuDesc(""); setMenuIngredients(""); setMenuNutritionalInfo(""); setMenuDietaryGuidelines(""); setMenuImageUrl(""); setMenuGlobalStock(""); setMenuIsVeg(true); setMenuIsGlutenFree(false); setMenuSpiceLevel("medium"); setMenuTag(""); setMenuAdminRating(""); setMenuIsBestSeller(false); setMenuIsPopular(false);
       loadData();
@@ -596,7 +596,7 @@ export default function AdminView({ onLogout, dbMode }) {
   const handleUpdateMenuItem = async (e) => {
     e.preventDefault();
     try {
-      await api.adminUpdateMenuItem(editMenuId, { name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category_id: menuCategory, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
+      await api.adminUpdateMenuItem(editMenuId, { name: menuName, code: menuCode, price: parseFloat(menuPrice), original_price: menuOriginalPrice ? parseFloat(menuOriginalPrice) : null, category_id: menuCategory ? parseInt(menuCategory, 10) : null, business_type: menuType, description: menuDesc, image_url: menuImageUrl || null, global_stock: menuGlobalStock !== "" ? parseInt(menuGlobalStock) : null, tag: menuTag || null, admin_rating: menuAdminRating !== "" ? parseFloat(menuAdminRating) : null, is_best_seller: menuIsBestSeller, is_popular: menuIsPopular, ingredients: menuIngredients, nutritional_info: menuNutritionalInfo, dietary_guidelines: menuDietaryGuidelines });
       showToast("Product updated!", "success");
       setShowEditMenu(false);
       setMenuName(""); setMenuCode(""); setMenuPrice(""); setMenuOriginalPrice(""); setMenuCategory(categories.length > 0 ? categories[0].id : ""); setMenuDesc(""); setMenuIngredients(""); setMenuNutritionalInfo(""); setMenuDietaryGuidelines(""); setMenuImageUrl(""); setMenuGlobalStock(""); setMenuTag(""); setMenuAdminRating(""); setMenuIsBestSeller(false); setMenuIsPopular(false);
@@ -962,13 +962,11 @@ export default function AdminView({ onLogout, dbMode }) {
     { id: "outlet_stations", label: "Outlet Stations", icon: MapPin, depts: ["SuperAdmin", "Operations"] },
     { id: "finance", label: "Revenue Share", icon: FileText, depts: ["SuperAdmin", "Finance", ...(storeSettings.share_revenue_with_outlets === "true" ? ["Operations"] : [])] },
     { id: "analytics", label: "Sales Analytics", icon: TrendingUp, depts: ["SuperAdmin", "Finance", "Operations"] },
-    { id: "forecast", label: "Demand Forecast", icon: TrendingUp, depts: ["SuperAdmin", "Finance", "Operations"] },
     { id: "users", label: "User Accounts", icon: Users, depts: ["SuperAdmin", "HR"] },
     { id: "timesheets", label: "Timesheets", icon: Clock, depts: ["SuperAdmin", "HR"] },
     { id: "batches", label: "Expiry & Spoilage", icon: Calendar, depts: ["SuperAdmin", "Operations"] },
     { id: "market_purchases", label: "Market Purchases", icon: Receipt, depts: ["SuperAdmin", "Operations"] },
     { id: "reviews", label: "Product Reviews", icon: MessageSquare, depts: ["SuperAdmin", "Operations"] },
-    { id: "stock_logs", label: "Stock Audit", icon: FileText, depts: ["SuperAdmin"] },
 { id: "admin_logs", label: "Admin Audit", icon: FileText, depts: ["SuperAdmin"] },
     { id: "stock_requests", label: "Restock Requests", icon: Package, depts: ["SuperAdmin", "Operations"] },
     { id: "qr", label: "QR Dispatch", icon: QrCode, depts: ["SuperAdmin", "Operations"] },
@@ -1112,7 +1110,7 @@ export default function AdminView({ onLogout, dbMode }) {
         {/* Sidebar Links */}
         <div style={{ flex: 1, overflowY: "auto", padding: "1rem 0", display: "flex", flexDirection: "column", gap: "0.25rem" }} className="sidebar-scroll">
           {TABS.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)} title={t.label} style={{
+            <button key={t.id} onClick={() => { setActiveTab(t.id); setSidebarOpen(false); }} title={t.label} style={{
               display: "flex", alignItems: "center", gap: "0.75rem",
               width: "100%", padding: sidebarOpen ? "0.75rem 1.25rem" : "0.75rem",
               justifyContent: sidebarOpen ? "flex-start" : "center",
@@ -1149,7 +1147,7 @@ export default function AdminView({ onLogout, dbMode }) {
             <Menu size={24} />
           </button>
           <div>
-            <h1 style={{ fontSize: "1.25rem", margin: 0 }}>Admin Dashboard</h1>
+            <h1 style={{ fontSize: "1.25rem", margin: 0 }}>{TABS.find(t => t.id === activeTab)?.label || "Admin Dashboard"}</h1>
             <p className="hide-mobile" style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Manage your food business — catalog, outlets, orders & analytics</p>
           </div>
         </div>
@@ -1667,64 +1665,41 @@ export default function AdminView({ onLogout, dbMode }) {
                 </div>
 
                 <div className="panel" style={{ padding: "1.5rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", margin: 0 }} title="AI-driven estimate of future sales based on past data, weather and holidays">AI Demand Forecast (Next 7 Days) ℹ</h3>
-                    <span style={{ fontSize: "0.75rem", background: "rgba(139,92,246,0.12)", color: "#8b5cf6", padding: "4px 8px", borderRadius: "12px", fontWeight: 700 }}>Powered by AI</span>
-                  </div>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.5rem" }}>Predicted order volume based on historical data, weather and upcoming holidays.</p>
-                  <div style={{ width: '100%', height: 250, marginTop: "1rem" }}>
-                    <ResponsiveContainer>
-                      <BarChart data={analytics?.forecast || [
-                        { day: "Mon", val: 45 },
-                        { day: "Tue", val: 52 },
-                        { day: "Wed", val: 80 },
-                        { day: "Thu", val: 65 },
-                        { day: "Fri", val: 95 },
-                        { day: "Sat", val: 110 },
-                        { day: "Sun", val: 85 }
-                      ]}>
-                        <XAxis dataKey="day" axisLine={false} tickLine={false} />
-                        <YAxis hide />
-                        <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: "8px", background: "var(--bg-card)" }} />
-                        <Bar dataKey="val" fill="var(--brand)" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div style={{ display: "flex", gap: "1rem", marginTop: "1rem", fontSize: "0.75rem", justifyContent: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><div style={{ width: 10, height: 10, borderRadius: "2px", background: "var(--brand)" }} /> Normal Volume</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><div style={{ width: 10, height: 10, borderRadius: "2px", background: "var(--warning)" }} /> High Demand</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><div style={{ width: 10, height: 10, borderRadius: "2px", background: "var(--error)" }} /> Peak/Surge</div>
-                  </div>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", marginBottom: "1.25rem" }}>Top B2C Home Foods</h3>
+                  {analytics?.top_b2c_items && analytics.top_b2c_items.length > 0 ? (
+                    analytics.top_b2c_items.map((item, idx) => (
+                      <div key={idx} style={{ marginBottom: "0.75rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: "0.3rem" }}>
+                          <span style={{ color: "var(--text-secondary)" }}>{item.name}</span>
+                          <span style={{ fontWeight: 700, color: "var(--brand)" }}>{item.qty} units</span>
+                        </div>
+                        <div className="stock-bar-container">
+                          <div className="stock-bar-fill" style={{ width: `${Math.min((item.qty / (analytics.top_b2c_items[0]?.qty || 1)) * 100, 100)}%`, background: "var(--brand)" }} />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>No B2C sales data yet.</p>
+                  )}
                 </div>
 
                 <div className="panel" style={{ padding: "1.5rem" }}>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", marginBottom: "1.25rem" }}>Customer Feedback</h3>
-                  <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "1.5rem" }}>
-                    <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(34,197,94,0.12)", border: "2px solid rgba(34,197,94,0.3)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <span style={{ fontFamily: "var(--font-heading)", fontSize: "1.6rem", fontWeight: 900, color: "var(--success)", lineHeight: 1 }}>4.8</span>
-                      <span style={{ fontSize: "0.55rem", color: "var(--text-secondary)", fontWeight: 600 }}>/ 5.0</span>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: "0.9rem", marginBottom: "0.25rem" }}>Excellent Ratings</div>
-                      <div style={{ color: "var(--text-secondary)", fontSize: "0.78rem" }}>94% positive over last 30 orders. Customers love the freshness.</div>
-                    </div>
-                  </div>
-                  {[
-                    { label: "Spice Level & Seasoning", score: 92, color: "var(--success)" },
-                    { label: "Packaging Quality", score: 96, color: "var(--success)" },
-                    { label: "Delivery Speed", score: 88, color: "var(--warning)" },
-                    { label: "Value for Money", score: 91, color: "var(--success)" },
-                  ].map(m => (
-                    <div key={m.label} style={{ marginBottom: "0.75rem" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: "0.3rem" }}>
-                        <span style={{ color: "var(--text-secondary)" }}>{m.label}</span>
-                        <span style={{ fontWeight: 700, color: m.color }}>{m.score}%</span>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1rem", marginBottom: "1.25rem" }}>Top POS Items</h3>
+                  {analytics?.top_pos_items && analytics.top_pos_items.length > 0 ? (
+                    analytics.top_pos_items.map((item, idx) => (
+                      <div key={idx} style={{ marginBottom: "0.75rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: "0.3rem" }}>
+                          <span style={{ color: "var(--text-secondary)" }}>{item.name}</span>
+                          <span style={{ fontWeight: 700, color: "var(--info)" }}>{item.qty} units</span>
+                        </div>
+                        <div className="stock-bar-container">
+                          <div className="stock-bar-fill" style={{ width: `${Math.min((item.qty / (analytics.top_pos_items[0]?.qty || 1)) * 100, 100)}%`, background: "var(--info)" }} />
+                        </div>
                       </div>
-                      <div className="stock-bar-container">
-                        <div className="stock-bar-fill" style={{ width: `${m.score}%`, background: m.color }} />
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>No POS sales data yet.</p>
+                  )}
                 </div>
               </div>
             </>
@@ -2844,8 +2819,8 @@ export default function AdminView({ onLogout, dbMode }) {
                   setStoreSettings(prev => ({ ...prev, is_store_online: val }));
                 }} style={{ width: "1.2rem", height: "1.2rem", accentColor: "var(--success)" }} />
                 <div>
-                  <strong style={{ display: "block", color: "var(--text-primary)" }}>Store Online (Not Accepting Orders)</strong>
-                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Toggle whe the store is not accepting new customer orders.</span>
+                  <strong style={{ display: "block", color: "var(--text-primary)" }}>Store Online (Accepting Orders)</strong>
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Toggle whether the store is accepting new customer orders.</span>
                 </div>
               </label>
               
@@ -2917,14 +2892,14 @@ export default function AdminView({ onLogout, dbMode }) {
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Minimum Order Value ($)</label>
+                <label className="form-label">Minimum Order Value (₹)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" className="form-input" value={storeSettings.min_order_value || "10"} onChange={e => setStoreSettings(prev => ({ ...prev, min_order_value: e.target.value }))} />
                 </div>
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Delivery Fee ($)</label>
+                <label className="form-label">Delivery Fee (₹)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" className="form-input" value={storeSettings.delivery_fee || "5"} onChange={e => setStoreSettings(prev => ({ ...prev, delivery_fee: e.target.value }))} />
                 </div>
@@ -2940,14 +2915,14 @@ export default function AdminView({ onLogout, dbMode }) {
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Loyalty: Earn Rate (e.g. 0.1 for 1 pt per ₹10)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <input type="number" step="0.01" className="form-input" value={storeSettings.loyalty_earn_rate || "0.1"} onChange={e => setStoreSettings(prev => ({ ...prev, loyalty_earn_rate: e.target.value }))} />
+                  <input type="number" step="0.01" className="form-input" value={storeSettings.loyalty_earn_rate ? parseFloat(Number(storeSettings.loyalty_earn_rate).toFixed(4)) : "0.1"} onChange={e => setStoreSettings(prev => ({ ...prev, loyalty_earn_rate: e.target.value }))} />
                 </div>
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Loyalty: Redeem Rate (e.g. 0.01 for 100 pts = ₹1)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <input type="number" step="0.01" className="form-input" value={storeSettings.loyalty_redeem_rate || "0.01"} onChange={e => setStoreSettings(prev => ({ ...prev, loyalty_redeem_rate: e.target.value }))} />
+                  <input type="number" step="0.01" className="form-input" value={storeSettings.loyalty_redeem_rate ? parseFloat(Number(storeSettings.loyalty_redeem_rate).toFixed(4)) : "0.01"} onChange={e => setStoreSettings(prev => ({ ...prev, loyalty_redeem_rate: e.target.value }))} />
                 </div>
               </div>
 
@@ -3274,7 +3249,7 @@ export default function AdminView({ onLogout, dbMode }) {
         "overview", "catalog", "outlet_stations", "customer_orders", "outlet_orders", 
         "finance", "analytics", "timesheets", "batches", "market_purchases", "suppliers", "logs", "qr", 
         "users", "reviews", "coupons", "tickets", "crm", "banners", "settings", "stock_requests",
-        "forecast"
+        "admin_logs"
       ].includes(activeTab) && (
         <div className="card fade-in" style={{ padding: "4rem 2rem", textAlign: "center" }}>
           <div className="empty-state-icon" style={{ margin: "0 auto 1.5rem" }}>
@@ -3291,7 +3266,7 @@ export default function AdminView({ onLogout, dbMode }) {
       )}
 
       {/* ══════════ UNKNOWN TAB FALLBACK ══════════ */}
-      {!["overview", "catalog", "outlet_stations", "customer_orders", "outlet_orders", "finance", "analytics", "timesheets", "batches", "market_purchases", "logs", "qr", "users", "reviews", "coupons", "tickets", "crm", "banners", "settings", "stock_requests"].includes(activeTab) && (
+      {!["overview", "catalog", "outlet_stations", "customer_orders", "outlet_orders", "finance", "analytics", "timesheets", "batches", "market_purchases", "logs", "qr", "users", "reviews", "coupons", "tickets", "crm", "banners", "settings", "stock_requests", "admin_logs"].includes(activeTab) && (
         <div style={{ padding: "3rem", textAlign: "center", display: "flex", justifyContent: "center" }}>
           <div style={{ maxWidth: 500, width: "100%" }}>
             <EmptyState title="Page Under Construction" description={`The '${activeTab}' view is currently being built. Please check back later.`} icon={AlertTriangle} />

@@ -1016,7 +1016,11 @@ def create_app(config_override=None):
                 attempts = int(rc.get(lockout_key) or 0)
                 ip_attempts = int(rc.get(ip_lockout_key) or 0)
                 if attempts >= 5 or ip_attempts >= 10:
-                    return jsonify({"error": "Too Many Requests", "message": "Account or IP temporarily locked due to excessive failed attempts"}), 429
+                    ttl = 300
+                    if hasattr(rc, 'ttl'):
+                        ttl = rc.ttl(lockout_key) if attempts >= 5 else rc.ttl(ip_lockout_key)
+                    minutes_left = max(1, ttl // 60)
+                    return jsonify({"error": "Too Many Requests", "message": f"Account locked. Try again in {minutes_left} minute(s)."}), 429
 
             user = db.session.scalars(select(User).where(User.staff_code == staff_code)).first()
             if not user or getattr(user, 'pin_hash', None) is None or not user.check_pin(pin, bcrypt):
@@ -1024,12 +1028,29 @@ def create_app(config_override=None):
                 if rc:
                     attempts += 1
                     ip_attempts += 1
-                    rc.setex(lockout_key, 300, attempts)
-                    rc.setex(ip_lockout_key, 300, ip_attempts)
+                    
+                    if attempts == 1:
+                        rc.setex(lockout_key, 300, attempts)
+                    elif hasattr(rc, 'incr'):
+                        rc.incr(lockout_key)
+                    else:
+                        ttl = rc.ttl(lockout_key) if hasattr(rc, 'ttl') else 300
+                        rc.set(lockout_key, attempts, ex=max(ttl, 1))
+
+                    if ip_attempts == 1:
+                        rc.setex(ip_lockout_key, 300, ip_attempts)
+                    elif hasattr(rc, 'incr'):
+                        rc.incr(ip_lockout_key)
+                    else:
+                        ttl = rc.ttl(ip_lockout_key) if hasattr(rc, 'ttl') else 300
+                        rc.set(ip_lockout_key, ip_attempts, ex=max(ttl, 1))
                 
                 import time
                 time.sleep(min(attempts, 4))
-                return jsonify({"error": "Unauthorized", "message": "Invalid staff code or PIN"}), 401
+                
+                remaining = max(0, 5 - attempts)
+                msg = f"Invalid ID or PIN. {remaining} attempt(s) remaining." if remaining > 0 else "Account locked. Try again in 5 minutes."
+                return jsonify({"error": "Unauthorized", "message": msg}), 401
             
             if rc:
                 rc.setex(lockout_key, 1, 0) # reset lockout

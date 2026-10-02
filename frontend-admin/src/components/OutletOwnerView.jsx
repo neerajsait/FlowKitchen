@@ -28,6 +28,7 @@ function Modal({ open, onClose, title, children, width = 480 }) {
 
 export default function OutletOwnerView({ onLogout, dbMode }) {
   const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => setToast({ message, type });
   
   useEffect(() => {
     if (toast) {
@@ -106,7 +107,7 @@ export default function OutletOwnerView({ onLogout, dbMode }) {
   const handleAddStaff = async (e) => {
     e.preventDefault();
     if (!addStaffForm.outlet_id) {
-      showToast("Please select an outlet for this staff.", "success");
+      showToast("Please select an outlet for this staff.", "error");
       return;
     }
     setStaffAdding(true);

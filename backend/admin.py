@@ -1025,6 +1025,18 @@ def admin_add_coupon():
         amt = data.get("discount_amount")
         if not code or (pct is None and amt is None):
             return jsonify({"error": "Bad Request", "message": "Code and either discount percentage or flat amount are required."}), 400
+        if len(code) > 255:
+            return jsonify({"error": "Bad Request", "message": "Coupon code cannot exceed 255 characters."}), 400
+            
+        try:
+            pct_val = float(pct) if pct is not None else 0
+            amt_val = float(amt) if amt is not None else 0
+            max_amt_val = float(data.get("max_discount_amount") or 0)
+            if pct_val < 0 or amt_val < 0 or max_amt_val < 0:
+                return jsonify({"error": "Bad Request", "message": "Discount values cannot be negative."}), 400
+        except ValueError:
+            return jsonify({"error": "Bad Request", "message": "Invalid discount values."}), 400
+            
         expiry_date = None
         if data.get("expiry_date"):
             expiry_date = datetime.strptime(data.get("expiry_date"), "%Y-%m-%d").date()
@@ -1041,7 +1053,15 @@ def admin_add_coupon():
             scope=data.get("scope", "both")
         )
         db.session.add(coupon)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            db.session.rollback()
+            return jsonify({"error": "Conflict", "message": f"Coupon code '{code}' already exists."}), 409
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": "Internal Error", "message": "An unexpected error occurred while saving."}), 500
+            
         return jsonify({"message": "Coupon created", "coupon": coupon.to_dict()}), 201
     return _inner()
 
@@ -1057,6 +1077,16 @@ def admin_edit_coupon(id):
         if not coupon:
             return jsonify({"error": "Not Found"}), 404
         data = (sanitize_input(request.get_json(silent=True)) or {})
+        
+        try:
+            pct_val = float(data.get("discount_pct") or 0)
+            amt_val = float(data.get("discount_amount") or 0)
+            max_amt_val = float(data.get("max_discount_amount") or 0)
+            if pct_val < 0 or amt_val < 0 or max_amt_val < 0:
+                return jsonify({"error": "Bad Request", "message": "Discount values cannot be negative."}), 400
+        except ValueError:
+            return jsonify({"error": "Bad Request", "message": "Invalid discount values."}), 400
+
         if "discount_pct" in data: coupon.discount_pct = data["discount_pct"]
         if "discount_amount" in data: coupon.discount_amount = Decimal(str(data["discount_amount"])) if data["discount_amount"] else None
         if "max_discount_amount" in data: coupon.max_discount_amount = Decimal(str(data["max_discount_amount"])) if data["max_discount_amount"] else None
@@ -1067,7 +1097,16 @@ def admin_edit_coupon(id):
         if "scope" in data: coupon.scope = data["scope"] if data["scope"] in ("both", "outlet", "customer") else "both"
         if "min_order_value" in data: coupon.min_order_value = Decimal(str(data["min_order_value"])) if data["min_order_value"] else Decimal("0")
         if "is_first_order_only" in data: coupon.is_first_order_only = bool(data["is_first_order_only"])
-        db.session.commit()
+        
+        try:
+            db.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            db.session.rollback()
+            return jsonify({"error": "Conflict", "message": "Coupon code already exists."}), 409
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": "Internal Error", "message": "An unexpected error occurred while updating."}), 500
+
         return jsonify({"message": "Coupon updated", "coupon": coupon.to_dict()}), 200
     return _inner()
 
