@@ -867,8 +867,6 @@ def create_app(config_override=None):
     @app.route("/api/health")
     @limiter.limit("120 per minute")
     def health():
-        if request.remote_addr not in ["127.0.0.1", "::1"]:
-            return jsonify({"error": "Forbidden"}), 403
         return jsonify({"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}), 200
 
     # ============================================================
