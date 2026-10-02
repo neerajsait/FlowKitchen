@@ -1794,8 +1794,16 @@ The FoodPilot Team"""
         
         # Calculate delivery charge server-side
         delivery_fee_raw = _setting_value("delivery_fee")
+        free_delivery_threshold_raw = _setting_value("free_delivery_threshold")
         try:
-            if delivery_fee_raw is not None and str(delivery_fee_raw).strip():
+            free_delivery_threshold = Decimal(str(free_delivery_threshold_raw).strip()) if free_delivery_threshold_raw else Decimal("499.00")
+        except Exception:
+            free_delivery_threshold = Decimal("499.00")
+            
+        try:
+            if total >= free_delivery_threshold:
+                delivery_charge = Decimal("0.00")
+            elif delivery_fee_raw is not None and str(delivery_fee_raw).strip():
                 delivery_charge = Decimal(str(delivery_fee_raw).strip())
             else:
                 delivery_charge = Decimal("0.00")

@@ -2906,6 +2906,13 @@ export default function AdminView({ onLogout, dbMode }) {
               </div>
 
               <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Free Delivery Threshold (₹)</label>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input type="number" className="form-input" value={storeSettings.free_delivery_threshold || "499"} onChange={e => setStoreSettings(prev => ({ ...prev, free_delivery_threshold: e.target.value }))} />
+                </div>
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Tax Percentage (%)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" step="0.1" className="form-input" value={storeSettings.tax_percentage || "0"} onChange={e => setStoreSettings(prev => ({ ...prev, tax_percentage: e.target.value }))} />
