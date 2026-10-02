@@ -138,9 +138,8 @@ export default function App() {
     return <VerifyEmail />;
   }
 
-  // If user specifically requested login, or we need authentication to proceed (optional later)
   if (showLogin && !currentUser) {
-    return <Login onLoginSuccess={(user) => { setShowLogin(false); handleLoginSuccess(user); }} />;
+    return <Login onClose={() => setShowLogin(false)} onLoginSuccess={(user) => { setShowLogin(false); handleLoginSuccess(user); }} />;
   }
 
   // Validate path - if it's not the root or known paths, show 404

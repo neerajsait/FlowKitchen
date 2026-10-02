@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { api } from "../utils/api";
 import {
   Lock, Mail, UserPlus, LogIn, Eye, EyeOff, ShoppingBag,
-  Store, BarChart3, Package, Shield, Zap, Star
+  Store, BarChart3, Package, Shield, Zap, Star, ArrowLeft
 } from "../ui/Icon";
 
 const FEATURES = [
@@ -18,7 +18,7 @@ const STATS = [
   { value: "∞", label: "Orders" },
 ];
 
-export default function Login({ onLoginSuccess }) {
+export default function Login({ onLoginSuccess, onClose }) {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -96,6 +96,21 @@ export default function Login({ onLoginSuccess }) {
 
   return (
     <div className="split-layout">
+      {onClose && (
+        <button 
+          type="button"
+          onClick={onClose}
+          style={{
+            position: "absolute", top: "1.5rem", left: "1.5rem", zIndex: 100,
+            background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.2)",
+            color: "#fff", display: "flex", alignItems: "center", gap: "0.5rem",
+            padding: "0.5rem 1rem", borderRadius: "100px", cursor: "pointer",
+            fontWeight: 600, fontSize: "0.85rem", backdropFilter: "blur(10px)"
+          }}
+        >
+          <ArrowLeft size={16} /> Back to Shop
+        </button>
+      )}
       
       {/* ── Login Panel ── */}
       <div 
