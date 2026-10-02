@@ -21,6 +21,9 @@ const DEV_CSP = [
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    chunkSizeWarningLimit: 1000,
+  },
   server: {
     port: 5173,
     strictPort: true,

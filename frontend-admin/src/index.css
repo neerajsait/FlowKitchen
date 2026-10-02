@@ -1,9 +1,9 @@
-/* ============================================================
-   FoodPilot — Premium Dark UI Design System
+﻿/* ============================================================
+   FoodPilot  Premium Dark UI Design System
    ============================================================ */
 
 :root {
-  /* ── Core Brand Colors ── */
+  /*  Core Brand Colors  */
   --brand: #43A047;
   /* Primary */
   --brand-light: #43A047;
@@ -16,7 +16,7 @@
   --accent-terracotta: #EF5350;
   /* Accent */
 
-  /* ── Background Layers ── */
+  /*  Background Layers  */
   --bg-canvas: #FCFBF7;
   /* Background */
   --bg-base: #FCFBF7;
@@ -28,17 +28,17 @@
   --bg-hover: #FCFBF7;
   --bg-input: #FFFFFF;
 
-  /* ── Borders ── */
+  /*  Borders  */
   --border-subtle: #E8E4DD;
   --border-default: #E8E4DD;
   --border-brand: #43A047;
 
-  /* ── Text ── */
+  /*  Text  */
   --text-primary: #333333;
   --text-secondary: #333333;
   --text-muted: #999999;
 
-  /* ── Semantic Colors ── */
+  /*  Semantic Colors  */
   --success: #43A047;
   --success-bg: #FFFFFF;
   --error: #EF5350;
@@ -48,29 +48,29 @@
   --info: #43A047;
   --info-bg: #FFFFFF;
 
-  /* ── Typography ── */
+  /*  Typography  */
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Outfit', sans-serif;
 
-  /* ── Spacing ── */
+  /*  Spacing  */
   --sidebar-w: 240px;
   --sidebar-w-sm: 64px;
 
-  /* ── Radius (Official, clean, slight rounding) ── */
+  /*  Radius (Official, clean, slight rounding)  */
   --r-sm: 3px;
   --r-md: 5px;
   --r-lg: 7px;
   --r-xl: 10px;
   --r-full: 9999px;
 
-  /* ── Shadows (Removed for flat design) ── */
+  /*  Shadows (Removed for flat design)  */
   --shadow-card: none;
   --shadow-glow: none;
   --shadow-modal: none;
   --shadow-input-focus: 0 0 0 2px rgba(67, 160, 71, 0.4);
   /* keeping focus ring but flat */
 
-  /* ── Transitions (Smoother easing) ── */
+  /*  Transitions (Smoother easing)  */
   --ease: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -96,7 +96,7 @@
   --shadow-md: var(--shadow-card);
 }
 
-/* ── Reset ── */
+/*  Reset  */
 *,
 *::before,
 *::after {
@@ -132,7 +132,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Scrollbars ── */
+/*  Scrollbars  */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -161,7 +161,7 @@ body {
   width: 100%;
 }
 
-/* ── Sidebar ── */
+/*  Sidebar  */
 .sidebar {
   position: fixed;
   top: 0;
@@ -302,7 +302,7 @@ body {
   line-height: 1.4;
 }
 
-/* ── Sidebar Footer (User) ── */
+/*  Sidebar Footer (User)  */
 .sidebar-footer {
   border-top: 1px solid var(--border-subtle);
   padding: 1rem;
@@ -359,7 +359,7 @@ body {
   font-weight: 600;
 }
 
-/* ── Main Content Area ── */
+/*  Main Content Area  */
 .main-content {
   margin-left: var(--sidebar-w);
   flex: 1;
@@ -401,7 +401,7 @@ body {
   padding: 0;
 }
 
-/* Legacy app-container — now full-width */
+/* Legacy app-container  now full-width */
 .app-container {
   width: 100%;
   max-width: 100%;
@@ -517,7 +517,7 @@ body {
   transform: none !important;
 }
 
-/* Primary — Filled Emerald */
+/* Primary  Filled Emerald */
 .btn-primary {
   background: var(--brand);
   color: #fff;
@@ -533,7 +533,7 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
-/* Secondary — Ghost */
+/* Secondary  Ghost */
 .btn-secondary {
   background: var(--bg-elevated);
   color: var(--text-primary);
@@ -1159,7 +1159,7 @@ body {
    GRID LAYOUTS
    ============================================================ */
 
-/* ── Fluid Grids (Perfect for Mobile through TV) ── */
+/*  Fluid Grids (Perfect for Mobile through TV)  */
 .grid-2,
 .grid-3,
 .grid-4,
@@ -2014,7 +2014,7 @@ body {
   padding: 2rem 3rem;
 }
 
-/* ── Extra-small phones (≤ 374px) ── */
+/*  Extra-small phones ( 374px)  */
 @media (max-width: 374px) {
   .shop-container {
     padding: 0.5rem 0.6rem;
@@ -2072,7 +2072,7 @@ body {
   }
 }
 
-/* ── Small phones (375px – 480px) ── */
+/*  Small phones (375px  480px)  */
 @media (min-width: 375px) and (max-width: 480px) {
   .shop-container {
     padding: 0.75rem 0.85rem;
@@ -2094,7 +2094,7 @@ body {
   }
 }
 
-/* ── Phones portrait and small tablets (≤ 600px) ── */
+/*  Phones portrait and small tablets ( 600px)  */
 @media (max-width: 600px) {
   .shop-container {
     padding: 0.75rem 1rem;
@@ -2139,7 +2139,7 @@ body {
   }
 }
 
-/* ── Tablets portrait (601px – 768px) ── */
+/*  Tablets portrait (601px  768px)  */
 @media (min-width: 601px) and (max-width: 768px) {
   .shop-container {
     padding: 1rem 1.25rem;
@@ -2166,7 +2166,7 @@ body {
   }
 }
 
-/* ── Tablets landscape & small laptops (769px – 992px) ── */
+/*  Tablets landscape & small laptops (769px  992px)  */
 @media (min-width: 769px) and (max-width: 992px) {
   .shop-container {
     padding: 1.25rem 1.75rem;
@@ -2201,21 +2201,21 @@ body {
   }
 }
 
-/* ── Small laptops & desktops (993px – 1200px) ── */
+/*  Small laptops & desktops (993px  1200px)  */
 @media (min-width: 993px) and (max-width: 1200px) {
   .shop-container {
     padding: 1.5rem 2rem;
   }
 }
 
-/* ── Standard desktops (1201px – 1440px) ── */
+/*  Standard desktops (1201px  1440px)  */
 @media (min-width: 1201px) and (max-width: 1440px) {
   .shop-container {
     padding: 2rem 3rem;
   }
 }
 
-/* ── Large desktops & 2K monitors (1441px – 1919px) ── */
+/*  Large desktops & 2K monitors (1441px  1919px)  */
 @media (min-width: 1441px) and (max-width: 1919px) {
   .shop-container {
     padding: 2rem 4rem;
@@ -2229,7 +2229,7 @@ body {
   }
 }
 
-/* ── Ultra-Wide Monitors, 4K TVs & Smart TVs (≥ 1920px) ── */
+/*  Ultra-Wide Monitors, 4K TVs & Smart TVs ( 1920px)  */
 @media (min-width: 1920px) {
   .main-content {
     max-width: 1600px;
@@ -2262,7 +2262,7 @@ body {
   }
 }
 
-/* ── 4K / Very Large TV Displays (≥ 2560px) ── */
+/*  4K / Very Large TV Displays ( 2560px)  */
 @media (min-width: 2560px) {
   body {
     font-size: 20px;
@@ -2287,7 +2287,7 @@ body {
   }
 }
 
-/* ── Safe area support for notched phones (iPhone etc.) ── */
+/*  Safe area support for notched phones (iPhone etc.)  */
 @supports (padding: env(safe-area-inset-bottom)) {
   .shop-container {
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
@@ -2302,7 +2302,7 @@ body {
   }
 }
 
-/* ── Print styles for receipts ── */
+/*  Print styles for receipts  */
 @media print {
   body {
     background: #fff !important;
@@ -2510,7 +2510,7 @@ body {
   max-width: 100%;
 }
 
-/* ── Loader + skeleton primitives ─────────────────────────── */
+/*  Loader + skeleton primitives  */
 @keyframes iconspin {
   to {
     transform: rotate(360deg);
