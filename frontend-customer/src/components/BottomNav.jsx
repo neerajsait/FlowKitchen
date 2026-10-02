@@ -21,7 +21,7 @@ export default function BottomNav({ activeTab, setActiveTab, cartCount, onOpenCa
 
   const isActive = (id) => {
     if (id === "cart") return activeTab === "checkout" || activeTab === "cart";
-    if (id === "search") return activeTab === "shop";
+    if (id === "search") return false; // search navigates to shop; don't double-highlight
     return activeTab === id;
   };
 

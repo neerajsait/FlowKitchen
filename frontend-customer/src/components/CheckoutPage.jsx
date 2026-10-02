@@ -17,6 +17,7 @@ export default function CheckoutPage({
 }) {
   const [step, setStep] = useState(1); // 1: address, 2: payment, 3: review
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [guestEmailError, setGuestEmailError] = useState("");
 
   const cartItems = Object.entries(cart)
     .map(([id, qty]) => {
@@ -69,7 +70,20 @@ export default function CheckoutPage({
                   </div>
                   <div className="form-group">
                     <label className="form-label">Email</label>
-                    <input className="form-input" type="email" placeholder="Enter your email" value={guestEmail} onChange={e => setGuestEmail(e.target.value)} required />
+                    <input
+                      className="form-input"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={guestEmail}
+                      onChange={e => { setGuestEmail(e.target.value); setGuestEmailError(""); }}
+                      onBlur={() => {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (guestEmail && !emailRegex.test(guestEmail))
+                          setGuestEmailError("Please enter a valid email address");
+                      }}
+                      required
+                    />
+                    {guestEmailError && <div style={{ color: "var(--error)", fontSize: "0.8rem", marginTop: "0.25rem" }}>{guestEmailError}</div>}
                   </div>
                   <div className="form-group">
                     <label className="form-label">Phone</label>
@@ -138,7 +152,19 @@ export default function CheckoutPage({
                 </>
               )}
 
-              <button className="btn btn-primary" style={{ width: "100%", marginTop: "1.5rem" }} onClick={() => setStep(2)} disabled={!checkoutAddress.trim() || (!currentUser && (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim()))}>
+              <button
+                className="btn btn-primary"
+                style={{ width: "100%", marginTop: "1.5rem" }}
+                onClick={() => {
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  if (!currentUser && guestEmail && !emailRegex.test(guestEmail)) {
+                    setGuestEmailError("Please enter a valid email address");
+                    return;
+                  }
+                  setStep(2);
+                }}
+                disabled={!checkoutAddress.trim() || (!currentUser && (!guestName.trim() || !guestEmail.trim() || !guestPhone.trim() || guestEmailError))}
+              >
                 Continue to Payment →
               </button>
             </div>
@@ -173,7 +199,14 @@ export default function CheckoutPage({
 
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button className="btn btn-secondary" onClick={() => setStep(1)}>← Back</button>
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => setStep(3)}>Review Order →</button>
+                <button
+                  className="btn btn-primary"
+                  style={{ flex: 1 }}
+                  onClick={() => setStep(3)}
+                  disabled={!paymentMethod}
+                >
+                  Review Order →
+                </button>
               </div>
             </div>
           )}
@@ -184,9 +217,18 @@ export default function CheckoutPage({
               <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "1.25rem" }}>Review Your Order</h2>
 
               {/* Delivery address recap */}
-              <div style={{ background: "var(--bg)", borderRadius: "var(--radius-md)", padding: "0.875rem 1rem", marginBottom: "1.25rem" }}>
+              <div style={{ background: "var(--bg)", borderRadius: "var(--radius-md)", padding: "0.875rem 1rem", marginBottom: "1rem" }}>
                 <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-3)", marginBottom: "0.375rem" }}>Delivering to</div>
                 <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text)" }}>{checkoutAddress}</div>
+              </div>
+
+              {/* Payment method recap */}
+              <div style={{ background: "var(--bg)", borderRadius: "var(--radius-md)", padding: "0.875rem 1rem", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-3)", minWidth: 90 }}>Payment</div>
+                <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text)" }}>
+                  {paymentMethod === "COD" ? "💵 Cash on Delivery" : "💳 Pay Online (Razorpay)"}
+                </div>
+                <button className="btn btn-ghost btn-sm" style={{ marginLeft: "auto", fontSize: "0.75rem" }} onClick={() => setStep(2)}>Change</button>
               </div>
 
               {/* Items recap */}

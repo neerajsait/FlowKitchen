@@ -196,6 +196,13 @@ export default function ShopPage({ menu, cart, favorites, loading, activeCategor
               onReset={handleReset}
               count={filtered.length} total={menu.length}
             />
+            <div style={{ marginTop: "1.5rem" }}>
+              <div className="filter-group-title" style={{ marginBottom: "0.5rem" }}>Sort By</div>
+              <select className="form-input" value={sortBy} onChange={e => setSortBy(e.target.value)}
+                style={{ fontSize: "0.875rem", padding: "0.5rem 0.75rem" }}>
+                {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
           </div>
         </div>
       )}
@@ -219,7 +226,7 @@ export default function ShopPage({ menu, cart, favorites, loading, activeCategor
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
             <div>
               <h1 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text)" }}>
-                {activeCategory === "all" ? "All Products" : activeCategory}
+                {activeCategory === "all" ? "All Products" : activeCategory === "favs" ? "My Faves" : activeCategory}
               </h1>
               {searchQuery && <p style={{ fontSize: "0.8125rem", color: "var(--text-2)", marginTop: "0.25rem" }}>Results for "{searchQuery}"</p>}
             </div>

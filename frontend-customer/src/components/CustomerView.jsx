@@ -88,7 +88,15 @@ function StoreBanner({ storeSettings }) {
 // ────────────────────────────────────────────────────────────
 // Site Footer
 // ────────────────────────────────────────────────────────────
-function SiteFooter({ setActiveTab }) {
+function SiteFooter({ setActiveTab, currentUser, onLoginRequest }) {
+  const handleProtectedTab = (tab) => {
+    if (!currentUser && ["orders", "profile", "tickets"].includes(tab)) {
+      onLoginRequest?.();
+    } else {
+      setActiveTab(tab);
+    }
+  };
+
   return (
     <footer style={{
       background: "var(--text)", color: "rgba(255,255,255,0.7)",
@@ -101,7 +109,7 @@ function SiteFooter({ setActiveTab }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", flexWrap: "wrap" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "1rem" }}>
-            <div style={{ width: 36, height: 36, background: "var(--green)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "1rem" }}>S</div>
+            <div style={{ width: 36, height: 36, background: "var(--green)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: "0.85rem", letterSpacing: "-0.5px" }}>FP</div>
             <div style={{ color: "#fff", fontWeight: 800, fontSize: "1rem" }}>FoodPilot</div>
           </div>
           <p style={{ fontSize: "0.8125rem", lineHeight: 1.7, maxWidth: 280 }}>
@@ -121,9 +129,9 @@ function SiteFooter({ setActiveTab }) {
         </div>
         <div>
           <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.8125rem", marginBottom: "0.875rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Help</div>
-          {[["Orders", "orders"], ["Profile", "profile"], ["Support", "tickets"]].map(([l, tab]) => (
+          {[["My Orders", "orders"], ["My Profile", "profile"], ["Support", "tickets"]].map(([l, tab]) => (
             <div key={l} style={{ marginBottom: "0.5rem" }}>
-              <button onClick={() => setActiveTab(tab)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: "0.8125rem", fontFamily: "inherit", padding: 0, transition: "color 0.15s" }}
+              <button onClick={() => handleProtectedTab(tab)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: "0.8125rem", fontFamily: "inherit", padding: 0, transition: "color 0.15s" }}
                 onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.6)"}>
                 {l}
               </button>
@@ -133,6 +141,16 @@ function SiteFooter({ setActiveTab }) {
       </div>
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: "2rem", paddingTop: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
         <span style={{ fontSize: "0.75rem" }}>© {new Date().getFullYear()} FoodPilot. All rights reserved.</span>
+        <span style={{ display: "flex", gap: "1.5rem", fontSize: "0.75rem", alignItems: "center" }}>
+          <button onClick={() => setActiveTab("terms")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Terms of Service</button>
+          <button onClick={() => setActiveTab("privacy")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Privacy Policy</button>
+          <button onClick={() => setActiveTab("dmca")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>DMCA Policy</button>
+        </span>
+        <span style={{ fontSize: "0.75rem" }}>Made with ♥ in India</span>
+      </div>
+    </footer>
+  );
+}
         <span style={{ display: "flex", gap: "1.5rem", fontSize: "0.75rem", alignItems: "center" }}>
           <button onClick={() => setActiveTab("terms")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Terms of Service</button>
           <button onClick={() => setActiveTab("privacy")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Privacy Policy</button>
@@ -1098,7 +1116,7 @@ export default function CustomerView({ onLogout, onLoginRequest, dbMode, current
               
               {/* Site footer */}
               {(!activeTab || activeTab === "home") && (
-                <SiteFooter setActiveTab={(tab) => { setSelectedItem(null); setActiveTab(tab); }} />
+                <SiteFooter setActiveTab={(tab) => { setSelectedItem(null); setActiveTab(tab); }} currentUser={currentUser} onLoginRequest={onLoginRequest} />
               )}
             </motion.div>
           </AnimatePresence>

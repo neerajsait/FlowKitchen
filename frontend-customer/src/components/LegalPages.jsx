@@ -147,10 +147,9 @@ export function DMCAPage({ setActiveTab }) {
       <Sec h="Designated Copyright Agent">
         <p>
           FoodPilot DMCA Agent<br />
-          123 Culinary Drive, Suite 400<br />
-          Food City, FC 90210<br />
-          Email: dmca@fooderp.local<br />
-          Phone: +1 (555) 123-4567
+          Hyderabad, Telangana, India<br />
+          Email: support@foodpilot.in<br />
+          (Contact via the Support section for fastest response)
         </p>
         <p>
           Please note that under Section 512(f) of the Copyright Act, any person who knowingly

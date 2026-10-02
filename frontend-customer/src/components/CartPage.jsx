@@ -169,7 +169,7 @@ function ComboRecommender({ cartTotal, menu, cart, coupons, onAddItem }) {
       <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "0.75rem" }}>
         <Zap size={14} color="var(--green)" />
         <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--green)" }}>
-          Add ₹{needed.toFixed(0)} more → {nearest.label}
+          Add ₹{needed.toFixed(0)}{" "}more →{" "}{nearest.label}
         </span>
       </div>
       <div className="combo-scroll" style={{ display: "flex", gap: "0.5rem", paddingBottom: 4 }}>
@@ -525,7 +525,7 @@ export default function CartPage({
                 </div>
                 {(discountAmount > 0 || actualLoyaltyDiscount > 0 || deliveryCharge === 0) && (
                   <div style={{ textAlign: "center", fontSize: "0.775rem", color: "var(--green)", fontWeight: 700, background: "var(--green-dim)", padding: "0.4rem 0.75rem", borderRadius: "var(--radius-md)" }}>
-                    "You are saving ₹{(discountAmount + actualLoyaltyDiscount + (deliveryCharge === 0 ? 49 : 0)).toFixed(0)} on this order!
+                    {`You are saving ₹${(discountAmount + actualLoyaltyDiscount + (deliveryCharge === 0 ? 49 : 0)).toFixed(0)} on this order!`}
                   </div>
                 )}
               </div>

@@ -111,15 +111,15 @@ export default function Login({ onLoginSuccess }) {
         <div className="split-content">
           <div className="glass-form">
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-              <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
+              <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", fontWeight: 900, color: "#fff" }}>FP</div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>FoodPilot</div>
-                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>FoodPilot</div>
+                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Online Shop</div>
               </div>
             </div>
 
             <h2 className="glass-title">Welcome Back</h2>
-            <p className="glass-sub">Sign in to access your workspace.</p>
+            <p className="glass-sub">Sign in to your FoodPilot account.</p>
 
             {error && !isRegistering && (
               <div className="alert alert-error" style={{ marginBottom: "1rem", background: "rgba(239, 68, 68, 0.2)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#fff" }}>
@@ -185,17 +185,7 @@ export default function Login({ onLoginSuccess }) {
                 </div>
               </div>
 
-              {!isRegistering && (
-                <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "rgba(255,255,255,0.05)", borderRadius: "12px", border: "1px dashed rgba(255,255,255,0.2)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 600, textTransform: "uppercase" }}>Demo Account</div>
-                  <button type="button" onClick={() => { setEmail("customer@example.com"); setPassword("password123"); }} style={{ display: "flex", justifyContent: "space-between", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.2)", color: "#fff", cursor: "pointer", fontSize: "0.85rem" }}>
-                    <span><b>Customer:</b> customer@example.com</span>
-                    <span style={{ color: "var(--green)" }}>password123</span>
-                  </button>
-                </div>
-              )}
-
-              <button type="submit" className="glass-btn" disabled={loading}>
+<button type="submit" className="glass-btn" disabled={loading}>
                 {loading ? "Signing in..." : <>Sign In <LogIn size={18} /></>}
               </button>
             </form>
@@ -217,10 +207,10 @@ export default function Login({ onLoginSuccess }) {
         <div className="split-content">
           <div className="glass-form" style={{ padding: "2rem 2.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-              <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}></div>
+              <div style={{ width: 40, height: 40, background: "var(--green)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", fontWeight: 900, color: "#fff" }}>FP</div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>FoodPilot</div>
-                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>FoodPilot</div>
+                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "1px" }}>Create Account</div>
               </div>
             </div>
             
