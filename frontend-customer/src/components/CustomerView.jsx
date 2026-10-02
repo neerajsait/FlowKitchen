@@ -150,6 +150,7 @@ function SiteFooter({ setActiveTab, currentUser, onLoginRequest }) {
       </div>
     </footer>
   );
+}
 
 // ────────────────────────────────────────────────────────────
 // Main CustomerView (router shell)
