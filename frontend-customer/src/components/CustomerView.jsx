@@ -150,17 +150,6 @@ function SiteFooter({ setActiveTab, currentUser, onLoginRequest }) {
       </div>
     </footer>
   );
-}
-        <span style={{ display: "flex", gap: "1.5rem", fontSize: "0.75rem", alignItems: "center" }}>
-          <button onClick={() => setActiveTab("terms")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Terms of Service</button>
-          <button onClick={() => setActiveTab("privacy")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>Privacy Policy</button>
-          <button onClick={() => setActiveTab("dmca")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "rgba(255,255,255,0.7)", textDecoration: "underline", fontFamily: "inherit", fontSize: "inherit" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.7)"}>DMCA Policy</button>
-        </span>
-        <span style={{ fontSize: "0.75rem" }}>Made with ♥ in India</span>
-      </div>
-    </footer>
-  );
-}
 
 // ────────────────────────────────────────────────────────────
 // Main CustomerView (router shell)
