@@ -13,7 +13,7 @@ services:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
-      - ALLOW_SEED=0
+      - ALLOW_SEED=${ALLOW_SEED:-0}
     command: >
       sh -c "flask db upgrade &&
              gunicorn --bind 0.0.0.0:5000 --workers 1 --threads 4 --timeout 120 'app:create_app()'"
