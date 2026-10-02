@@ -119,7 +119,7 @@ class BackendTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 201)
         order_id = resp.json["order"]["id"]
         self.assertEqual(resp.json["order"]["status"], "pending")
-        self.assertEqual(resp.json["order"]["total_price"], 80.00) # (12.5*2) + (2*3) = 31 + 49 delivery fee = 80
+        self.assertEqual(resp.json["order"]["total_price"], 31.00) # (12.5*2) + (2*3) = 31 + 0 delivery fee = 31
 
         # 2. Customer attempts to submit feedback for pending order -> Should be Forbidden (403)
         feedback_payload = {"rating": 5, "comment": "Excellent Biryani!"}

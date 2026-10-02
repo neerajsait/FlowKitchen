@@ -230,11 +230,11 @@ class LoyaltyPointsTestCase(unittest.TestCase):
         """No StoreSetting rows → defaults earn=0.1, redeem=0.01."""
         db.session.query(StoreSetting).delete()
         db.session.commit()
-        # 149 INR total (100 item + 49 default delivery fee) -> 149 * 0.1 = 14
+        # 100 INR total (100 item + 0 default delivery fee) -> 100 * 0.1 = 10
         resp = self._place_online_order(self.customer_headers, qty=1, redeem=0)
         self.assertEqual(resp.status_code, 201)
         order = resp.get_json().get("order") or resp.get_json()
-        self.assertEqual(order["loyalty_points_earned"], 14)
+        self.assertEqual(order["loyalty_points_earned"], 10)
         self.assertEqual(order["loyalty_points_redeemed"], 0)
 
     # ==================================================================
