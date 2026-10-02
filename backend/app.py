@@ -734,7 +734,7 @@ def create_app(config_override=None):
     app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "False").lower() == "true"
     app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")
     app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")
-    app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USERNAME", "noreply@fooderp.local")
+    app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER") or os.getenv("MAIL_USERNAME") or "noreply@fooderp.local"
     app.config["ADMIN_EMAIL"] = os.getenv("ADMIN_EMAIL", "")
 
     if config_override:
@@ -3999,15 +3999,11 @@ def _check_and_send_alert(app, outlet_id):
 
 def get_frontend_url(user_role):
     import os
-    urls = [u.strip() for u in os.environ.get('FRONTEND_URL', 'http://localhost:5173,http://localhost:5174').split(',')]
-    # Enforce standard ports if found
     if user_role == 'customer':
-        for u in urls:
-            if '5174' in u: return u
-    elif user_role in ['admin', 'staff', 'outlet_owner', 'kitchen']:
-        for u in urls:
-            if '5173' in u: return u
-    return urls[0]
+        return os.getenv('CUSTOMER_FRONTEND_URL', 'http://localhost:5174')
+    else:
+        # admin, staff, outlet_owner, kitchen
+        return os.getenv('ADMIN_FRONTEND_URL', 'http://localhost:5173')
 
 def _get_email_html_wrapper(title, content):
     return f"""
