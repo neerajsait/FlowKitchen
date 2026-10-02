@@ -1000,11 +1000,9 @@ def create_app(config_override=None):
         if staff_code and pin:
             try:
                 rc = get_redis()
-            except Exception:
+            except Exception as e:
+                logger.error(f"Redis error during staff login: {e}")
                 rc = None
-            
-            if not rc and os.getenv("FLASK_ENV") == "production":
-                return jsonify({"error": "Service Unavailable", "message": "Login temporarily unavailable"}), 503
 
             ip_address = request.remote_addr
             ip_lockout_key = f"staff_login_ip:{ip_address}"
@@ -1068,7 +1066,8 @@ def create_app(config_override=None):
                 from redis_client import get_redis
                 try:
                     rc = get_redis()
-                except Exception:
+                except Exception as e:
+                    logger.error(f"Redis error during login: {e}")
                     rc = None
                 failed_count = 1
                 if rc:
@@ -1079,6 +1078,7 @@ def create_app(config_override=None):
                 # Note: progressive delay + Redis lockout is used instead of CAPTCHA for now
                 time.sleep(min(failed_count, 3))
                 return jsonify({"error": "Unauthorized", "message": "Invalid email or password"}), 401
+
             
             from redis_client import get_redis
             try:
@@ -1214,16 +1214,17 @@ def create_app(config_override=None):
         
         try:
             redis_client = get_redis()
-        except Exception:
+        except Exception as e:
+            logger.error(f"Redis error during logout: {e}")
             redis_client = None
-        if not redis_client:
-            return jsonify({"error": "Service Unavailable", "message": "Logout temporarily unavailable"}), 503
             
+
         try:
-            exp = get_jwt().get("exp")
-            now = int(datetime.now(timezone.utc).timestamp())
-            ttl = max(1, exp - now) if exp else 3600
-            redis_client.setex(f"revoked:{jti}", ttl, "1")
+            if redis_client:
+                exp = get_jwt().get("exp")
+                now = int(datetime.now(timezone.utc).timestamp())
+                ttl = max(1, exp - now) if exp else 3600
+                redis_client.setex(f"revoked:{jti}", ttl, "1")
             
             # Revoke the refresh token from the HttpOnly cookie (or legacy body).
             data = sanitize_input(request.get_json(silent=True)) or {}
@@ -1235,11 +1236,12 @@ def create_app(config_override=None):
                     rt_jti = rt_claims["jti"]
                     rt_exp = rt_claims["exp"]
                     rt_ttl = max(1, rt_exp - now)
-                    redis_client.setex(f"revoked:{rt_jti}", rt_ttl, "1")
-                except Exception:
-                    pass
-        except Exception:
-            return jsonify({"error": "Service Unavailable", "message": "Logout temporarily unavailable"}), 503
+                    if redis_client:
+                        redis_client.setex(f"revoked:{rt_jti}", rt_ttl, "1")
+                except Exception as e:
+                    logger.error(f"Failed to revoke refresh token: {e}")
+        except Exception as e:
+            logger.error(f"Error during logout: {e}")
 
         try:
             uid = int(get_jwt_identity())

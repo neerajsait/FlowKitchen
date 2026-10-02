@@ -100,7 +100,7 @@ def get_redis():
             _redis_client = redis.from_url(redis_url, decode_responses=True, protocol=2)
             _redis_client.ping()
             return _redis_client
-        except redis.ConnectionError as e:
+        except Exception as e:
             logger.error(f"Failed to connect to Redis at {redis_url}: {e}")
             if is_production:
                 raise RuntimeError(f"FATAL: Redis is required in production but unreachable: {e}")
