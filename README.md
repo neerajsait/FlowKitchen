@@ -17,8 +17,6 @@
   </p>
 </div>
 
----
-
 ## 🌐 Live Demo
 
 | App | Link |
@@ -28,7 +26,7 @@
 
 The backend API runs on an **Oracle Cloud** VM. The two frontends are hosted on Netlify.
 
-## ✨ Key Features
+## Stack
 
 **Customer Storefront**
 - Dynamic menus with product detail pages
