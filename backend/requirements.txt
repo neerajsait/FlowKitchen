@@ -6,7 +6,7 @@ Flask-JWT-Extended==4.7.4
 Flask-Bcrypt==1.0.1
 Flask-Limiter==4.1.1
 python-dotenv==1.2.3
-email-validator==2.3.0
+email-validator==2.4.0
 Flask-Cors==6.0.0
 qrcode[pil]==7.4.2
 APScheduler==3.11.3
